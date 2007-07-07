@@ -1,0 +1,91 @@
+body           {font-family: Junicode, gentium, caslon roman, serif;
+                font-size: 12pt;
+                line-height: 16pt;
+                margin-left: 10%;
+                margin-right: 10%}
+
+h1             {font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: normal;
+                font-size: 18pt}
+
+h2             {font-size: 16pt}
+
+h3             {font-size: 14pt;
+                font-weight: normal;
+                font-style: italic;}
+
+h4             {font-size: 12pt;
+                font-weight: normal;
+                font-style: italic;}
+
+p              {line-height: 16pt;}
+
+p.first        {text-indent: 0pt}
+
+p.continued    {text-indent: 0pt}
+
+pre            {font-family: "courier new", "freemono", "bitstream vera sans mono";
+                font-size: 10pt;
+                line-height: 12pt;}
+
+tt             {font-family: "courier new", "freemono", "bitstream vera sans mono";
+                font-size: 10pt;}
+                
+ul.detnote     {font-size: 10pt;}
+
+dt             {font-weight: bold}
+
+table          {font-family: Junicode, gentium, caslon roman, serif;}
+
+table.std      {padding: 2pt;
+                border-style: solid;
+                border-width: thin;
+                border-color: black}
+
+table.notabene {padding: 5px;
+                border-style: solid;
+                border-width: medium;
+                width: 95%}
+
+td             {padding-left: 10px;
+                padding-right: 10px;
+                border-style: solid;
+                border-width: thin;
+                border-color: black;
+                font-size: 12pt}
+
+td.alert       {width: 10px;
+                background-color: #D3D3D3;
+                border-style: none}
+
+td.nb          {border-style: none}
+
+td.plain       {vertical-align: top;
+                background-color: transparent;
+                border-style: none;}
+
+div.bigindent  {text-indent: 7em;
+                display: block}
+
+div#jumplist   {display: none}
+
+A:active       {text-decoration: none;
+                color: black}
+
+A:link         {text-decoration: none;
+                color: black}
+
+A:visited      {text-decoration: none;
+                color: black}
+
+span.note      {display: block;
+                border: solid thin black;
+                padding-left: 1em;
+                padding-right: 1em;
+                font-size: 10pt;
+                text-indent: 0;}
+
+div#copyright  {border-top: solid thin black;
+                margin-top: 10pt;}
+
+img            {border-style: none;}

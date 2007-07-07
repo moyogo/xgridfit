@@ -1,0 +1,172 @@
+/* The big containers */
+
+html           {margin: 0; padding: 0;}
+
+body           {margin: 0; padding: 0; height: 100%;
+                font-family: Junicode, gentium, caslon roman, serif;
+                font-size: large;
+                line-height: 125%;
+                background-color: black;}
+
+
+/* Basic HTML elements */
+
+h1             {line-height: 125%;
+                font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: bold;}
+
+h1 span.chnum  {font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: normal;}
+
+h3             {font-weight: normal;
+                font-style: italic;}
+
+h4             {font-weight: normal;
+                font-style: italic;}
+
+hr             {background-color: red; color: red;}
+
+p              {line-height: 125%;
+                text-indent: 1em;}
+
+blockquote p   {margin-top: 0; margin-bottom: 0;}
+
+li             {line-height: 125%;}
+
+dt             {font-weight: bold;}
+
+table          {font-family: Junicode, gentium, caslon roman, serif;}
+
+th             {background-color: black;
+                color: white;
+                line-height: 125%;
+                padding: 0 10px;
+                border: solid thin #888;}
+
+td             {padding-left: 10px;
+                padding-right: 10px;
+                background-color: transparent;
+                border: solid thin #888;
+                font-size: large;}
+
+img            {border-style: none;}
+
+
+/* Anything we want to say only to old browsers */
+
+.hideme        {display: none;}
+
+
+
+/* Our versions of the elements */
+
+p.first        {text-indent: 0;}
+
+p.continued    {text-indent: 0;}
+
+ul.detnote     {font-size: medium;
+                line-height: 125%;}
+
+table.std      {margin-top: 10px;
+                margin-bottom: 10px;
+                padding: 1px;
+                background-color: transparent;
+                border: solid thin #888;}
+
+td.blank       {background-color: black;}
+
+td.blankhdr    {background-color: black;
+                line-height: 125%;
+                border: solid thin #888;}
+
+td.plain       {vertical-align: top;
+                background-color: transparent;
+                border-style: none;
+                line-height: 125%}
+
+td.hw          {vertical-align: top;
+                background-color: transparent;
+                border-style: none;
+                line-height: 125%;
+                font-weight: bold;}
+
+/* For poetic extracts that start in mid-line */
+div.bigindent  {text-indent: 7em;}
+
+div.bigindbqtr {text-indent: 7em;}
+
+/* Bad name: actually the side menu */
+div#jumplist   {position: absolute;
+                left: 5px; top: 3em;
+                width: 195px;
+                height: auto;
+                font-size: 12px;
+                color: white;
+                line-height: 115%;
+                overflow: auto;}
+
+div#jumplist a {font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: bold;}
+
+/* Hide this rule from Internet Explorer 6 */
+body>div#jumplist {position: fixed;
+                   height: 93%;}
+
+div#jumplist a {display: block;
+                text-indent: -2em;
+                color: white;
+                text-decoration: none;
+                padding-left: 2em;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding-right: 5px;}
+
+div#jumplist a i {font-family: Verdana, Arial, Helvetica, sans-serif;
+                  font-weight: bold;}
+
+div#jumplist a em {font-family: Verdana, Arial, Helvetica, sans-serif;
+                   font-style: normal;
+                   text-decoration: underline;}
+
+div#jumplist a:visited {color: white;
+                        text-decoration: none}
+
+div#jumplist a:hover {color: black;
+                      text-decoration: none;
+                      background-color: white;}
+
+div#jumplist h1 {font-size: small;}
+
+div.levone     {margin-left: 1em;
+                display: block;}
+
+div#content    {position: absolute;
+                top: 10px;
+                left: 200px;
+                right: 10px;
+                height: auto;
+                background-color: white;
+                border: solid thin black;
+                padding: 20px;}
+
+span.note      {display: none;
+                border: solid 1px #B8860B;
+                padding-left: 1em;
+                padding-right: 1em;
+                font-size: medium;
+                text-indent: 0;}
+
+span.chnum     {font-weight: normal;}
+
+div.alertbox   {position: relative; left: 0; top: 0;
+                border: solid medium red;
+                padding: 0 1em;
+                margin: 1em 0;
+                height: auto;
+                width: auto;
+                background-color: #EEE;}
+
+div.bqhdr      {font-weight: bold;
+                margin-bottom: 1em;}
+
+div#copyright  {border-top: solid thin black}

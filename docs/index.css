@@ -1,0 +1,13 @@
+span.smaller {font-size: 75%; font-weight: normal; font-style: italic;}
+
+span.bigger  {font-size: 125%;
+              line-height: 125%;}
+
+p            {text-indent: 0;
+              line-height: 125%;}
+
+#content a em {font-style: normal;
+               font-weight: bold;
+               color: #A52A2A;
+               background-color: transparent;
+               text-decoration: underline;}
