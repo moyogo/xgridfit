@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#set-vectors">&lt;set-vectors&gt;</a>
+<a href="#set-vectors">&lt;with-vectors&gt;</a>
+<a href="#set-projection-vector">&lt;set-projection-vector&gt;</a>
+<a href="#set-projection-vector">&lt;with-projection-vector&gt;</a>
+<a href="#set-freedom-vector">&lt;set-freedom-vector&gt;</a>
+<a href="#set-freedom-vector">&lt;with-freedom-vector&gt;</a>
+<a href="#set-dual-projection-vector">&lt;set-dual-projection-vector&gt;</a>
+<a href="#store-projection-vector">&lt;store-projection-vector&gt;</a>
+<a href="#store-projection-vector">&lt;store-freedom-vector&gt;</a>
+</div>
+
+<div id="content">
+<h1>Vectors</h1>
+
+<p>A vector is a direction represented by a line. The TrueType engine stores a
+vector as an x,y coordinate pair--that is, as one end-point of a line. The other
+end-point of the line that defines a vector is always at coordinate 0,0.
+The actual location of the line is not so important, however, as the direction
+the line defines. Vectors stored by the TrueType engine determine how
+measurements are made and how points are moved.</p>
+
+<p>The TrueType engine maintains three vectors:</p>
+
+<ul>
+<li><b>The freedom vector.</b> Almost all the instructions that move points
+move them along (i.e. parallel to) the freedom vector (an important exception is
+&lt;move-point-to-intersection&gt;).</li>
+<li><b>The projection vector.</b> Almost all instructions that measure
+distance (this includes almost all instructions that move points) do so
+along the projection vector.</li>
+<li><b>The dual projection vector.</b> This is usually the same as the
+projection vector, but when it is different it is used by the
+&lt;interpolate&gt;, &lt;measure-distance&gt;, &lt;mdrp&gt; and
+&lt;mirp&gt; instructions--also by &lt;move&gt; when a "relative-to"
+point is present.</li>
+</ul>
+
+<p>Most of the time the three vectors all point in the same direction, with
+the result that it is easy to visualize how instructions that move points
+work. For example, this code</p>
+
+<pre>
+&lt;with-vectors axis="x"&gt;
+  &lt;move distance="left-sidebearing"&gt;
+    &lt;reference&gt;
+      &lt;point num="a"/&gt;
+    &lt;/reference&gt;
+    &lt;point num="b"/&gt;
+  &lt;/move&gt;
+&lt;/with-vectors&gt;
+</pre>
+
+<p>moves point <b>b</b> along the horizontal freedom vector until
+it is positioned the rounded distance
+"left-sidebearing" from point <b>a</b> (the character origin at 0,0),
+as measured along the horizontal projection
+vector. When measuring the distance and
+moving the point, the TrueType engine treats both <b>a</b> and <b>b</b> as if
+they were arrayed in a single dimension, and the y axis did not
+exist. These images illustrate the effect of the move:</p>
+
+<table>
+<tr><td>
+<img alt="before move of point b" src="x-vec-a.gif"/>
+</td>
+<td>
+<img alt="after move of point b" src="x-vec-b.gif"/>
+</td>
+</tr></table>
+
+<p>The freedom and projection vectors need not match. In the leftmost
+image below, the glyph program has moved point <b>a</b>, which defines
+the top of a serif, up to the nearest gridline. As a result point
+<b>b</b> is too close to <b>a</b> and ought to be moved up by the same
+amount. But
+moving it straight up would alter the slope of the diagonal line whose
+bottom point it defines. The solution is to set the freedom vector to
+be parallel to the diagonal so that point <b>b</b> moves along that
+line without distorting it. This code will do it:</p>
+
+<pre>
+&lt;with-projection-vector axis="y"&gt;
+  &lt;with-freedom-vector to-line="parallel"&gt;
+    &lt;line&gt;
+      &lt;point num="b"/&gt;
+      &lt;point num="c"/&gt;
+    &lt;/line&gt;
+    &lt;shift&gt;
+      &lt;reference&gt;
+        &lt;point num="a"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="b"/&gt;
+    &lt;/shift&gt;
+  &lt;/with-freedom-vector&gt;
+&lt;/with-projection-vector&gt;
+</pre>
+
+<p>The middle image shows the result of the move, and the last image shows the
+same area of the glyph after execution of &lt;interpolate-untouched-points&gt;.</p>
+
+<table>
+<tr><td>
+<img alt="before move of point b" src="A1.gif"/>
+</td>
+<td>
+<img alt="after move of point b" src="A2.gif"/>
+</td>
+<td>
+<img alt="after move of point b" src="A3.gif"/>
+</td>
+</tr></table>
+
+<p>Notice how the curve that joins the diagonal to the serif is preserved
+even at 16 pixels-per-em. An anti-aliasing program can give an impression
+of this curve, as in the image below, which is enlarged 8x.</p>
+
+<table>
+<tr><td>
+<img alt="before move of point b" src="A4.gif"/>
+</td>
+</tr></table>
+
+<p>A vector has a direction, though this is rarely significant.
+When the vector is set to the y axis, it points up; when set to the
+x axis, it points right. When set to a line, it points from the
+second point in the &lt;line&gt; element to the first: imagine
+an arrow on the first point.</p>
+
+<h2 id="vect-inst">Instructions that set vectors</h2>
+
+<p>Instructions that begin with <tt>set</tt> set one or two vectors,
+and these remain as set until another vector-setting instruction is
+encountered. Instructions that begin with <tt>with</tt> set vectors
+that apply only to the instructions contained within the <tt>with</tt>
+element.</p>
+
+<p>Instructions that set the projection vector, freedom vector, or
+both may do so in any of four ways:</p>
+
+<ul>
+<li>by including an <tt>axis</tt> attribute whose value is <tt>x</tt>
+or <tt>y</tt>.</li>
+<li>by including a &lt;line&gt; element as the child of a <tt>set</tt>
+instruction or the first child of a <tt>with</tt> instruction. You
+may also include the <tt>to-line</tt> attribute on the <tt>set</tt>
+or <tt>with</tt> element to indicate whether the vector should be
+<tt>parallel</tt> or <tt>orthogonal</tt> to the line (the default is
+<tt>parallel</tt>).</li>
+<li>by including the attributes <tt>x-component</tt> and <tt>y-component</tt>,
+giving the x and y components of the point that defines the vector. The
+sum of the squares of these numbers must be <tt>1v</tt> (or 16384 if
+integers are used). It would be difficult to calculate these
+coordinates on the fly, so this method is chiefly useful for restoring
+saved vectors.</li>
+<li>by doing none of these things, in which case a <tt>set</tt>
+instruction attempts to retrieve the required vector(s) from the
+stack while a <tt>with</tt> element only saves the current vector(s),
+executes the instructions it contains, and then restores the vector(s).</li>
+</ul>
+
+<h3 id="set-vectors">&lt;set-vectors&gt;<br/>&lt;with-vectors&gt;</h3>
+
+<p>Sets both the projection vector and the freedom vector to
+the same value. They can be set to "x" or "y" via the
+<tt>axis</tt> attribute; to a line by including a line element
+as the content of the &lt;set-vectors&gt; element or the first
+child of the &lt;with-vectors&gt; element; or by passing
+"raw" values via the <tt>x-component</tt> and <tt>y-component</tt>
+attributes.</p>
+     
+<p>Xgridfit looks first for an <tt>axis</tt> attribute, next for
+a &lt;line&gt;, and finally for <tt>x-component</tt> and <tt>y-component</tt>
+attributes (neither is used unless both are present). If
+it finds none of these, Xgridfit prints a warning and
+attempts to find the values it needs on the stack.</p>
+
+<p>The "raw" values passed in via <tt>x-component</tt> and <tt>y-component</tt>
+are constrained in ways that make them
+difficult to calculate, at least in a TrueType program,
+but the <tt>x-component/y-component</tt> method is useful to
+restore values that have been saved via &lt;store-projection-vector&gt;
+or &lt;store-freedom-vector&gt;. For example, to
+copy one vector to another, you can do this:</p>
+
+<pre>
+&lt;variable name="x-comp"/&gt;
+&lt;variable name="y-comp"/&gt;
+&lt;store-freedom-vector x-component="x-comp" y-component="y-comp"/&gt;
+&lt;set-projection-vector x-component="x-comp" y-component="y-comp"/&gt;
+</pre>
+
+<p>But because of the way these instructions can leave values on
+the stack and take them from the stack again, this is easier and
+more efficient:</p>
+
+<pre>
+&lt;store-freedom-vector/&gt;
+&lt;set-projection-vector/&gt;
+</pre>
+
+<p>When setting vectors to a line, one or both points in
+the line can be in the twilight zone. You can include
+a <tt>zone</tt> attribute in the &lt;line&gt; element or one in
+either or both &lt;point&gt; elements. Include a <tt>zone</tt>
+attribute in the &lt;line&gt; element if both points are in
+the twilight zone. This is the same as including an
+attribute <tt>zone="twilight"</tt> in both points. If only one
+point is in the twilight zone, include the <tt>zone</tt>
+attribute for that point.</p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+
+<dt>axis</dt>
+
+<dd>The axis to which the vectors should be set. Permitted values
+are <tt>x</tt> and <tt>y</tt>.</dd>
+
+<dt>to-line</dt>
+
+<dd>Whether the vectors should be parallel or orthogonal
+(perpendicular) to the line being used to set the
+vector. The default value is <tt>parallel.</tt></dd>
+
+<dt>x-component</dt>
+
+<dd>The x component of the vector to set. This has no
+effect unless the <tt>y-component</tt> attribute is included
+as well.</dd>
+
+<dt>y-component</dt>
+
+<dd>The y component of the vector to set. This has no
+effect unless the <tt>x-component</tt> attribute is included
+as well.</dd>
+</dl>
+
+<h3 id="set-projection-vector">&lt;set-projection-vector&gt;<br/>&lt;with-projection-vector&gt;</h3>
+
+<p>Just like &lt;set-vectors&gt;, but sets only the projection vector.</p>
+
+
+<h3 id="set-freedom-vector">&lt;set-freedom-vector&gt;<br/>&lt;with-freedom-vector&gt;</h3>
+
+<p>Just like &lt;set-vectors&gt;, but sets only the freedom vector.</p>
+
+
+<h3 id="set-dual-projection-vector">&lt;set-dual-projection-vector&gt;</h3>
+
+<p>Like &lt;set-projection-vector&gt;, but the dual projection vector
+can be set only from a line, and it uses the original
+positions in the outline of the points that constitute the
+line rather than their current positions (assuming they have
+moved).</p>
+
+<p>The dual projection vector is not used by every instruction:
+just by &lt;interpolate&gt;, &lt;get-coordinate&gt;, &lt;measure-distance&gt;,
+&lt;mirp&gt;, &lt;mdrp&gt;, and &lt;move&gt; (only when a
+"relative-to" point is present). This vector lasts only until
+a new projection vector is set; then it gets canceled.</p>
+
+<p>One or both points in the line may be in the twilight zone.
+See the explanation for &lt;set-vectors&gt;.</p>
+
+
+<h2>Instructions that store vectors</h2>
+
+<h3 id="store-projection-vector">&lt;store-projection-vector&gt;<br/>&lt;store-freedom-vector&gt;</h3>
+
+<p>These instructions store a vector as two numbers, an
+x-component and a
+y-component. The <tt>x-component</tt> and <tt>y-component</tt>
+attributes, if given, must be identifiers for variables:</p>
+<pre>
+  &lt;store-projection-vector x-component="vx" y-component="vy"/&gt;
+</pre>
+<p>
+If variables are not given, a warning is printed and the
+values are left on the stack, where they will be picked
+up correctly by a following <tt>set</tt> instruction.
+For example, this code sets the projection vector to be the
+same as the freedom vector:</p>
+
+<pre>
+  &lt;store-freedom-vector/&gt;
+  &lt;set-projection-vector/&gt;
+</pre>
+
+<p>Note that a <tt>with</tt> block will not pick up the components
+of a vector from the stack.</p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+
+<dt>x-component</dt>
+
+<dd>The x-component of the vector. Both the <tt>x-component</tt>
+and the <tt>y-component</tt> must be present if either is present;
+otherwise the one that is present is ignored, and the two components
+of the vector are left on the stack.</dd>
+
+<dt>y-component</dt>
+
+<dd>The y-component of the vector.</dd>
+</dl>
+
+</div>
+</body>
+</html>
+

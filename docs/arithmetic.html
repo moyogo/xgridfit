@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Do\wnload</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#add">&lt;add&gt;</a>
+<a href="#subtract">&lt;subtract&gt;</a>
+<a href="#multiply">&lt;multiply&gt;</a>
+<a href="#divide">&lt;divide&gt;</a>
+<a href="#set-equal">&lt;set-equal&gt;</a>
+<a href="#absolute">&lt;absolute&gt;</a>
+<a href="#negate">&lt;negate&gt;</a>
+<a href="#floor">&lt;floor&gt;</a>
+<a href="#ceiling">&lt;ceiling&gt;</a>
+<a href="#minimum">&lt;minimum&gt;</a>
+<a href="#maximum">&lt;maximum&gt;</a>
+<a href="#round">&lt;round&gt;</a>
+<a href="#no-round">&lt;no-round&gt;</a>
+<a href="#control-value-index">&lt;control-value-index&gt;</a>
+<a href="#formula">&lt;formula&gt;</a>
+</div>
+
+<div id="content">
+
+          <h1>Arithmetic</h1>
+
+          <p>Xgridfit has a number of elements corresponding to the arithmetic
+                    instructions of TrueType. While it is generally best to use
+                    Xgridfit's <a href="expressions.html">expression</a> syntax
+                    for arithmetic, these elements
+                    may occasionally come in handy and so are mentioned here.
+                    The &lt;set-equal&gt; and &lt;round&gt; elements are
+                    especially likely to be useful.</p>
+          <p>Arithmetic elements generally have one or two attributes for
+                    operands and a <tt>result-to</tt> attribute for the place to
+                    store the result. The <tt>result-to</tt> attribute can be
+                    the name of a variable, an entry in the Control Value Table,
+                    or one of the graphics state variables that can be written
+                    to. If one of the operands is missing, Xgridfit assumes that
+                    the missing value can be found on the run-time stack. If the
+                    <tt>result-to</tt> attribute is missing, Xgridfit attempts
+                    to write the result to the operand that normally appears on
+                    the left in an arithetic expression. Failing that, Xgridfit
+                    issues a warning and generates code that leaves the
+                    result on the stack. The behavior of an arithmetic element
+                    is somewhat different when it is the child of a <a
+                    href="expressions.html#formulas">&lt;formula&gt;</a>
+                    element.</p>
+
+          <h3 id="add">&lt;add&gt;</h3>
+
+          <p>Adds <tt>value1</tt> to <tt>value2</tt>. If there is no
+                    <tt>result-to</tt> attribute, Xgridfit attempts to write the
+                    result to <tt>value1</tt>.</p>
+          
+
+          <h3 id="subtract">&lt;subtract&gt;</h3>
+          
+          <p>Subtracts <tt>minuend - subtrahend</tt>. If <tt>result-to</tt> is not
+                    specified, Xgridfit attempts to write the result to
+                    <tt>minuend</tt>.</p>
+
+
+          <h3 id="multiply">&lt;multiply&gt;</h3>
+
+          <p>Multiplies <tt>value1</tt> by <tt>value2</tt>. If there is no
+                    <tt>result-to</tt> attribute, Xgridfit attempts to write the
+                    result to <tt>value1</tt>.</p>
+
+
+          <h3 id="divide">&lt;divide&gt;</h3>
+
+          <p>Divides <tt>dividend</tt> by <tt>divisor</tt>. If
+                    <tt>result-to</tt> is not specified, Xgridfit attempts to
+                    write the result to <tt>dividend</tt>.</p>
+
+
+          <h3 id="set-equal">&lt;set-equal&gt;</h3>
+
+          <p>Set <tt>target</tt> (variable, control value, or any of the
+                    graphics state variables that Xgridfit can write to) equal
+                    to <tt>source</tt>, which can be an expression or any number
+                    type that Xgridfit can handle.</p>
+
+
+          <h3 id="absolute">&lt;absolute&gt;</h3>
+
+          <p>Converts negative to positive numbers; positive numbers
+                    stay positive.</p>
+
+
+          <h3 id="negate">&lt;negate&gt;</h3>
+
+          <p>Converts positive to negative numbers; negative numbers
+                    stay negative.</p>
+<pre>
+&lt;!ELEMENT    negate                    EMPTY&gt;
+
+&lt;!ATTLIST    negate
+             value           CDATA                #IMPLIED
+             result-to       CDATA                #IMPLIED&gt;
+</pre>
+
+          <h3 id="floor">&lt;floor&gt;</h3>
+
+          <p>Yields the greatest integer less than or equal to <tt>value</tt>,
+                    which is either an integer representing 64ths of a pixel or
+                    a fixed-point number. The returned value, if looked at as
+                    an integer, is either zero or a multiple of 64.</p>
+
+
+          <h3 id="ceiling">&lt;ceiling&gt;</h3>
+
+          <p>Yields the smallest integer greater than or equal to
+                    <tt>value</tt>.</p>
+
+
+          <h3 id="minimum">&lt;minimum&gt;</h3>
+
+          <p>Yields the lesser of the two values <tt>value1</tt> and
+                    <tt>value2</tt>.</p>
+
+
+          <h3 id="maximum">&lt;maximum&gt;</h3>
+          
+          <p>Yields the greater of the two values <tt>value1</tt> and
+                    <tt>value2</tt>.</p>
+
+
+          <h3 id="round">&lt;round&gt;</h3>
+
+          <p>Rounds a distance (expressed by <tt>value</tt>) according to the
+                    current round state, applies whatever correction is
+                    appropriate for the "color" of the distance, and returns the
+                    result.</p>
+
+          
+          <h3 id="no-round">&lt;no-round&gt;</h3>
+
+          <p>Like round, but without the rounding. That is, it may apply a
+                    correction for the "color" of the distance, but it will not
+                    round the distance.</p>
+
+
+          <h3 id="control-value-index">&lt;control-value-index&gt;</h3>
+
+          <p>Assigns the index of a control value to a variable. Use this if
+                    you need to get such an index for any reason, since the
+                    &lt;set-equal&gt; instruction yields the value, not the
+                    index, of a control value.</p>
+
+          
+          <h4>Attributes</h4>
+
+          <dl>
+                    <dt>value</dt>
+                    <dd>Name of the &lt;control-value&gt; element for which we
+                              want the index. No other kind of value is
+                              recognized here.</dd>
+                    <dt>result-to</dt>
+                    <dd>Name of a variable in which to store the control value
+                              index. Only a variable is permitted here--not, for
+                              example, the name of another control value.</dd>
+          </dl>
+
+          <h3 id="formula">&lt;formula&gt;</h3>
+
+          <p>A formula is a block containing arithmetical instruction
+                    elements. Within the &lt;formula&gt; the behavior of these
+                    elements is modified slightly: when a result-to attribute is
+                    missing, they do not attempt to write their result back to
+                    one of the values passed to them, but rather leave it on the
+                    stack, thus making it available to the following instruction
+                    element. Further, while Xgridfit normally issues a warning
+                    when an arithmetic element takes a value from the stack or
+                    leaves a result on the stack, within a formula this is the
+                    expected behavior and so the warning is suppressed. The
+                    instructions within the formula should be chained, the
+                    result of one operation being used as an argument for the
+                    following one; this results in tight code being generated.
+                    Example:</p> 
+<pre>
+&lt;formula result-to="minimum-distance"&gt;
+  &lt;round value="lc-vert-stem"/&gt;
+  &lt;multiply value2="0.8p"/&gt;
+&lt;/formula&gt;
+</pre>
+          <p>This rounds the control-value "lc-vert-stem," multiplies it by
+                    0.8, and sets the minimum distance in the graphics state to
+                    the result. The original entry in the control-value table is
+                    unchanged. By contrast, if this &lt;round&gt; element were
+                    not the child of a &lt;formula&gt;, the result would be
+                    written back to the control-value table.</p>
+
+</div>
+</body>
+</html>

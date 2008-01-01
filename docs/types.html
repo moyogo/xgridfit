@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#integers">Integers</a>
+<a href="#grid-distance">Grid Distance</a>
+<a href="#vector-set">Vector Setting</a>
+<a href="#control-values">Control Values</a>
+<a href="#expressions">Expressions</a>
+</div>
+
+<div id="content">
+
+          <h1>Number Types</h1>
+          <p>
+                    The TrueType engine provides no facilities for conversion
+                    between number types and no type-checking. If you pass a
+                    negative integer to an instruction that accepts only
+                    unsigned integers, you will receive no notice of your error
+                    before your glyph program crashes. You can catch many
+                    run-time errors relating to invalid numbers by testing your 
+                    font in Rogier van Dalen's <a
+                    href="http://home.kabelfoon.nl/~slam/fonts/truetypeviewer.html">TrueTypeViewer</a>.
+          </p>
+          <p>
+                    Xgridfit does distinguish several different types of number
+                    literal, and it does prevent your doing truly outrageous
+                    things--for example, using a fixed-point number (which
+                    normally expresses distance on the raster grid) to index a
+                    control value. But as TrueType does no internal
+                    type-checking, a program compiled by Xgridfit does not do so
+                    either.  Xgridfit will not catch an error that cannot be
+                    caught at compile time.  So while you can't do this:
+          </p> 
+<pre>
+&lt;point num="2.5"/&gt;
+</pre>
+          <p>
+                    You can do this (and you will get no error-message, though
+                    it makes no sense):
+          </p>
+<pre>
+&lt;variable name="p"/&gt;
+&lt;set-equal target="p" source="2.5"/&gt;
+&lt;move-point&gt;
+  &lt;point num="p"/&gt;
+&lt;/move-point&gt;
+</pre>
+          <p>
+                    It is largely up to you to make sure the numbers you are
+                    using are appropriate.
+          </p>
+          <h2 id="integers">Integers</h2>
+          <p>
+                    Integers present little difficulty, since it is generally
+                    obvious whether a number may be signed and if there are
+                    limits on its size. At present Xgridfit does not distinguish
+                    between signed and unsigned integers or between integers of
+                    various sizes. This may change in a future release.
+          </p>
+          <p>
+                    To represent an integer value, simply type the number with
+                    no decimal point, e.g. "-64," "23."
+          </p>
+          <h2 id="grid-distance">Grid distance ("F26Dot6")</h2>
+          <p>
+                    There are three ways to write these numbers. One is as an
+                    integer, in 64ths of a pixel (the smallest unit this kind of
+                    number can express): thus "32" is half a pixel, "64" is one
+                    pixel, and so on. A second way is to type a decimal point
+                    anywhere in the number: "0.5" for half a pixel, "1.0" for
+                    one pixel, and so on. A third way is as a number with the
+                    suffix "p": thus "1p" is one pixel, "1.5p" is one and a half
+                    pixels, and so on.  These numbers may be signed: "-64,"
+                    "-0.25," "-1p" and so on.
+          </p> 
+          <p>
+                    Note that, if you write F26dot6 numbers as decimals, the
+                    number you write may be rounded to the nearest 64th of a
+                    pixel: for example, 1.1p comes to 70.4 64ths; Xgridfit
+                    rounds it to 70/64 (= 1.09375). This is due to the
+                    limitations of the TrueType engine; it is not a problem with
+                    Xgridfit.
+          </p> 
+          <p>
+                    All arithmetic operations return F26dot6 numbers. You should
+                    keep in mind that the limited precision of these numbers
+                    constrains the kind of math you can do in Xgridfit and the
+                    TrueType engine.
+          </p> 
+          <h2 id="vector-set">Vector-setting numbers ("EF2Dot14")</h2>
+          <p>
+                    These numbers may be written either as integers between
+                    16384 and -16384 or as decimal values with suffix "v" (e.g.
+                    "1.0v," "0.785v"--the zero is needed for validation). For
+                    further constraints on these numbers, see <a
+                              href="vectors.html">Vectors</a>.
+          </p>
+          <h2 id="control-values">Control Values</h2>
+          <p>
+                    To work with control values you must understand three
+                    distinct numerical types. When you set up the Control Value
+                    Table, you must supply numbers (signed integers)
+                    corresponding to the units of the grid on which you designed
+                    the glyphs in your font:
+          </p>
+<pre>
+&lt;control-values&gt;
+  &lt;control-value name="baseline" value="0"/&gt;
+  &lt;control-value name="lc-round-bottom" value="-23"/&gt;
+  &lt;control-value name="cap-round-bottom" value="-27"/&gt;
+  &lt;control-value name="lc-x-height" value="850"/&gt;
+&lt;/control-values&gt;
+</pre>
+          <p>
+                    But before any of your programming ever runs, the TrueType
+                    engine converts these values to grid-units ("F26Dot6"
+                    numbers), whose exact values depend on the resolution at
+                    which the font is now being rasterized (measured in
+                    pixels-per-em). Finally, all control values are stored in an
+                    array indexed with unsigned integers.
+          </p>
+          <p>
+                    Xgridfit encourages you to access control values by id;
+                    indeed, the <tt>distance</tt> attributes of &lt;move&gt; and
+                    other instructions will accept only these symbolic
+                    identifiers, not numbers or variables (this is so, at least,
+                    if you validate with the schema). But the index of a
+                    control-value may be retrieved, if wanted, with the
+                    &lt;control-value-index&gt; element:
+          </p>
+<pre>
+&lt;control-value-index value="lc-vert-stem" result-to="v"/&gt;
+</pre>
+          <p>
+                    where <tt>value</tt> is the <tt>name</tt> of an
+                    entry in the Control Value Table and
+                    <tt>result-to</tt> is a variable in which to store
+                    the index.
+          </p>
+          <p>
+                    Xgridfit converts the <tt>name</tt> of a control
+                    value to an index whenever appropriate: especially
+                    in the <tt>distance</tt> attributes of the
+                    point-moving instructions &lt;move&gt;,
+                    &lt;diagonal-stem&gt;, &lt;mirp&gt; and
+                    &lt;miap&gt;. When passing a control value to a
+                    function it is the index that gets passed, and in
+                    any expression involving operators, the name of a
+                    control-value resolves to the index. (Thus a
+                    shorthand way to get the index of a control value
+                    is to put it in an expression, e.g.  "lc-vert-stem
+                    + 0".)
+          </p>
+          <p>
+                    When the <tt>name</tt> of a control value is used
+                    in an arithmetic instruction (including
+                    &lt;set-equal&gt;), it is the value that gets
+                    used, not the index. The <tt>name</tt> of a
+                    control value can also be passed to the
+                    &lt;set-minimum-distance&gt; instruction, and in
+                    that case the value is used, not the index.  The
+                    same is true of &lt;shift-absolute&gt;
+                    &lt;set-coordinate&gt;, &lt;move&gt; with
+                    <tt>pixel-distance</tt> attribute,
+                    &lt;set-control-value-cut-in&gt;,
+                    &lt;set-single-width-cut-in&gt;, and
+                    &lt;set-single-width&gt;. If you need the value
+                    rather than the index in an expression, use the
+                    <tt>control-value</tt> operator with any
+                    expression that resolves to an index into the
+                    Control Value Table:
+          </p>
+<pre>
+control-value(lc-vert-stem)      &lt;!-- The name of a control value --&gt;
+control-value(0)                 &lt;!-- An unsigned integer --&gt;
+control-value(baseline + 3)      &lt;!-- An expression --&gt;
+</pre>
+          <h2 id="expressions">Expressions</h2>
+          <p>
+                    Expressions have no type, and, except where the schema
+                    forbids it, can be used to express any sort of value at all.
+                    The schema insists that only the <tt>name</tt> of a
+                    &lt;control-value&gt; can be used in the <tt>distance</tt>
+                    attribute of an instruction that moves a point; but even
+                    here you can use an expression if you don't validate: the
+                    attribute <tt>distance="2.5 * foo"</tt> will be acceptable
+                    to the Xgridfit compiler, if you can justify it to yourself.
+          </p>
+</div>
+</body>
+</html>
