@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <title>Xgridfit</title>
+    <link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+    <link rel="stylesheet" href="parchment.css" media="screen"
+	  type="text/css" title="parchment" />
+    <link rel="alternate stylesheet" href="legible.css" media="screen"
+	  type="text/css" title="legible" />
+    <style type="text/css" media="print"> @import "oeg.print.css"; </style>
+    <meta name="AUTHOR" content="Peter S. Baker" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+      <hr/>
+      <a href="#point">&lt;point&gt;</a>
+      <a href="#line">&lt;line&gt;</a>
+      <a href="#range">&lt;range&gt;</a>
+      <a href="#set">&lt;set&gt;</a>
+      <a href="#contour">&lt;contour&gt;</a>
+      <a href="#zone">&lt;zone&gt;</a>
+    </div>
+
+    <div id="content">
+
+      <h1>Points and Collections of Points</h1>
+
+      <p>
+	The points that define outlines in TrueType are numbered
+	sequentially from zero, as illustrated in the figure below,
+	which shows both on-line points (those that a line must pass
+	through), and off-line points (those that determine the
+	curvature of a line):
+      </p>
+
+      <table>
+	<tr>
+	  <td>
+	    <img src="o-bold.gif" alt="boldface o"/>
+	  </td>
+	</tr>
+      </table>
+
+      <p>
+	"Raw" TrueType instructions refer to points only by
+	number. For example, the following code positions point 20 in
+	the <b>o</b> relative to point 12:
+      </p>
+
+      <pre>
+PUSHB_1[ ]
+12
+SRP0[ ]
+PUSHB_2[ ]
+20 5
+MIRP[01101]</pre>
+
+      <p>
+	Code of this kind, with references to points scattered through
+	as number literals, is very hard to maintain: even a small
+	change in the outline (the addition or deletion of a point)
+	would require that one tediously search through the glyph
+	program locating and revising all the point numbers.
+      </p>
+
+      <p>
+	Xgridfit, on the other hand, encourages the programmer to name
+	key points in the glyph and store the names in
+	&lt;constant&gt; elements at the top of the glyph
+	program. Here is a set of names for the <b>o</b> illustrated
+	above:
+      </p>
+
+      <pre>
+  &lt;constant name="left-sidebearing" value="32"/&gt;
+  &lt;constant name="bottom" value="4"/&gt;
+  &lt;constant name="bottom-inside" value="28"/&gt;
+  &lt;constant name="top" value="12"/&gt;
+  &lt;constant name="top-inside" value="20"/&gt;
+  &lt;constant name="left-stem-left" value="8"/&gt;
+  &lt;constant name="left-stem-right" value="24"/&gt;
+  &lt;constant name="right-stem-right" value="0"/&gt;
+  &lt;constant name="right-stem-left" value="16"/&gt;
+      </pre>
+
+      <p>
+	Then all instructions that change or refer to points do so by
+	including &lt;point&gt; elements with <tt>num</tt> attributes
+	that can use these names (though they can also use number
+	literals, variables or function parameters). Unnamed points
+	can be referred to by naming a nearby point and adding or
+	subtracting an offset. For example, these elements refer to
+	the top point of the <b>o</b> and the off-line point
+	immediately to the left of it:
+      </p>
+
+      <pre>
+&lt;point num="top"/&gt;
+&lt;point num="top - 1"/&gt;</pre>
+
+      <p>
+	An alternative to this syntax is to use the <tt>offset</tt>
+	attribute of the &lt;point&gt; element:
+      </p>
+
+      <pre>
+&lt;point num="top"/&gt;
+&lt;point num="top" offset="-1"/&gt;</pre>
+  
+      <p>
+	However, this attribute is deprecated, and an addition or
+	subtraction expression in the <tt>num</tt> attribute should be
+	preferred.
+      </p>
+  
+      <p>
+	The Xgridfit equivalent of the TrueType instructions that
+	moved point 20 looks like this (<tt>lc-horz-thin-curve</tt> is
+	a reference to the control value table):
+      </p>
+
+      <pre>
+&lt;move distance="lc-horz-thin-curve"&gt;
+  &lt;reference&gt;
+    &lt;point num="top"/&gt;
+  &lt;/reference&gt;
+  &lt;point num="top-inside"/&gt;
+&lt;/move&gt;</pre>
+
+      <p>
+	If the outline changes slightly this code will need no
+	revision; only the constants will have to be edited.
+      </p>
+
+      <p>
+	Xgridfit defines various collections of points. A
+	&lt;line&gt;, defined by two points, is often used to set <a
+	href="vectors.html">vectors</a>. A &lt;range&gt; is a
+	collection of contiguous points defined by two end-points. A
+	&lt;set&gt; is an arbitrary collection of points. The
+	&lt;line&gt;, &lt;range&gt; and &lt;set&gt; can be defined in
+	one place and then referred to by name; thus collections that
+	define complex features need be defined only once, even if
+	they are used several times.
+      </p>
+
+      <p>
+	A glyph consists of one or more contours numbered sequentially
+	(the one with the lowest-numbered points is 0). One TrueType
+	instruction operates on contours, and accordingly Xgridfit has
+	a &lt;contour&gt; element for this instruction.  Xgridfit also
+	contains a &lt;zone&gt; element for an instruction that
+	operates on an entire zone.
+      </p>
+  
+      <h3 id="point">&lt;point&gt;</h3>
+  
+      <p>
+	The &lt;point&gt; element defines a point. It is used in all
+	instructions that manipulate or refer to points.
+      </p>
+  
+      <h4>Attributes</h4>
+      <dl>
+	<dt>num</dt>
+	<dd>
+	  Required. The number of a point. This may be a number
+	  literal, the name of a &lt;constant&gt;, a variable, or a
+	  function parameter. To refer to a point in a glyph other
+	  than the one whose glyph program is currently running (as
+	  you may have occasion to do when instructing composite
+	  glyphs), use the syntax "g/p", where g is the ps-name of the
+	  glyph, and p is the point being referred to (it should be
+	  the name of a &lt;constant&gt;).
+	</dd>
+	<dt>offset</dt>
+	<dd>
+	  Number (can be positive or negative) to add to the point
+	  identified in <tt>num</tt>. If <tt>num</tt> is a variable or
+	  function parameter, Xgridfit will generate code to add it at
+	  run time. Otherwise Xgridfit will add it at compile
+	  time. <tt>Offset</tt> must be a number literal or a
+	  &lt;constant&gt;.  It may, like <tt>num</tt>, refer to a
+	  &lt;constant&gt; declared in another glyph via "g/p"
+	  syntax. This element is deprecated. You should ins tead use
+	  an addition or subtraction expression in the <tt>num</tt>
+	  attribute.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  The zone that contains this point. Instructions will take
+	  note of this attribute, when present, and adjust the zone
+	  pointers appropriately. The glyph zone is always the default
+	  zone. When a point is in the glyph zone it is generally
+	  redundant to include an attribute zone="glyph," and doing so
+	  may also cause unnecessary (though harmless) code to be
+	  generated.  N.B. For instructions that deal with lists of
+	  points, include the zone attribute only in the first.
+	</dd>
+      </dl>
+
+      <h3 id="line">&lt;line&gt;</h3>
+
+      <p>
+	A &lt;line&gt; is defined by its two end-points. These points
+	need not be adjacent. For example, in the <b>W</b> illustrated
+	here,
+      </p>
+
+      <table>
+	<tr>
+	  <td>
+	    <img src="W.gif" alt="Capital W"/>
+	</td>
+	</tr>
+      </table>
+
+      <p>
+	it is perfectly all right for points <b>a</b> and <b>b</b> to
+	be the end-points of a line:
+      </p>
+
+      <pre>
+&lt;line&gt;
+  &lt;point num="b"/&gt;
+  &lt;point num="a"/&gt;
+&lt;/line&gt;</pre>
+
+      <p>
+	Points <b>c</b> and <b>d</b> can be aligned so that they are
+	on the line defined by those two points:
+      </p>
+
+      <pre>
+&lt;with-projection-vector to-line="orthogonal"/&gt;
+  &lt;line&gt;
+    &lt;point num="b"/&gt;
+    &lt;point num="a"/&gt;
+  &lt;/line&gt;
+  &lt;align&gt;
+    &lt;reference&gt;
+      &lt;point num="b"/&gt;
+    &lt;/reference&gt;
+    &lt;point num="c"/&gt;
+    &lt;point num="d"/&gt;
+  &lt;/align&gt;
+&lt;/with-projection-vector&gt;</pre>
+
+      <p>
+	When a &lt;line&gt; has a <tt>name</tt> attribute, another
+	&lt;line&gt; may refer to it by name. You may name the
+	&lt;line&gt; the first time you use it or declare it by
+	placing a &lt;line&gt; element among the declarations at the
+	beginning of the &lt;glyph&gt; element.  For example, if you
+	declare the line thus:
+      </p>
+
+      <pre>
+&lt;line name="line-2b"&gt;
+  &lt;point num="b"/&gt;
+  &lt;point num="a"/&gt;
+&lt;/line&gt;</pre>
+
+      <p>
+	then you can use an abbreviated form whenever you need it:
+      </p>
+
+      <pre>
+&lt;set-freedom-vector&gt;
+  &lt;line ref="line-2b"/&gt;
+&lt;/set-freedom-vector&gt;</pre>
+
+      <p>
+	If both points that define a &lt;line&gt; are in the same
+	zone, you may use the optional <tt>zone</tt> attribute on the
+	&lt;line&gt; to indicate this. Most instructions that take a
+	&lt;line&gt; as an argument allow one point to be in one zone
+	and the other point in the other: in such cases place the
+	<tt>zone</tt> attributes on the &lt;point&gt;s. The exception
+	is the &lt;move-point-to-intersection&gt; instruction, which
+	requires that each of the two lines it takes as arguments be
+	entirely in a zone. For this instruction, place the
+	<tt>zone</tt> attributes on the &lt;line&gt;s, never on the
+	&lt;point&gt;s.
+      </p>
+
+
+      <h3 id="range">&lt;range&gt;</h3>
+
+      <p>
+	A &lt;range&gt; is a collection of contiguous points defined
+	by its end-points. It can be used in any instruction that
+	operates on more than one point: &lt;shift&gt;, &lt;align&gt;,
+	&lt;interpolate&gt;, &lt;shift-absolute&gt;,
+	&lt;toggle-points&gt;. The order of points in the
+	&lt;range&gt; is not significant. Example:
+      </p>
+
+      <pre>
+&lt;align&gt;
+  &lt;reference&gt;
+    &lt;point num="bottom"/&gt;
+  &lt;/reference&gt;
+  &lt;range&gt;
+    &lt;point num="bottom - 2"/&gt;
+    &lt;point num="bottom + 2"/&gt;
+  &lt;/range&gt;
+&lt;/align&gt;</pre>
+
+      <p>
+	If "bottom" is point 17, the &lt;range&gt; begins with 15 and
+	ends with 19. But any reference point in the parent element of
+	the &lt;range&gt; is excluded from the &lt;range&gt;, so this
+	&lt;range&gt; actually represents points 15, 16, 18 and
+	19. The same is true of implicit reference points supplied by
+	a &lt;move&gt; element that is the parent of the parent of the
+	&lt;range&gt;:
+      </p>
+
+      <pre>
+&lt;move&gt;
+  &lt;point num="bottom"/&gt;
+  &lt;align&gt;
+    &lt;range&gt;
+      &lt;point num="bottom - 2"/&gt;
+      &lt;point num="bottom + 2"/&gt;
+    &lt;/range&gt;
+  &lt;/align&gt;
+&lt;/move&gt;</pre>
+
+      <p>
+	Here the points in the &lt;range&gt; are aligned with "bottom"
+	after it has been moved by the &lt;move&gt; instruction; but
+	"bottom" itself is not part of the &lt;range&gt;. The code
+	above is functionally identical to this:
+      </p>
+
+      <pre>
+&lt;move&gt;
+  &lt;point num="bottom"/&gt;
+  &lt;align&gt;
+    &lt;point num="bottom - 2"/&gt;
+    &lt;point num="bottom - 1"/&gt;
+    &lt;point num="bottom + 1"/&gt;
+    &lt;point num="bottom + 2"/&gt;
+  &lt;/align&gt;
+&lt;/move&gt;</pre>
+
+      <p>
+	The latter generates more efficient code than the example with
+	the &lt;range&gt;, but the &lt;range&gt; is more flexible,
+	since its endpoints, its size, and the points to be excluded
+	need not be known until run-time. This makes the &lt;range&gt;
+	ideal for use in functions.
+      </p>
+
+      <p>
+	All the points in a &lt;range&gt; must be in the same zone,
+	determined by the optional <tt>zone</tt> attribute on the
+	&lt;range&gt; element. Any <tt>zone</tt> attributes on the
+	&lt;point&gt;s within the &lt;range&gt; are ignored.
+      </p>
+
+      <p>
+	As with &lt;line&gt;, you may declare a &lt;range&gt; in one
+	place with points and a <tt>name</tt> attribute and then refer
+	to that with a &lt;range&gt; element containing a <tt>ref</tt>
+	attribute:
+      </p>
+
+      <pre>
+&lt;range ref="r"/&gt;</pre>
+
+      <h3 id="set">&lt;set&gt;</h3>
+
+      <p>
+	A &lt;set&gt; is an arbitrary collection of points, which can
+	be used by all elements that can operate on more than one
+	point. Like a &lt;line&gt; and a &lt;range&gt;, the
+	&lt;set&gt; can be defined in one place and invoked by name
+	elsewhere.
+      </p>
+
+      <p>
+	As with the &lt;range&gt;, points in the &lt;set&gt; are
+	excluded when they match the reference point(s) for the
+	instructions that use them.
+      </p>
+
+      <p>
+	The &lt;set&gt; has several limitations. It is available only
+	for elements in the &lt;glyph&gt; program, and in macros. All
+	points in the &lt;set&gt; must be defined by constants or
+	number literals: variables are not permitted. Similarly,
+	reference points must be defined by constants or number
+	literals, or they will not be excluded.
+      </p>
+
+      <p>
+	A &lt;set&gt; used in a &lt;macro&gt; may refer to a
+	&lt;set&gt; defined in a &lt;glyph&gt; program when the name
+	of the &lt;set&gt; is passed to the &lt;macro&gt; as a
+	parameter. This set, defined in a &lt;glyph&gt;
+      </p>
+
+      <pre>
+&lt;set name="bottom-points"&gt;
+  &lt;point num="bottom-a"/&gt;
+  &lt;point num="bottom-b"/&gt;
+&lt;/set&gt;
+      </pre>
+
+      <p>
+	can be passed to this macro
+      </p>
+
+      <pre>
+&lt;macro id="align-to-baseline"&gt;
+  &lt;param name="pt"/&gt;
+  &lt;param name="al" value="0"/&gt;
+  &lt;move distance="baseline" round="no" cut-in="no"&gt;
+    &lt;point num="pt"/&gt;
+    &lt;align compile-if="nan(al)"&gt;
+      &lt;set ref="al"/&gt;
+    &lt;/align&gt;
+  &lt;/move&gt;
+&lt;/macro&gt;
+      </pre>
+
+      <p>
+	with this call:
+      </p>
+
+      <pre>
+&lt;call-macro macro-id="align-to-baseline"&gt;
+  &lt;with-param name="pt" value="bottom"/&gt;
+  &lt;with-param name="al" value="bottom-points"/&gt;
+&lt;/call-macro&gt;
+      </pre>
+
+      <p id="nan-test">
+	Notice that the <tt>compile-if</tt> attribute (on the
+	&lt;align&gt; element in the macro) tests whether the "al"
+	parameter has been passed by determining whether it is a
+	number using the <tt>nan</tt> (not a number) operator, which
+	returns true if the operator is not a number and false if it
+	is. The name of a set is never a number, but the default value
+	for the "al" param is the number zero.
+      </p>
+
+      <h3 id="contour">&lt;contour&gt;</h3>
+
+      <p>
+	Specifies a contour to be shifted by a &lt;shift&gt;
+	instruction.
+      </p>
+
+      <h4>Attributes</h4>
+
+      <dl>
+	<dt>num</dt>
+	<dd>
+	  The number of this contour or a name associated with it via
+	  a constant.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  The zone that contains this contour. As a rule, you do not
+	  need this attribute when the contour is in the glyph
+	  zone. In fact, it must be very rare indeed that a whole
+	  contour is in the twilight zone.
+	</dd>
+      </dl>
+
+      <h3 id="zone">&lt;zone&gt;</h3>
+
+      <p>
+	A zone to be shifted by a &lt;shift&gt; instruction.
+      </p>
+
+
+
+</div>
+</body>
+</html>
