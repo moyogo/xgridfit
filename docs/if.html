@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+  <hr/>
+  <a href="#if-el">&lt;if&gt;</a>
+  <a href="#compile-if">&lt;compile-if&gt;</a>
+  <a href="#looping">Looping</a>
+</div>
+
+<div id="content">
+  <h1>Conditional Execution and Looping</h1>
+  <h2 id="if-el">The &lt;if&gt; element</h2>
+  <p>
+    Xgridfit's mechanism for executing code conditionally is simple:
+    the &lt;if&gt; element contains code that is executed if the
+    expression in the <tt>test</tt> attribute evaluates as true
+    (non-zero):
+  </p>
+  <pre>
+    &lt;if test="pixels-per-em &amp;lt; 20"&gt;
+      &lt;!-- execute code --&gt;
+    &lt;/if&gt;
+  </pre>
+  <p>
+    The &lt;if&gt; element may also contain an &lt;else&gt; element at
+    the end; this is executed only if <tt>test</tt> evaluates as false
+    (zero):
+  </p>
+  <pre>
+    &lt;if test="pixels-per-em &amp;lt; 20"&gt;
+      &lt;!-- do this if test is true --&gt;
+      &lt;else&gt;
+        &lt;!-- do this if test is false --&gt;
+      &lt;/else&gt;
+    &lt;/if&gt;
+  </pre>
+  <p>
+    Xgridfit's &lt;if&gt; element resembles the XSLT's &lt;if&gt;
+    (though &lt;else&gt; is an addition). Remember, when writing the
+    <tt>test</tt> attribute, that Xgridfit requires operators in
+    expressions to be surrounded by whitespace.
+  </p>
+  <p>
+    You should also be aware that the TrueType engine frequently
+    executes code conditionally even without the explicit use of
+    &lt;if&gt;. The <a href="cvt.html#cut-in-expl">control value
+    cut-in</a> is consulted to determine whether to use a measurement
+    from the original outline or one from the Control Value Table in
+    moving points, and the (apparently) little-used <a
+    href="reference.html#set-single-width-cut-in">single-width
+    cut-in</a> is similar.  Every <a
+    href="deltas.html#delta-set">&lt;delta-set&gt;</a> represents code
+    that is executed conditionally--a point is moved only at a
+    particular resolution.
+  </p>
+  <h2 id="compile-if">The &lt;compile-if&gt; element</h2>
+  <p>
+    The &lt;compile-if&gt; element provides for conditional
+    compilation: the code inside the element is compiled only if the
+    expression in the <tt>test</tt> attribute evaluates to "true"
+    (non-zero) at compile time. The <tt>test</tt> attribute may
+    contain only expressions that can be evaluated at compile time:
+    constants, number literals, control values (indexes only). Only a
+    few operators are permitted: <tt>+ - = != &amp;gt; &amp;lt;
+    &amp;gt;= &amp;lt;= or and not</tt>.
+  </p>
+  <p>
+    &lt;compile-if&gt; is allowed anywhere that other programming is
+    allowed (except within a &lt;move&gt; element), and can contain
+    any other programming (including other &lt;compile-if&gt;
+    elements). Here's a simple example:
+  </p>
+  <pre>
+    &lt;macro name="anchor-to-baseline"&gt;
+      &lt;param name="pt"/&gt;
+      &lt;param name="pt2" value="-1"/&gt;
+      &lt;param name="pt3" value="-1"/&gt;
+      &lt;move distance="baseline" round="no" cut-in="no"&gt;
+        &lt;point num="pt"/&gt;
+      &lt;/move&gt;
+      &lt;compile-if test="pt2 &amp;gt;= 0"&gt;
+        &lt;align&gt;
+          &lt;point num="pt2"/&gt;
+        &lt;/align&gt;
+      &lt;/compile-if&gt;
+      &lt;compile-if test="pt3 &amp;gt;= 0"&gt;
+        &lt;align&gt;
+          &lt;point num="pt3"/&gt;
+        &lt;/align&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;
+  </pre>
+  <p>
+    This macro anchors one, two or three points to the baseline so
+    that they won't be moved later. The param "pt" is required: it is
+    a point that is always moved by the first "move" element. Params
+    "pt2" and "pt3" are optional; they have impossible default
+    values. But if reasonable point numbers are passed to the macro
+    for "pt2" and "pt3" then the two "align" elements are
+    compiled. Here are a couple of calls to the macro:
+  </p>
+  <pre>
+      &lt;call-macro name="anchor-to-baseline"&gt;
+        &lt;with-param name="pt" value="bottom-left"/&gt;
+      &lt;/call-macro&gt;
+
+      &lt;call-macro name="anchor-to-baseline"&gt;
+        &lt;with-param name="pt" value="bottom-left"/&gt;
+        &lt;with-param name="pt2" value="bottom-mid"/&gt;
+        &lt;with-param name="pt3" value="bottom-right"/&gt;
+      &lt;/call-macro&gt;
+  </pre>
+  <p>
+    Another way to compile code conditionally is to include the
+    <tt>compile-if</tt> attribute on a &lt;move&gt;, &lt;align&gt;,
+    &lt;interpolate&gt;, &lt;shift&gt; or &lt;delta&gt; element. These
+    are the elements that can be nested inside a &lt;move&gt;, where
+    the &lt;compile-if&gt; element is not allowed. Using this
+    attribute, we can rewrite the "anchor-to-baseline" macro as
+    follows:
+  </p>
+  <pre>
+    &lt;macro id="anchor-to-baseline"&gt;
+      &lt;param name="pt"/&gt;
+      &lt;param name="pt2" value="-1"/&gt;
+      &lt;param name="pt3" value="-1"/&gt;
+      &lt;move distance="baseline" round="no" cut-in="no"&gt;
+        &lt;point num="pt"/&gt;
+	&lt;align compile-if="pt2 &amp;gt;= 0 and pt3 &amp;lt; 0"&gt;
+	  &lt;point num="pt2"/&gt;
+	&lt;/align&gt;
+	&lt;align compile-if="pt2 &amp;gt;= 0 and pt3 &amp;gt;= 0"&gt;
+	  &lt;point num="pt2"/&gt;
+	  &lt;point num="pt3"/&gt;
+	&lt;/align&gt;
+      &lt;/move&gt;
+    &lt;/macro&gt;
+  </pre>
+  <p>
+    The advantage of this method is that it enables the Good
+    Programming Practice of building blocks of code around the visible
+    features of a glyph while still permitting conditional
+    compilation. It also produces slightly more compact and efficient
+    code than the earlier example. The disadvantage is that it is
+    somewhat more awkward to write three different &lt;align&gt;
+    elements. However, it may well be worth doing so in a macro.
+  </p>
+  <p>
+    You may include, as the last child of a &lt;compile-if&gt;
+    element, an &lt;else&gt; element containing code to
+    compile if <tt>test</tt> evaluates as false. This works the same
+    way as the &lt;else&gt; clause in an &lt;if&gt; element.
+  </p>
+
+  <h2 id="looping">Looping</h2>
+  <p>
+    Xgridfit does not have an explicit looping mechanism such as the
+    for-loop of C and other languages. Certain TrueType instructions
+    can loop through a collection of points; Xgridfit exploits this
+    capability and extends it by allowing more than one &lt;point&gt;
+    or &lt;range&gt; element to be included in an &lt;align&gt;,
+    &lt;shift&gt;, &lt;interpolate&gt;, or &lt;toggle-points&gt;
+    element (the &lt;range&gt; element is itself a looping
+    mechanism). Xgridfit exploits other looping mechanisms of TrueType
+    when it allows more than one &lt;delta-set&gt; in a &lt;delta&gt;
+    or &lt;control-value-delta&gt; element and more than one
+    &lt;param-set&gt; in a &lt;call-function&gt; element.
+  </p>
+</div>
+</body>
+</html>
