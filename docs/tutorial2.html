@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+</div>
+
+<div id="content">
+  <h1>Tutorial 2: Gentium's o</h1>
+  <p>
+    The o in Gentium Italic presents us with a slightly more complex
+    task than the period. The glyph shape itself is more complicated,
+    and the distances we need to regulate are less standardized. Here
+    is the glyph as it appears in FontForge: we have added names for
+    the points that will have to be explicitly positioned and
+    distances (in font units) for the stems that will have to be
+    regulated.
+  </p>
+  <table>
+    <tr>
+      <td>
+        <img src="Gentium_o.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    Notice that the distances at the top and bottom of the glyph do
+    not quite match; the same is true of the left and right. In fact,
+    all of the lower-case letters with curves somewhat like that of o
+    (a, c, d, e, g, etc.) have curves of slightly different widths. In
+    a font of the quality of Gentium, it would be a mistake to assume
+    that this variation is inadvertent; rather, Victor Gaultney was
+    presumably aiming for optical rather than mathematical consistency
+    in his glyph outlines. What is true of the stems is also true of
+    the sidebearings: the left sidebearings of the lower-case letters
+    with rounded left sides are slightly different.
+  </p>
+  <p>
+    These minor differences can cause problems at low resolutions,
+    where a difference of a single pixel can make a character look
+    lopsided, or too bold, or too thin. At the same time, we want to
+    preserve the differences at higher resolutions, as on good laser
+    printers or imagesetters. This is not really a problem for us,
+    since the <a href="cvt.html#cut-in-expl">control-value cut in</a>
+    is intended to handle precisely this kind of situation. We need
+    only to choose a standard width for these curved stems; if we make
+    sure that the cut-in is always used, our standard width will be
+    used at low resolutions and the designer's widths at high
+    resolutions. We can experiment with the standard width and with
+    various settings for the cut-in at any time.
+  </p>
+  <p>
+    The x-height and the distance of the bottom point of a rounded
+    lower-case glyph from the baseline are consistent in this font.
+    We will add the following control values to the ones we defined
+    for the period:
+  </p>
+  <pre>
+    &lt;control-value name="x-height" value="936"/&gt;
+    &lt;control-value name="lc-round-char-bottom" value="-41"/&gt;
+    &lt;control-value name="lc-vert-round-stem" value="143"/&gt;
+    &lt;control-value name="lc-horz-round-stem" value="115"/&gt;
+    &lt;control-value name="lc-round-char-left-side" value="55"/&gt;
+  </pre>
+  <p>
+    And we will get ready to write the glyph program by creating the
+    &lt;glyph&gt; element and defining constants for the key point
+    numbers:
+  </p>
+  <pre>
+    &lt;glyph ps-name="o"&gt;
+      &lt;constant name="last" value="47"/&gt;
+      &lt;constant name="topa" value="43"/&gt;
+      &lt;constant name="topb" value="3"/&gt;
+      &lt;constant name="bottoma" value="30"/&gt;
+      &lt;constant name="bottomb" value="13"/&gt;
+      &lt;constant name="lefta" value="35"/&gt;
+      &lt;constant name="leftb" value="8"/&gt;
+      &lt;constant name="righta" value="0"/&gt;
+      &lt;constant name="rightb" value="20"/&gt;
+    &lt;/glyph&gt;
+  </pre>
+  <p>
+    For the <i>o</i>, we will nest <a
+    href="moves.html#move">&lt;move&gt;</a> elements, building XML
+    structures to correspond to the visible features of the glyph: the
+    four rounded stems at the left, right, top and bottom. Remember
+    that when we nest a &lt;move&gt; inside a &lt;move&gt; element,
+    the point moved by the parent &lt;move&gt; is implicitly the
+    reference point for the child &lt;move&gt;. Here are the
+    horizontal and vertical moves:
+  </p>
+  <pre>
+    &lt;with-vectors axis="x"&gt;
+      &lt;move distance="lc-round-char-left-side"&gt;
+        &lt;reference&gt;
+          &lt;point num="left-sidebearing"/&gt;
+        &lt;/reference&gt;
+        &lt;point num="lefta"/&gt;
+        &lt;move distance="lc-vert-round-stem"&gt;
+          &lt;point num="leftb"/&gt;
+        &lt;/move&gt;
+      &lt;/move&gt;
+      &lt;move&gt;
+        &lt;reference&gt;
+          &lt;point num="lefta"/&gt;
+        &lt;/reference&gt;
+        &lt;point num="rightb"/&gt;
+        &lt;move distance="lc-vert-round-stem"&gt;
+          &lt;point num="righta"/&gt;
+        &lt;/move&gt;
+      &lt;/move&gt;
+    &lt;/with-vectors&gt;
+    &lt;with-vectors axis="y"&gt;
+      &lt;move distance="lc-round-char-bottom"&gt;
+        &lt;point num="bottoma"/&gt;
+        &lt;move distance="lc-horz-round-stem"&gt;
+          &lt;point num="bottomb"/&gt;
+        &lt;/move&gt;
+      &lt;/move&gt;
+      &lt;move distance="x-height"&gt;
+        &lt;point num="topa"/&gt;
+        &lt;move distance="lc-horz-round-stem"&gt;
+          &lt;point num="topb"/&gt;
+        &lt;/move&gt;
+      &lt;/move&gt;
+    &lt;/with-vectors&gt;
+    &lt;interpolate-untouched-points/&gt;
+  </pre>
+  <p>
+    First we position point <tt>lefta</tt> relative to the
+    <tt>left-sidebearing</tt> point (defined in the last tutorial as a
+    global &lt;constant&gt; dependent on point <tt>last</tt>). Then we
+    position point <tt>leftb</tt> distance <tt>lc-vert-round-stem</tt>
+    from <tt>lefta</tt>. We do the same with the right side of the
+    glyph, but this time we start by positioning point <tt>rightb</tt>
+    relative to point <tt>lefta</tt>, and then we work from the right
+    side of the stem to the left. By omitting a <tt>distance</tt>
+    attribute from the outer &lt;move&gt;, we accept, but round, the
+    design width of the glyph. Later, if we find that one or more
+    other glyphs in the font are the same width as the <i>o</i>, we
+    can add a &lt;control-value&gt; for that measurement and a
+    <tt>distance</tt> attribute here.
+  </p>
+  <p>
+    For the y axis, the operations are similar to what we did on the x
+    axis. Here, however, we omit the reference points and position
+    points &lt;bottoma&gt; and &lt;topa&gt; at absolute positions on
+    the grid. If we go on writing instructions for this font, we will
+    use the control values <tt>x-height</tt> and
+    <tt>lc-round-char-bottom</tt> so frequently that it will make
+    sense to round them in the &lt;pre-program&gt;, saving the
+    TrueType engine the trouble of rounding them over and over while
+    executing glyph programs. So we add these lines to the
+    &lt;pre-program&gt;:
+  </p>
+  <pre>
+    &lt;round value="x-height"/&gt;
+    &lt;round value="lc-round-char-bottom"/&gt;
+  </pre>
+  <p>
+    And we add attributes <tt>round="no"</tt> and <tt>cut-in="no"</tt>
+    to the two outer &lt;move&gt; elements. (We don't need the cut-in
+    with such standard measurements; and for technical reasons it
+    makes sense to turn off rounding and the cut-in at the same time.)
+    Now the glyph program for <i>o</i> looks like this:
+  </p>
+  <pre>
+    &lt;glyph ps-name="o"&gt;
+      &lt;constant name="last" value="47"/&gt;
+      &lt;constant name="topa" value="43"/&gt;
+      &lt;constant name="topb" value="3"/&gt;
+      &lt;constant name="bottoma" value="30"/&gt;
+      &lt;constant name="bottomb" value="13"/&gt;
+      &lt;constant name="lefta" value="35"/&gt;
+      &lt;constant name="leftb" value="8"/&gt;
+      &lt;constant name="righta" value="0"/&gt;
+      &lt;constant name="rightb" value="20"/&gt;
+      &lt;with-vectors axis="x"&gt;
+        &lt;move distance="lc-round-char-left-side"&gt;
+          &lt;reference&gt;
+            &lt;point num="left-sidebearing"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="lefta"/&gt;
+          &lt;move distance="lc-vert-round-stem"&gt;
+            &lt;point num="leftb"/&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+        &lt;move&gt;
+          &lt;reference&gt;
+            &lt;point num="lefta"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="rightb"/&gt;
+          &lt;move distance="lc-vert-round-stem"&gt;
+            &lt;point num="righta"/&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+      &lt;/with-vectors&gt;
+      &lt;with-vectors axis="y"&gt;
+        &lt;move distance="lc-round-char-bottom" round="no" cut-in="no"&gt;
+          &lt;point num="bottoma"/&gt;
+          &lt;move distance="lc-horz-round-stem"&gt;
+            &lt;point num="bottomb"/&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+        &lt;move distance="x-height" round="no" cut-in="no"&gt;
+          &lt;point num="topa"/&gt;
+          &lt;move distance="lc-horz-round-stem"&gt;
+            &lt;point num="topb"/&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+      &lt;/with-vectors&gt;
+      &lt;interpolate-untouched-points/&gt;
+    &lt;/glyph&gt;
+  </pre>
+  <p>
+    And now the &lt;pre-program&gt;, which we began to construct in
+    the last tutorial, looks like this:
+  </p>
+  <pre>
+    &lt;pre-program&gt;
+      &lt;round value="period-height"/&gt;
+      &lt;round value="x-height"/&gt;
+      &lt;round value="lc-round-char-bottom"/&gt;
+      &lt;control-value-delta&gt;
+        &lt;delta-set size="11" distance="-8" cv="period-height"/&gt;
+      &lt;/control-value-delta&gt;
+    &lt;/pre-program&gt;
+  </pre>
+  <p>
+    At 20 pixels per em, the grid-fitted glyph now looks like this:
+  </p>
+  <table>
+    <tr>
+      <td>
+        <img src="Gentium_o_fitted.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    And here is how it looks at various resolutions from 30 ppem to
+    200 ppem. The pattern of pixels corresponds more closely to the
+    original outline as the resolution goes up:
+  </p>
+  <table>
+    <tr>
+      <td>
+        <img src="Gentium_o_cascade.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
