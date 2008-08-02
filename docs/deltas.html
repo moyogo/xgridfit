@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#delta">&lt;delta&gt;</a>
+<a href="#control-value-delta">&lt;control-value-delta&gt;</a>
+<a href="#delta-set">&lt;delta-set&gt;</a>
+<a href="#set-delta-base">&lt;set-delta-base&gt;</a>
+<a href="#set-delta-base">&lt;with-delta-base&gt;</a>
+<a href="#set-delta-shift">&lt;set-delta-shift&gt;</a>
+<a href="#set-delta-shift">&lt;with-delta-shift&gt;</a>
+</div>
+
+<div id="content">
+
+          <h1>Deltas</h1>
+          <p>
+                    A delta is an instruction that operates only at a specific
+                    resolution. There are two kinds of delta, invoked by two
+                    Xgridfit elements: a &lt;delta&gt; element moves points, and
+                    a &lt;control-value-delta&gt; element edits the Control
+                    Value Table.
+          </p>
+          <p>
+                    Use delta instructions when the non-resolution-specific
+                    parts of your programming have failed for some reason.
+                    Here are some situations
+                    in which deltas typically make sense:
+          </p>
+          <ul>
+                    <li>Rounding of a distance has produced an unattractive
+                              result. (If the distance was from the Control
+                              Value Table, consider using 
+                              &lt;control-value-delta&gt;.)</li>
+                    <li>A feature does not render well at particular sizes, and
+                              you wish to remove or modify it. (But programming
+                              can also be made to operate at a range of sizes
+                              using an &lt;if&gt; construction.)</li>
+                    <li>Components of a composite glyph are poorly positioned
+                              relative to each other.</li>
+          </ul>
+          <p>
+                    In addition, you may wish to use a delta to smooth a curve
+                    that has developed a kink, or to turn a pixel on or off.
+                    Before you use a delta, however, you should make sure that
+                    the problem you are correcting is not the result of your own
+                    careless programming: failure to use control values
+                    correctly, for example, or failure to think through the
+                    problems presented by a complex feature. It may well be less
+                    trouble to write a great many deltas than to think
+                    intensively about the intersection of two diagonals. But
+                    once you have written non-size-specific code that addresses
+                    a problem, it can easily be adapted to handle similar
+                    problems in the same or another font. The same can rarely be
+                    said of deltas. So think of the delta as a last resort or a
+                    finishing touch.
+          </p>
+          <p>
+                    Another situation that may tempt you to use deltas arises
+                    when the original glyph outline contains small
+                    irregularities that show up only at certain low resolutions.
+                    When an <b>o</b> is not quite symmetrical, for example, it
+                    may appear lopsided at times. In this case you should
+                    consider whether the glyph's lack of symmetry is a feature
+                    you wish to preserve or an error you should correct. The
+                    best time to consider such issues as this is before you
+                    start writing the glyph program.
+          </p>
+          <p>
+                    If you have used a graphical hinter like the one in FontLab,
+                    it may have left you in some confusion about where deltas
+                    can and should come in the sequence of a glyph program.
+                    Deltas may come anywhere, but they should generally be
+                    placed so as to correct any problems in the positioning of a
+                    point as early as possible. The letter <b>q</b> in the
+                    left-hand figure below illustrates. (The black lines show the
+                    original shape of the glyph and the green lines the
+                    grid-fitted shape; the brown squares show which pixels are
+                    on. The black vertical line shows the original right
+                    margin, and the green vertical line shows the
+                    grid-fitted one.)
+          </p>
+          <table>
+            <tr>
+            <td>
+              <img alt="q without delta" src="q-no-delta.gif"/>
+            </td>
+            <td>
+              <img alt="q with delta" src="q-delta.gif"/>
+            </td>
+            </tr>
+          </table>
+          <p>
+                    The <b>q</b> on the left is too wide, and it bumps into the
+                    right margin. The problem arises after the left-hand curve
+                    has been hinted; then the overall width of the glyph is
+                    regulated by positioning point <tt>b</tt> relative to point
+                    <tt>a</tt>:
+          </p>
+<pre>
+  &lt;move distance="bdpq-width"&gt;
+    &lt;reference&gt;
+      &lt;point num="a"/&gt;
+    &lt;/reference&gt;
+    &lt;point num="b"/&gt;
+  &lt;/move&gt;
+</pre>
+          <p>
+                    The problem is that the distance "bdpq-width" gets rounded
+                    <i>up</i> at 15&nbsp;ppem when it would be better visually
+                    for it to be rounded <i>down</i>. If you waited till the end
+                    of the glyph program to address this problem, you would need
+                    deltas to correct the position not only of <tt>b</tt>, but
+                    also of <tt>c</tt>, <tt>d</tt>, and several other points not
+                    shown here--for example, those that control the horizonal
+                    positions of the serif ends. All of these points are
+                    positioned relative to point <tt>b</tt>, so if you correct
+                    the position of <tt>b</tt> immediately after the execution
+                    of the instruction above, thus:
+          </p>
+<pre>
+  &lt;delta&gt;
+    &lt;delta-set size="6" distance="-8"&gt;
+      &lt;point num="b"/&gt;
+    &lt;/delta-set&gt;
+  &lt;/delta&gt;
+</pre>
+          <p>
+                    then the position of the others will automatically
+                    incorporate the correction, and the result will be the much
+                    better glyph on the right.
+          </p>
+          <p>
+                    We can correct the problem even earlier than this, however.
+                    Notice that the &lt;control-value&gt; that controls the
+                    width of the <b>q</b> is named "bdpq-width": this is because
+                    that single entry controls the width of <b>b</b>, <b>d</b>
+                    and <b>p</b> as well as <b>q</b>. As the following figure
+                    demonstrates, the width of all four characters is wrong at
+                    15&nbsp;ppem:
+          </p>
+          <table>
+            <tr>
+              <td>
+                <img alt="b d p q with incorrect width" src="bdpq-no-delta.png"/>
+              </td>
+            </tr>
+          </table>
+          <p>
+                    We can correct this problem most efficiently with a
+                    &lt;control-value-delta&gt; instruction in the
+                    &lt;pre-program&gt;. First we round the distance, then
+                    execute the delta instruction:
+          </p>
+<pre>
+  &lt;round value="bdpq-width"/&gt;
+  &lt;control-value-delta&gt;
+    &lt;delta-set cv="bdpq-width" size="6" distance="-8"/&gt;
+  &lt;/control-value-delta&gt;
+</pre>
+          <p>
+                    And now, as the figure below shows, the width of all four
+                    characters has been corrected without resorting to the use
+                    of delta instructions in the glyph programs themselves.
+          </p>
+          <table>
+            <tr>
+              <td>
+                <img alt="b d p q with correct width" src="bdpq-delta.png"/>
+              </td>
+            </tr>
+          </table>
+          <h2>Elements Relating to Deltas</h2>
+          <p>
+                    In addition to the following elements, you should know about
+                    the <tt>delta-base</tt> and <tt>delta-shift</tt> graphics
+                    variables, which you may both read and write to.
+          </p>
+          <h3 id="delta">&lt;delta&gt;</h3>
+          <p>
+                    A delta instruction moves points at particular
+                    sizes.  The &lt;delta&gt; element may contain any
+                    number of &lt;delta-set&gt; elements. When all of
+                    the &lt;delta-set&gt; elements in a &lt;delta&gt;
+                    move the same point, it may be convenient to make
+                    the first element a &lt;point&gt;. This is the
+                    default &lt;point&gt;, which every
+                    &lt;delta-set&gt; will move unless it contains its
+                    own &lt;point&gt;.
+          </p>
+          <p>
+                    The direction of the move is determined by the current
+                    setting of the freedom vector. The available
+                    specifications are fuzzy as to the details. You will
+                    experience no surprises when the vectors are set to x or y;
+                    you may experiment with the vectors set at other angles.
+          </p>
+
+          <h3 id="control-value-delta">&lt;control-value-delta&gt;</h3>
+          <p>
+                    The &lt;control-value-delta&gt; element works like the
+                    &lt;delta&gt; element, but operates on the Control 
+                    Value Table rather than on a point. Each &lt;delta-set&gt;
+                    inside a control-value-delta element must have <tt>cv</tt>,
+                    <tt>size</tt> and <tt>distance</tt> attributes, but it
+                    may not contain a point.
+          </p>
+          <p>
+                    The setting of the vectors has no effect on the
+                    &lt;control-value-delta&gt;. Rather, the &lt;delta-set&gt;
+                    specifies an amount to add to or subtract from the value
+                    stored there.
+          </p>
+
+          <h3 id="delta-set">&lt;delta-set&gt;</h3>
+          <p>
+                    The &lt;delta-set&gt; element encapsulates the essential
+                    information about a single delta move or adjustment: the
+                    resolution at which to apply the delta, the magnitude of the
+                    adjustment, and the point or control value that will be
+                    affected.
+          </p>
+          <p>
+                    The resolution is determined by the <tt>size</tt> attribute,
+                    which can be a number from 0 to 47. It is added to
+                    the value set by the &lt;set-delta-base&gt; or
+                    &lt;with-delta-base&gt; instruction to
+                    obtain the resolution (in pixels per em) at which the move
+                    should take place. The default delta base is 9; if
+                    you don't change it, a <tt>size</tt> of "0" means 9 ppem,
+                    "9" means 18 ppem, and so forth up to "47," which means 56
+                    ppem.
+          </p>
+          <p>
+                    The <tt>distance</tt> attribute is the distance to shift the
+                    point along the freedom vector, or the amount to add to or
+                    subtract from the control value. Legal values are from -8
+                    to 8 (excluding 0). When moving points, negative numbers
+                    shift against the
+                    direction of the freedom vector (generally down or
+                    left) and positive numbers shift in the direction of the
+                    freedom vector.
+          </p>
+          <p>
+                    The default unit by which pixels are moved and control
+                    values adjusted is 1/8 pixel.
+                    The unit is controlled by means of the
+                    &lt;set-delta-shift&gt; or the &lt;with-delta-shift&gt;
+                    instruction.
+          </p>
+          <p>
+	    A &lt;delta-set&gt; that is the child of a &lt;delta&gt;
+	    will normally contain a single &lt;point&gt;.  However,
+	    the &lt;point&gt; may be omitted in either of two
+	    circumstances: First, when the &lt;delta&gt; is the child
+	    of a &lt;move&gt; element, the &lt;point&gt;, when not
+	    specified, is implicitly the &lt;point&gt; that is the
+	    child of the parent &lt;move&gt;. Second, when the first
+	    child element of the &lt;delta&gt; is &lt;point&gt;, that
+	    point will be moved by any &lt;delta-set&gt; that lacks a
+	    child &lt;point&gt;. These two deltas are equivalent:
+          </p>
+          <pre>
+            &lt;delta&gt;
+              &lt;delta-set size="3" distance="4"&gt;
+                &lt;point num="p"/&gt;
+              &lt;/delta-set&gt;
+              &lt;delta-set size="8" distance="-7"&gt;
+                &lt;point num="p"/&gt;
+              &lt;/delta-set&gt;
+            &lt;/delta&gt;
+
+            &lt;delta&gt;
+              &lt;point num="p"/&gt;
+              &lt;delta-set size="3" distance="4"/&gt;
+              &lt;delta-set size="8" distance="-7"/&gt;
+            &lt;/delta&gt;
+          </pre>
+          <p>
+                    All attribute values in a &lt;delta-set&gt; and a child
+                    &lt;point&gt; must be capable of being resolved to numerical
+                    values at compile time. Variables and function parameters
+                    are not permitted.
+          </p>
+
+          <h3 id="set-delta-base">&lt;set-delta-base&gt;<br/>&lt;with-delta-base&gt;</h3>
+          <p>
+                    Sets the number that is added to the "size" attribute of a
+                    &lt;delta-set&gt; element to get the resolutioni at which an
+                    adjustment should take place. The default value is 9, and
+                    that rarely needs to be changed.
+          </p>
+
+          <h3 id="set-delta-shift">&lt;set-delta-shift&gt;<br/>&lt;with-delta-shift&gt;</h3>
+          <p>
+                    The unit by which a delta instruction shifts a point. If the
+                    unit is "2," the smallest shift is half a pixel; if "4," it
+                    is a quarter of a pixel; if "8" (the default) it is one
+                    eighth, and so on.
+          </p>
+</div>
+</body>
+</html>
