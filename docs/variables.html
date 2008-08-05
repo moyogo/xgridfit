@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+      <a href="#local">Local Variables</a>
+      <a href="#global">Global Variables</a>
+      <a href="#graphics">Graphics Variables</a>
+      <a href="#reserving">Reserving Variable Space</a>
+</div>
+
+<div id="content">
+
+          <h1>Variables</h1>
+          <p>
+                    In TrueType programming, most of the work you'd normally
+                    expect variables to do is handled by control values, which
+                    are great for storing and manipulating
+                    the fixed-point numbers that measure distance on the raster
+                    grid. If you need storage for some other kind of number, or
+                    temporary storage for a fixed-point number, you may wish to
+                    use an Xgridfit variable.
+          </p>
+          <p>
+                    Variables are Xgridfit's way of providing access to the
+                    TrueType "Storage Area," which stores 32-bit numbers and no
+                    other data types (such as strings). Any of the <a
+                              href="types.html">number types</a> known to
+                    TrueType can be stored there; but TrueType provides no way
+                    to store type information with these numbers, or to check
+                    types. Think of variables as handy places to store numbers
+                    temporarily, but don't expect the sorts of conveniences
+                    provided by the variables of general-purpose programming
+                    languages such as Java and Python.
+          </p>
+          <p>
+                    All Xgridfit variables must be declared before they are
+                    used. You must assign a value to a variable before you can
+                    read it. In addition, you must initialize the storage area
+                    for your font by estimating the number of variables that are
+                    likely to be in use at any one time.
+          </p>
+          <p>
+                    It is a simple matter to write to a variable. You can
+                    reference the variable by name in the <tt>target</tt>
+                    attribute of the &lt;set-equal&gt; element, or you can
+                    reference it in the <tt>result-to</tt> attribute of any of
+                    the elements that have it, including &lt;round&gt;,
+                    &lt;measure-distance&gt; and &lt;get-coordinate&gt;. When
+                    you call a function that returns a value, you may store the
+                    return value in a variable via the <tt>result-to</tt>
+                    attribute of the &lt;call-function&gt; element.
+          </p>
+          <p>
+                    Once a variable has been written to, you can access the
+                    value by referencing the variable by name in almost any
+                    attribute that accepts a number value--for example, the
+                    <tt>num</tt> attribute of the &lt;point&gt; element. A
+                    variable can also be used anywhere in an <a
+                              href="expression.html">expression</a>.
+          </p>
+          <h2 id="local">Local Variables</h2>
+          <p>
+                    Local variables are those which are visible only within the
+                    &lt;pre-program&gt;, glyph program, or function where they
+                    are declared. Local variables are temporary: a variable
+                    declared within a glyph program exists only while the glyph
+                    program is running, and afterwards the storage location it
+                    occupied is freed for other uses. The same is true of
+                    variables declared within functions and the
+                    &lt;pre-program&gt;.
+          </p>
+          <p>
+                    Local variables must be declared in
+                    &lt;variable&gt; elements at the top of the
+                    &lt;pre-program&gt;, after the &lt;param&gt;
+                    elements element in a function, or with the
+                    &lt;constant&gt;, &lt;range&gt;, &lt;set&gt; and
+                    &lt;line&gt; elements at the beginning of a glyph
+                    program. You cannot declare variables within
+                    smaller scopes (such as if-blocks and
+                    with-blocks). The variable declarations for the
+                    asterisk in Junicode-Bold look like this:
+          </p>
+<pre>
+  &lt;variable name="up-x"/&gt;
+  &lt;variable name="up-y"/&gt;
+  &lt;variable name="down-x"/&gt;
+  &lt;variable name="down-y"/&gt;
+  &lt;variable name="half-min"/&gt;
+</pre>
+          <p>
+	    The TrueType engine stores no type information at all: The
+	    declaration merely signals to the engine how many spaces
+	    will be required in the Storage Area and associates names
+	    with spaces. It is possible to initialize a variable by
+	    including a <tt>value</tt> attribute in the declaration:
+          </p>
+<pre>
+  &lt;variable name="v" value="50"/&gt;
+</pre>
+          <h2 id="global">Global Variables</h2>
+          <p>
+	    A global variable is one that is visible anywhere that
+	    programming is allowed: in the &lt;pre-program&gt; and in
+	    any function or glyph program. It must be declared in top
+	    level of he program, as a child of &lt;xgridfit&gt;:
+          </p>
+<pre>
+  &lt;variable name="global-var"/&gt;
+</pre>
+          <p>
+	    A global variable should be initialized in the
+	    &lt;pre-program&gt;, and after that its value may be read
+	    by glyph programs and functions. It cannot be initialized
+	    with a <tt>value</tt> attribute. If a glyph program or
+	    function alters a global variable, or if you attempt to
+	    use a global variable to make one glyph program
+	    communicate with another, you are in <i>terra
+	    incognita</i>: the specifications are not informative
+	    about the way variables are handled in such situations. It
+	    seems a poor idea, in any case, to try to make glyph
+	    programs communicate with each other, since it is
+	    impossible to predict the order in which they will be run.
+          </p>
+          <h2 id="graphics">Graphics Variables</h2>
+          <p>
+                    Several pre-declared variables can be used to query the
+                    graphics state or (usually) to set a graphics variable.
+                    These are detailed in the section of this documentation
+                    on the <a href="graphics.html">Graphics State</a>.
+          </p>
+          <h2 id="reserving">Reserving Variable Space</h2>
+          <p>
+	    Xgridfit reserves twenty-four spaces in the Storage Area
+	    for its own purposes. By default it reserves forty more
+	    spaces for variables. You may change this number with a
+	    &lt;default&gt; element:
+          </p>
+<pre>
+  &lt;default type="max-storage" value = "80"/&gt;
+</pre>
+          <p>
+                    In figuring the number of spaces you need to reserve, start
+                    with the 24 that Xgridfit requires, then add the number of
+                    global variables, the largest number of variables declared
+                    in any one glyph program, and the largest number of
+                    variables declared in any one function. If one function with
+                    variables calls another function with variables, you will
+                    have to increase the number accordingly.
+          </p>
+          
+</div>
+</body>
+</html>
