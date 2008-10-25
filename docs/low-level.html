@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+  <div id="jumplist">
+    <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+    <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+    <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+    <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+    <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+    <hr/>
+    <a href="#command">&lt;command&gt;</a>
+    <a href="#push">&lt;push&gt;</a>
+    <a href="#to-stack">&lt;to-stack&gt;</a>
+  </div>
+
+  <div id="content">
+    <h1>Low-level elements</h1>
+    <p>
+      Though Xgridfit tries to provide as much functionality as
+      possible in its high-level programming constructs, there may
+      well be times when you feel you need to write low-level, "raw"
+      instructions, either because Xgridfit does not meet some
+      particular need or because a job can be done most efficiently
+      with low-level instructions. Xgridfit provides three elements to
+      help you write low-level code.
+    </p>
+
+    <h2 id="command">&lt;command&gt;</h2>
+    <p>
+      The &lt;command&gt; element will insert any TrueType instruction
+      into your Xgridfit program. If the command reads values from the
+      stack or writes to it, it is up to you to manage the stack
+      yourself. Here is a simple example:
+    </p>
+    <pre>
+      &lt;command name="ALIGNRP"/&gt;
+    </pre>
+    <p>
+      A number of instructions take one or more bits as modifiers. For
+      example, the MIAP instruction, which positions a point at a grid
+      coordinate read from the control-value table, takes a single
+      modifier bit that indicates whether the control-value should be
+      rounded before the point is positioned. The modifier can be
+      noted in more than one way, even when entered in FontForge:
+    </p>
+    <pre>
+      MIAP[1]
+      MIAP[rnd]
+    </pre>
+    <p>
+      There are two ways to insert modifiers in Xgridfit: one is
+      compact, easy and possibly non-portable, and the other is
+      verbose but portable. The compact method is to include a
+      <tt>modifier</tt> attribute containing a string which is to be
+      copied verbatim into Xgridfit's output code:
+    </p>
+    <pre>
+      &lt;command name="MIAP" modifier="1"/&gt;
+      &lt;command name="MIRP" modifier="01100"/&gt;
+    </pre>
+    <p>
+      The verbose method is to include one or more &lt;modifier&gt;
+      elements as children of &lt;command&gt;. Each element defines a
+      bit:
+    </p>
+    <pre>
+      &lt;command name="MIAP"&gt;
+        &lt;modifier type="round" value="yes"/&gt;
+      &lt;/command&gt;
+
+      &lt;command name="MIRP"&gt;
+        &lt;modifier type="set-rp0" value="no"/&gt;
+        &lt;modifier type="round" value="yes"/&gt;
+        &lt;modifier type="minimum-distance" value="yes"/&gt;
+        &lt;modifier type="color" value="gray"/&gt;
+      &lt;/command&gt;
+    </pre>
+    <p>
+      At present there is no advantage, aside from legibility (and who
+      cares about that?), to using &lt;modifier&gt;. But if Xgridfit
+      at some future time acquires the ability to produce input for
+      some font production program other than FontForge, the verbose
+      method is guaranteed to work while the compact method is not.
+    </p>
+    <p>
+      It is not necessary to provide a &lt;modifier&gt; for every bit
+      that can accompany an instruction: all modifier types have
+      defaults. Here are the modifier types, with all possible values,
+      and with defaults in bold:
+    </p>
+    <ul>
+      <li><tt>set-rp0</tt>: <b>yes</b>, no.</li>
+      <li><tt>round</tt>: <b>yes</b>, no.</li>
+      <li><tt>minimum-distance</tt>: <b>yes</b>, no.</li>
+      <li><tt>color</tt>: <b>gray</b>, black, white.</li>
+      <li><tt>grid-fitted</tt>: <b>yes</b>, no.</li>
+      <li><tt>to-line</tt>: <b>parallel</b>, orthogonal.</li>
+      <li><tt>axis</tt>: <b>x</b>, y.</li>
+      <li><tt>ref-ptr</tt>: <b>1</b>, 0.</li>
+    </ul>
+    <p>
+      If you are planning to write low-level code, you presumably know
+      already which instructions have modifier bits and what those
+      bits do. If you do not, consult the <a
+      href="http://developer.apple.com/textfonts/TTRefMan/index.html">TrueType
+      Reference Manual</a>.
+    </p>
+
+    <h2 id="push">&lt;push&gt;</h2>
+    <p>
+      Many TrueType instructions operate upon values they pop from the
+      stack; thus you must have have a way to move values onto the
+      stack. TrueType provides a variety of PUSH instructions,
+      depending on how the values are stored in the program code (as
+      bytes or words) and how many values need to be pushed. Xgridfit
+      reduces this variety to a single element: &lt;push&gt;, which
+      takes a list of values.  These are valid Xgridfit &lt;push&gt;
+      instructions:
+    </p>
+    <pre>
+        &lt;push&gt;2 5 89 67&lt;/push&gt;
+
+        &lt;push&gt;
+          left
+          right
+          lc-vertical-stem
+          -1
+        &lt;/push&gt;
+
+        &lt;push&gt; 0.58p 2.0 to-grid &lt;/push&gt;
+
+        &lt;push&gt;1 (top + 3) 512&lt;/push&gt;
+
+	&lt;push&gt;minimum-distance&lt;/push&gt;
+    </pre>
+    <p>
+      Notice that all expressions containing whitespace must be
+      enclosed in parentheses.
+    </p>
+    <p>
+      The Xgridfit &lt;push&gt; element may invoke the TrueType PUSHB
+      and PUSHW instructions, which push number literals onto the
+      stack; but it can also handle variables and other values that
+      can be resolved only at run-time. In other words, it is a
+      general-purpose element for moving numbers of all kinds onto the
+      stack. The list of values in a single &lt;push&gt; element can
+      be heterogeneous: some bytes, some words, some variables.
+    </p>
+    <p>
+      Here is an example of the use of &lt;push&gt; in a fragment
+      of code from a function, in which the point <tt>line-2-a</tt>
+      and the control-value <tt>cvt</tt> have been passed in as
+      parameters:
+    </p>
+    <pre>
+      &lt;push&gt;line-2-a cvt&lt;/push&gt;
+      &lt;command name="MIRP"&gt;
+        &lt;modifier type="color" value="black"/&gt;
+      &lt;/command&gt;
+    </pre>
+    <p>
+      This code fragment also shows, incidentally, how a
+      &lt;command&gt; element can be abbreviated by accepting
+      defaults. It is functionally the same as this:
+    </p>
+    <pre>
+      &lt;command name="MIRP"&gt;
+        &lt;modifier type="set-rp0" value="yes"/&gt;
+        &lt;modifier type="minimum-distance" value="yes"/&gt;
+        &lt;modifier type="round" value="yes"/&gt;
+        &lt;modifier type="color" value="black"/&gt;
+      &lt;/command&gt;
+    </pre>
+
+    <h2 id="to-stack">&lt;to-stack&gt;</h2>
+    <p>
+      &lt;to-stack&gt;, an element for moving a single value onto the
+      stack, is deprecated as of Xgridfit version 1.11, as
+      &lt;push&gt; can perform the same function.
+    </p>
+</div>
+</body>
+</html>
+
