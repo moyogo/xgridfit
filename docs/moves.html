@@ -1,0 +1,1068 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#move">&lt;move&gt;</a>
+<a href="#diagonal-stem">&lt;diagonal-stem&gt;</a>
+<a href="#interpolate">&lt;interpolate&gt;</a>
+<a href="#interpolate-untouched-points">&lt;interpolate-untouched-points&gt;</a>
+<a href="#untouch">&lt;untouch&gt;</a>
+<a href="#align">&lt;align&gt;</a>
+<a href="#align-midway">&lt;align-midway&gt;</a>
+<a href="#shift">&lt;shift&gt;</a>
+<a href="#shift-absolute">&lt;shift-absolute&gt;</a>
+<a href="#move-point-to-intersection">&lt;move-point-to-intersection&gt;</a>
+<a href="#set-coordinate">&lt;set-coordinate&gt;</a>
+<a href="#flip-on">&lt;flip-off&gt;</a>
+<a href="#flip-on">&lt;flip-on&gt;</a>
+<a href="#toggle-points">&lt;toggle-points&gt;</a>
+<a href="#mirp">&lt;mirp&gt;</a>
+<a href="#mdrp">&lt;mdrp&gt;</a>
+<a href="#miap">&lt;miap&gt;</a>
+<a href="#mdap">&lt;mdap&gt;</a>
+</div>
+
+<div id="content">
+     <h1>Instructions that Move Points</h1>
+
+     <p>
+       The most important Xgridfit instruction is &lt;move&gt;. This
+       may move a point to an absolute position on the raster grid, to
+       the nearest gridline (or rounded position), or to a position
+       relative to another point. &lt;move&gt; does the work of the
+       TrueType MIRP, MDRP, MSIRP, MIAP, MDAP and SCFS
+       instructions. (Xgridfit provides equivalents of most of these
+       primitive instructions, but their use is not recommended except
+       in special circumstances.)
+     </p>
+
+     <p>
+       Other commonly used instructions are &lt;shift&gt;,
+       &lt;align&gt; and &lt;interpolate&gt;. These are generally
+       subordinate to &lt;move&gt;: that is, after &lt;move&gt; has
+       moved a point, these instructions are used to shift other
+       points along with it (&lt;shift&gt;), align other points with
+       it (&lt;align&gt;), or reposition some points so that they are
+       properly located between it and another moved point
+       (&lt;interpolate&gt;). Another instruction, &lt;delta&gt;,
+       which moves a point an absolute distance at a specific size, is
+       discussed in <a href="deltas.html">its own section</a>.
+     </p>
+
+     <p>
+       Some of the following instructions should be avoided in favor
+       of higher level instructions but are here in case they're
+       needed, or in case the programmer wants to produce more
+       efficient code. Such instructions have cryptic names (e.g.
+       &lt;mirp&gt;) that echo the mnemonics for TrueType
+       instructions.  Those that are suitable for frequent use have
+       clearer, fuller names (e.g. &lt;shift&gt;).
+     </p>
+
+     <h3 id="move">&lt;move&gt;</h3>
+
+     <p>
+       Moves a point and, optionally, aligns other points with it or
+       moves other points in relation to it.
+     </p>
+
+     <p>
+       The only required item is a point to move.  Xgridfit moves this
+       point differently depending on the presence or absence of a
+       reference point (explicit or, in the case of a &lt;move&gt;
+       nested within a &lt;move&gt;, implicit) and the "distance" or
+       "pixel-distance" attribute:
+     </p>
+
+     <dl>
+       <dt>no reference point or distance attribute</dt>
+       <dd>
+	 The point is moved to a position on the grid determined by
+	 the current position of the point and the round state: for
+	 example, if the round state is "to-grid," the point is moved
+	 to the nearest grid line. If rounding is off, the point is
+	 not moved, but "touched" as if it had been moved. In this
+	 example, the point "bottom" is moved to the nearest position
+	 halfway between two grid lines:
+<pre>
+&lt;move round="to-half-grid"&gt;
+  &lt;point num="bottom"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+
+       <dt>reference point but no distance attribute</dt>
+       <dd>
+	 The point is moved so that its original distance from the
+	 reference point is maintained. The distance is rounded in
+	 accordance with the current round state. Here the original
+	 distance between "bottom" and "top" is rounded (presumably
+	 "to-grid"), and "top" is moved until it is that distance from
+	 "bottom":
+<pre>
+&lt;move&gt;
+  &lt;reference&gt;
+    &lt;point num="bottom"/&gt;
+  &lt;/reference&gt;
+  &lt;point num="top"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+
+       <dt>reference point and distance attribute</dt>
+       <dd>
+	 "Distance" is a value from a &lt;control-value&gt; element;
+	 the point is positioned this distance from the reference
+	 point. The distance is rounded in accordance with the current
+	 round state. Here the &lt;control-value&gt; "lc-height" is
+	 rounded and "top" is moved until it is that distance from
+	 "bottom":
+<pre>
+&lt;move distance="lc-height"&gt;
+  &lt;reference&gt;
+    &lt;point num="bottom"/&gt;
+  &lt;/reference&gt;
+  &lt;point num="top"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+
+       <dt>distance attribute but no reference point</dt>
+       <dd>
+	 "Distance" is a value from a &lt;control-value&gt;
+	 element; the point is positioned this distance from the grid
+	 origin. The distance is rounded in accordance with the
+	 current round state. Here the &lt;control-value&gt;
+	 "lc-height" is rounded and "top" is moved until it is that
+	 distance from the grid origin. If the freedom and projection
+	 vectors are set to the <tt>y</tt> axis, the distance is
+	 measured from the baseline:
+<pre>
+&lt;move distance="lc-height"&gt;
+  &lt;point num="top"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+
+       <dt>reference point and pixel-distance attribute</dt>
+       <dd>
+	 "Pixel-distance" is a distance in pixels (e.g. "2p" or "2.0"
+	 or "round(control-value(lc-height) * 0.8)").  The point is
+	 positioned this distance from the reference point:
+<pre>
+&lt;move pixel-distance="2p"&gt;
+  &lt;reference&gt;
+    &lt;point num="left"/&gt;
+  &lt;/reference&gt;
+  &lt;point num="right"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+
+       <dt>pixel-distance attribute but no reference point</dt>
+       <dd>
+	 The point is positioned the specified distance from the grid
+	 origin:
+<pre>
+&lt;move pixel-distance="2p"&gt;
+  &lt;point num="right"/&gt;
+&lt;/move&gt;
+</pre>
+       </dd>
+     </dl>
+
+     <p>
+       A top-level &lt;move&gt;--one that is not a child of another
+       &lt;move&gt; element--always leaves the RP0 reference pointer
+       set to the point just moved. When another &lt;move&gt; follows,
+       with a reference point that matches the point just moved,
+       Xgridfit optimizes the output, "chaining" the instructions
+       generated by &lt;move&gt;. Here is a series of chained
+       &lt;move&gt; elements:
+     </p>
+
+<pre>
+    &lt;move distance="std-stem-left-side" min-distance="no"&gt;
+      &lt;reference&gt;
+        &lt;point num="left-sidebearing"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="stem-left"/&gt;
+    &lt;/move&gt;
+    &lt;move distance="lc-vert-stem"&gt;
+      &lt;reference&gt;
+        &lt;point num="stem-left"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="stem-right-a"/&gt;
+    &lt;/move&gt;
+    &lt;move min-distance="no"&gt;
+      &lt;reference&gt;
+        &lt;point num="stem-right-a"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="stem-right-b"/&gt;
+    &lt;/move&gt;
+</pre>
+
+     <p>
+       A number of subordinate moves may be packaged inside a
+       &lt;move&gt; element. This is done by including
+       &lt;interpolate&gt;, &lt;align&gt;, &lt;shift&gt;,
+       &lt;delta&gt; and other &lt;move&gt; instructions after the
+       &lt;point&gt; element. The parent &lt;move&gt; element supplies
+       the reference point or points for those child elements that
+       take reference points (&lt;delta&gt; does not); in such child
+       elements the &lt;reference&gt; element should be omitted, the
+       reference point(s) being implicit. Here are further notes on
+       the behavior of nested elements:
+     </p>
+
+     <ul>
+       <li>
+	 The points and ranges in an &lt;align&gt; element are aligned
+	 with the point moved by the &lt;move&gt; instruction.
+       </li>
+
+       <li>
+	 You may include &lt;interpolate&gt; instructions if the
+	 &lt;move&gt; instruction contains either an explicit or an
+	 implicit reference point. The points and ranges in the
+	 &lt;interpolate&gt; instructions are interpolated between the
+	 reference point and the moved point.
+       </li>
+
+       <li>
+	 The points, ranges and contours in a &lt;shift&gt; element
+	 are shifted relative to the point moved by the &lt;move&gt;
+	 instruction.
+       </li>
+
+       <li>
+	 The point in a &lt;move&gt; element is moved relative to the
+	 point moved by the parent &lt;move&gt; instruction. Unlike a
+	 top-level &lt;move&gt;, a nested &lt;move&gt; does not leave
+	 RP0 set to its &lt;point&gt;; rather, RP0 always continues to
+	 point to the &lt;point&gt; in the parent &lt;move&gt;.
+       </li>
+
+       <li>
+	 You may include &lt;delta&gt; elements both before and after
+	 nested &lt;align&gt;, &lt;interpolate&gt;, &lt;shift&gt; and
+	 &lt;move&gt; elements.  Deltas positioned before those
+	 elements are executed immediately after the &lt;point&gt;
+	 belonging to the parent &lt;move&gt; is moved, but before
+	 other nested elements are executed. Normally these deltas are
+	 used to make fine adjustments to the position of the point
+	 just moved; if you omit the &lt;point&gt; element in a
+	 &lt;delta-set&gt; here, the &lt;point&gt; belonging to the
+	 parent &lt;move&gt; is assumed. The &lt;delta&gt; elements
+	 that come after other nested elements are executed after all
+	 those elements have been executed: use these to make fine
+	 adjustments in the positions of the points moved by those
+	 other instructions.
+       </li>
+     </ul>
+
+     <p>
+       You should use this nesting or packaging feature to build
+       programming structures around the visible structures of the
+       glyph. The payoffs for doing so are more compact and legible
+       program code and more compact and efficient output. As an
+       example, here are the horizontal instructions for a letter
+       <b>n</b>:
+     </p>
+
+<pre>
+    &lt;move distance="fhijklmnt-left-side"&gt;
+      &lt;reference&gt;
+	&lt;point num="left-sidebearing"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="left-left"/&gt;
+      &lt;move distance="top-serif-x-width"&gt;
+	&lt;point num="top-serif-end"/&gt;
+      &lt;/move&gt;
+      &lt;move distance="lc-serif-width"&gt;
+	&lt;point num="left-serif-left-end"/&gt;
+      &lt;/move&gt;
+      &lt;move distance="lc-vert-stroke"&gt;
+	&lt;point num="left-right-a"/&gt;
+	&lt;align&gt;
+	  &lt;point num="left-right-b"/&gt;
+	&lt;/align&gt;
+	&lt;move distance="lc-serif-width"&gt;
+	  &lt;point num="left-serif-right-end"/&gt;
+	&lt;/move&gt;
+      &lt;/move&gt;
+    &lt;/move&gt;
+
+    &lt;move distance="hnu-width"&gt;
+      &lt;reference&gt;
+	&lt;point num="left-left"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="right-right"/&gt;
+      &lt;delta&gt;
+	&lt;delta-set size="4" distance="-8"/&gt;
+      &lt;/delta&gt;
+      &lt;move distance="lc-serif-width"&gt;
+	&lt;point num="right-serif-right-end"/&gt;
+      &lt;/move&gt;
+      &lt;move distance="lc-vert-stroke"&gt;
+	&lt;point num="right-left"/&gt;
+	&lt;move distance="lc-serif-width"&gt;
+	  &lt;point num="right-serif-left-end"/&gt;
+	&lt;/move&gt;
+      &lt;/move&gt;
+    &lt;/move&gt;
+</pre>
+
+     <p>
+       The first &lt;move&gt; block relates to the left "leg" of the
+       <b>n</b>. First the point <tt>left-left</tt> is positioned
+       relative to the <tt>left-sidebearing</tt> point; then the
+       points that define the left ends of the serifs are positioned
+       relative to <tt>left-left</tt>. Then <tt>left-right-a</tt> is
+       positioned relative to <tt>left-left</tt>,
+       <tt>left-right-b</tt> is aligned with <tt>left-right-a</tt>,
+       and the right end of the left serif is positioned relative to
+       <tt>left-right-a</tt>. The second &lt;move&gt; block works in a
+       similar way, each element nested inside a &lt;move&gt; taking
+       that element's &lt;point&gt; as a reference point. Note that
+       the &lt;delta&gt; in this element moves the point
+       <tt>right-right</tt>.
+     </p>
+
+     <img src="n-hroz.png" alt="instructions for the letter n"/>
+
+     <p>
+       The figure above illustrates this code graphically, the
+       thick lines showing the relationship among the reference points
+       and moved points of the top-level &lt;move&gt; elements, and
+       the thin lines showing the subordinate moves.
+     </p>
+
+     <p>
+       Remember that &lt;move&gt; elements are not "chained" inside
+       other &lt;move&gt; elements as top-level &lt;move&gt; elements
+       are. Rather, after a nested &lt;move&gt; RP0 always points to
+       the &lt;point&gt; moved by the parent &lt;move&gt;. One might
+       say that chaining inside the &lt;move&gt; is vertical, from
+       parent to child, while otherwise is it horizontal, from sibling
+       to sibling.
+     </p>
+
+     <p>
+       Elements nested inside a &lt;move&gt; must come in the
+       following order:
+     </p>
+
+     <ul>
+       <li>&lt;delta&gt;</li>
+       <li>&lt;align&gt;,
+       &lt;interpolate&gt;,
+       &lt;shift&gt; (in any order),</li>
+       <li>&lt;move&gt;</li>
+       <li>&lt;delta&gt;</li>
+     </ul>
+
+     <p>
+       You may include more than one of each of these nested
+       elements. Note that the order of &lt;align&gt;,
+       &lt;interpolate&gt; and &lt;shift&gt; is not significant:
+       Xgridfit sets the order in which these elements are
+       executed. Normally this should not be a problem, as it would be
+       very odd if the content of these elements were to overlap.
+     </p>
+
+     <p>
+       The &lt;compile-if&gt; element is not permitted in a
+       &lt;move&gt;, but nested elements may be compiled conditionally
+       with the <tt>compile-if</tt> attribute. For example, one set of
+       deltas can be compiled if a font is bold and another if it is
+       not bold (a "bold" constant, either true (1) or false (0) being
+       defined in the top level of your program):
+     </p>
+     <pre>
+       &lt;move&gt;
+         &lt;point num="p"/&gt;
+         &lt;delta compile-if="bold"/&gt;
+           &lt;delta-set size="5" distance="2"/&gt;
+         &lt;/delta&gt;
+         &lt;delta compile-if="not(bold)"/&gt;
+           &lt;delta-set size="3" distance="-1"/&gt;
+         &lt;/delta&gt;
+       &lt;/delta&gt;
+˙     </pre>
+
+     <p>
+       Bypassing the Control Value Table by using the pixel-distance
+       attribute is usually unnecessary. Yet this attribute may
+       occasionally be useful. For example, here is a function that
+       guarantees at least one pixel of space between a character and
+       the diacritic above it:
+     </p>
+     
+<pre>
+    &lt;function id="ensure-diacritic-gap"&gt;
+      &lt;param name="char-top"/&gt;
+      &lt;param name="diacritic-bottom"/&gt;
+      &lt;param name="diacritic-contour"/&gt;
+      &lt;variable id="d"/&gt;
+      &lt;with-vectors axis="y"&gt;
+        &lt;measure-distance result-to="d"&gt;
+          &lt;point num="char-top"/&gt;
+          &lt;point num="diacritic-bottom"/&gt;
+        &lt;/measure-distance&gt;
+        &lt;if test="d &amp;lt; 1p"&gt;
+          &lt;move pixel-distance="1p" round="no"&gt;
+            &lt;reference&gt;
+              &lt;point num="char-top"&gt;
+            &lt;/reference&gt;
+            &lt;point num="diacritic-bottom"/&gt;
+            &lt;shift&gt;
+              &lt;contour num="diacritic-contour"/&gt;
+            &lt;/shift&gt;
+          &lt;/move&gt;
+        &lt;/if&gt;
+      &lt;/with-vectors&gt;
+    &lt;/function&gt;
+</pre>
+     
+
+<h4>Attributes</h4>
+
+<dl>
+  <dt>distance</dt>
+  <dd>
+    A value from a &lt;control-value&gt; element.  If
+    a <tt>distance</tt> is specified, the target point is positioned
+    that distance either from the reference point or from the grid
+    origin. If a <tt>distance</tt> is not specified, the distance from
+    the original outline is used. In either case,
+    the <tt>distance</tt> is measured along the projection
+    vector.
+  </dd>
+     
+  <dt>pixel-distance</dt>
+  <dd>
+    A distance in pixels. If a <tt>pixel-distance</tt> is specified,
+    the target point is positioned that distance either from the
+    reference point or from the grid origin. The <tt>distance</tt> and
+     <tt>pixel-distance</tt> attributes are not compatible.
+     If a <tt>distance</tt> attribute is present, the
+     <tt>pixel-distance</tt> attribute is not consulted.
+  </dd>
+
+  <dt>round</dt>
+  <dd>
+    Whether and how to round the <tt>distance</tt> or
+    <tt>pixel-distance</tt>.  The default value is <tt>yes</tt>, which
+    means to round it according to the current setting (to the grid,
+    if you haven't changed it). If you specify
+    <tt>no</tt>, no rounding will be done. To use one of the standard
+    round states, use <tt>to-grid, to-half-grid, to-double-grid,
+    down-to-grid</tt> or <tt>up-to-grid</tt>.  To use a custom round
+    state, use its name. Finally, any
+    number (constant, variable) is passed to SROUND for the TrueType
+    engine to interpret.  Setting the round state with this attribute
+    has no effect except in this instruction: the round state returns
+    to its former value after the instruction is executed. If several
+    &lt;move&gt; instructions use the same round state, it is more
+    efficient to enclose them in a &lt;with-round-state&gt; element
+    than to include a <tt>round</tt> attribute with each one. That is
+    also true if the <tt>round</tt> value is to be <tt>no</tt>: in
+    that case use <tt>&lt;with-round-state round="no"&gt;</tt> and
+    omit the <tt>round</tt> attribute for the &lt;move&gt;
+    instructions.
+  </dd>
+
+  <dt>cut-in</dt>
+  <dd>
+    Whether to use the Control Value cut-in; or a cut-in value to
+    use. Legal values are <tt>yes</tt>, <tt>no</tt> or any number; the
+    default value is <tt>yes</tt>. If the value of this attribute
+    is <tt>no</tt>, the value of the <tt>round</tt> attribute must
+    also be <tt>no</tt>. (This is a peculiarity of the TrueType
+    instruction set and has nothing to do with Xgridfit.) This
+    attribute has an effect only when the <tt>distance</tt> attribute
+    is present.
+  </dd>
+
+  <dt>min-distance</dt>
+
+  <dd>
+    Whether to maintain a minimum distance between the reference point
+    and the target point; or the minimum distance to use: legal values
+    are <tt>yes</tt> (the default), <tt>no</tt>, or any number. This
+    attribute has an effect only when there is a reference point.
+  </dd>
+
+  <dt>color</dt>
+  <dd>
+    Distance type: <tt>black</tt>, <tt>white</tt> or
+    <tt>gray</tt> (the default).  This applies only when there is a
+    reference point.
+  </dd>
+
+  <dt>compile-if</dt>
+  <dd>
+    The &lt;move&gt; instruction and all its contents are compiled
+    only if the expression in the <tt>compile-if</tt> attribute
+    evaluates as true (non-zero). The instruction is also compiled if
+    this attribute is omitted.
+  </dd>
+</dl>
+
+
+<h3 id="diagonal-stem">&lt;diagonal-stem&gt;</h3>
+
+<p>
+  Given two lines (making up a diagonal stem), makes the second line
+  parallel to the first, subject to the operation of the Control Value
+  cut-in. If one &lt;align&gt; element is present, the points it
+  contains are aligned with the second line; if there are two, the
+  first set of points is aligned with the first line and the second
+  set with the second line. You may, and often should, set a new
+  minimum distance value with the <tt>min-amount</tt> attribute. At
+  the end of this instruction the minimum distance will be reset to
+  its former value.
+</p>
+
+<p>
+  Usually it doesn't make a lot of sense to round the distance when
+  calling this instruction; and yet the default value of
+  <tt>round</tt> is <tt>yes</tt> for compatibility with other, similar
+  instructions.  You'll probably want to set the <tt>round</tt>
+  attribute to <tt>no</tt>; but if you have several
+  &lt;diagonal-stem&gt; instructions together, enclose them in a
+  <tt>&lt;with-round-state round="no"&gt;</tt> element to turn off
+  rounding beforehand and on again afterwards. In this case, do not
+  include the <tt>round</tt> attribute with the &lt;diagonal-stem&gt;
+  elements.
+</p>
+
+<p>
+  By default this instruction does not set the Freedom Vector, since
+  the best setting of that vector varies with circumstances. If you
+  want the Freedom Vector to be the same as the Projection Vector, set
+  <tt>freedom-vector="yes"</tt>.
+</p>
+
+<p>
+  This instruction is not suitable for use inside a function (though
+  you may do so if the &lt;line&gt; elements contain points rather
+  than <tt>ref</tt> attributes). Also, I'm not sure whether it will
+  work if the various points are in different zones. It may, but I
+  don't guarantee it.
+</p>
+
+<p>
+  Example:
+</p>
+<pre>
+  &lt;diagonal-stem min-distance="yes" distance="cap-thin-diag" round="no"&gt;
+    &lt;line ref="left-left-line"/&gt;
+    &lt;line ref="left-right-line"/&gt;
+    &lt;align&gt;
+      &lt;point num="left-right-b"/&gt;
+      &lt;point num="left-right-c"/&gt;
+    &lt;/align&gt;
+  &lt;/diagonal-stem&gt;
+</pre>
+
+<h4>Attributes</h4>
+
+<dl>
+<dt>distance</dt>
+
+<dd>A value from a &lt;control-value&gt; element: this
+     controls the width of the diagonal stem.
+</dd>
+
+<dt>round</dt>
+
+<dd>Whether and how to round the distance the point is to
+be moved. The default value is <tt>yes</tt>, which means to
+round it according to the current setting (to the grid,
+if you haven't changed it). If you specify <tt>no</tt>, no
+rounding will be done. The other values specify
+one of the standard kinds of rounding or a custom round-state.
+Setting the
+round state with this attribute has no effect except
+in this instruction: the round state returns to its
+former value after the instruction is executed. If
+several &lt;diagonal-stem&gt; instructions use the same round
+state, it is more efficient to call &lt;set-round-state&gt;
+before and after that group than to include a <tt>round</tt>
+attribute with each one. That is also true if the
+<tt>round</tt> value is to be <tt>no</tt>: in that case call
+<tt>&lt;set-round-state round-state="no"/&gt;</tt> before and omit
+the <tt>round</tt> attribute for the &lt;diagonal-stem&gt; instructions.</dd>
+
+<dt>cut-in</dt>
+
+<dd>Whether to use the Control Value cut-in. Legal values
+are <tt>yes</tt> and <tt>no</tt>; the default is <tt>yes</tt>. If the
+value of this attribute is <tt>no</tt>, the value of the
+<tt>round</tt> attribute must also be <tt>no</tt>. (This is a
+peculiarity of the TrueType instruction set and has
+nothing to do with Xgridfit.) This attribute has an
+effect only when a distance is specified.</dd>
+
+     <dt>min-distance</dt>
+     <dd>Whether to maintain a minimum distance between the
+          points in the first line and the points in the second:
+          legal values are <tt>yes</tt> (the default) and
+          <tt>no</tt>.</dd>
+
+     <dt>min-amount</dt>
+          <dd>The value of the minimum-distance setting in pixels. The
+          default value of this setting (1p) is more often than
+          not appropriate for vertical and horizontal stems, but
+          usually needs to be changed for diagonal stems to look
+          their best. This attribute applies only to the present
+          instruction. The minimum-distance setting resumes its former
+          value after this instruction.</dd>
+
+     <dt>color</dt>
+     <dd>Distance type: <tt>black</tt>, <tt>white</tt> or
+          <tt>gray</tt> (the default).</dd>
+
+     <dt>freedom-vector</dt>
+          <dd>Set this to <tt>yes</tt> if you want the Freedom Vector
+          to be the same as the
+          Projection Vector. The default is <tt>no</tt>.</dd>
+     <dt>save-vectors</dt>
+          <dd>If <tt>yes</tt>, both the Projection Vector and the Freedom Vector
+          are guaranteed to be the same after this intruction as they
+          were before. The default is <tt>no</tt>.</dd>
+</dl>
+
+
+<h3 id="interpolate">&lt;interpolate&gt;</h3>
+
+<p>
+To "interpolate" a point is to move it so that its
+position relative to two reference points is what it was in
+the original outline. If the distance between the two
+reference points is not what it was in the original
+outline, the point is positioned so that its
+relationship to the reference points is proportionally
+correct.</p>
+
+<p>The &lt;interpolate&gt; element must contain at
+least one point to interpolate.
+It may contain any number of &lt;point&gt;s and &lt;range&gt;s.
+Like most other elements that move points, it may contain a
+&lt;reference&gt; element; but this element must contain
+two &lt;point&gt;s, not just one.</p>
+
+<p>
+  This instruction may be nested inside a &lt;move&gt; element
+  containing a reference point, or inside a &lt;move&gt; nested in
+  another &lt;move&gt;, and so having an implicit reference point. In
+  an &lt;interpolate&gt; element so placed reference points are
+  needed; the points it contains are automatically interpolated
+  between the &lt;move&gt; element's explicit or implicit reference
+  point and its moved point.
+</p>
+
+<p>
+  Example:
+</p>
+<pre>
+  &lt;interpolate&gt;
+    &lt;reference&gt;
+      &lt;point num="top"/&gt;
+      &lt;point num="bottom"/&gt;
+    &lt;/reference&gt;
+    &lt;point num="bar-top-left"/&gt;
+  &lt;/interpolate&gt;
+</pre>
+
+<h4>Attributes</h4>
+
+<dl>
+  <dt>compile-if</dt>
+  <dd>
+    The &lt;interpolate&gt; instruction is compiled only if the
+    expression in the compile-if attribute evaluates as true
+    (non-zero). The instruction is also compiled if this attribute is
+    omitted.
+  </dd>
+  <dt>round</dt>
+  <dd>
+    If this attribute is included with any value other than "no," all
+    points referenced by &lt;point&gt; elements will be aligned to the
+    grid after being interpolated. Points referenced by &lt;range&gt;
+    and &lt;set&gt; elements are unaffected. The possible values of
+    <tt>round</tt> are the same as those for <a
+    href="reference.html#set-round-state">&lt;set-round-state&gt; and
+    &lt;with-round-state&gt;</a>. Note that the value "yes" will use
+    the current round state; so it is usually not necessary to specify
+    a round state here.
+  </dd>
+</dl>
+
+<h3 id="interpolate-untouched-points">&lt;interpolate-untouched-points&gt;</h3>
+
+<p>Interpolates all points that have not been moved or
+"touched" by instructions so that they are positioned
+correctly relative to points that have been moved.
+Most of the time you will want to place this
+instruction at the end of the program for each
+glyph.</p>
+
+<h4>Attribute</h4>
+
+<dl>
+     <dt>axis</dt>
+          <dd>Interpolation always takes place along the
+          x or the y axis. If you omit this attribute,
+          interpolation takes place along both axes.</dd>
+</dl>
+
+<h3 id="untouch">&lt;untouch&gt;</h3>
+
+<p>A point that has been moved is "touched." This
+untouches it so that it will be affected by
+the &lt;interpolate-untouched-points&gt; instruction.</p>
+
+<h3 id="align">&lt;align&gt;</h3>
+
+<p>
+  Moves one or more points along the freedom vector until aligned with
+  a reference point. Points are "aligned" when their distance from
+  each other, measured along the projection vector, is zero. When the
+  projection vector is "x," aligned points end up stacked vertically;
+  when it is "y" they end up in a horizontal line. When the projection
+  vector is set to a line, the aligned points end up arrayed along an
+  imaginary line orthogonal to the projection vector.
+</p>
+
+<p>
+  The &lt;align&gt; element must contain at least one point to align.
+  It may contain any number of &lt;point&gt;s and &lt;range&gt;s.  An
+  optional &lt;reference&gt; element contains the point to align
+  with. If the reference point is omitted, the current setting of RP0
+  is used.
+</p>
+
+<p>
+  The &lt;align&gt; element may be nested in a &lt;move&gt; element,
+  in which case it is not necessary to include a &lt;reference&gt;:
+  the &lt;point&gt; of the parent &lt;move&gt; is implicitly the
+  reference point.
+</p>
+
+<p>
+  Example:
+</p>
+<pre>
+  &lt;align&gt;
+    &lt;reference&gt;
+      &lt;point num="left-left-b"/&gt;
+    &lt;/reference&gt;
+    &lt;range ref="knob-range"/&gt;
+  &lt;/align&gt;
+</pre>
+
+<h4>Attribute</h4>
+
+<dl>
+  <dt>compile-if</dt>
+  <dd>
+    The &lt;align&gt; instruction is compiled only if the
+    expression in the compile-if attribute evaluates as true
+    (non-zero). The instruction is also compiled if this attribute is
+    omitted.
+  </dd>
+</dl>
+
+<h3 id="align-midway">&lt;align-midway&gt;</h3>
+
+<p>Must contain two &lt;point&gt; elements. Moves these along
+the freedom vector until they are aligned midway
+between their original positions. Measurement is
+along the projection vector.</p>
+
+<h3 id="shift">&lt;shift&gt;</h3>
+
+     <p>Shifts one or more points, ranges, contours and zones
+     by the distance between the current position of the reference
+     point and its original position. Note that this does not
+     guarantee that the shifted elements will maintain their original
+     distance from the reference point (use &lt;move&gt; or
+     &lt;mdrp&gt; for that).</p>
+
+     <p>The &lt;shift&gt; element may contain points, ranges,
+     contours and zones in any combination and order. The following
+     is perfectly correct:</p>
+     
+<pre>
+     &lt;shift&gt;
+       &lt;reference&gt;
+         &lt;point num="ref-pt"/&gt;
+       &lt;/reference&gt;
+       &lt;point num="move-pt-1"/&gt;
+       &lt;range ref="move-rg-1"/&gt;
+       &lt;contour num="0"/&gt;
+       &lt;point num="move-pt-2"/&gt;
+       &lt;range ref="move-rg-2"/&gt;
+     &lt;/shift&gt;
+</pre>
+
+     <p>But note that all the points are shifted first, then all the
+     ranges, then all the contours, and finally any zones. The order
+     of child elements in the &lt;shift&gt; element is not significant; but this is less confusing:</p>
+
+<pre>
+     &lt;shift&gt;
+       &lt;reference&gt;
+         &lt;point num="ref-pt"/&gt;
+       &lt;/reference&gt;
+       &lt;point num="move-pt-1"/&gt;
+       &lt;point num="move-pt-2"/&gt;
+       &lt;range ref="move-rg-1"/&gt;
+       &lt;range ref="move-rg-2"/&gt;
+       &lt;contour num="0"/&gt;
+     &lt;/shift&gt;
+</pre>
+
+     <p>
+       The &lt;shift&gt; element may be nested in a &lt;move&gt;
+       element, in which case it is not necessary to include a
+       &lt;reference&gt;: the &lt;point&gt; of the parent &lt;move&gt;
+       is implicitly the reference point.
+     </p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+  <dt>reference-ptr</dt>
+  <dd>
+    Addresses a technical detail: the SHP, SHC and SHZ instructions
+    can use either RP1 or RP2, and this attribute determines
+    which. Chiefly useful if the RP you want to use has already been
+    set; otherwise the default (RP1) should do fine. Xgridfit
+    automatically sets this correctly when a &lt;shift&gt; instruction
+    is nested inside a &lt;move&gt; instruction.
+  </dd>
+  <dt>compile-if</dt>
+  <dd>
+    The &lt;align&gt; instruction is compiled only if the
+    expression in the compile-if attribute evaluates as true
+    (non-zero). The instruction is also compiled if this attribute is
+    omitted.
+  </dd>
+  <dt>round</dt>
+  <dd>
+    Causes any points referenced by &lt;point&gt; elements to be moved
+    to rounded positions after the shift. &lt;set&gt; and
+    &lt;range&gt; elements are not affected. Works like the
+    <tt>round</tt> attribute on the <a
+    href="#interpolate">&lt;interpolate&gt;</a> element.
+  </dd>
+</dl>
+
+     <h3 id="shift-absolute">&lt;shift-absolute&gt;</h3>
+     
+     <p>Moves one or more points along the freedom vector by
+          a fixed amount (expressed in pixels); it does not use the
+          projection vector. The &lt;shift-absolute&gt;
+          element must contain at
+          least one point to shift: that is, a &lt;range&gt; or a &lt;point&gt;
+          element.
+          It may contain any number of &lt;point&gt;s and &lt;range&gt;s.</p>
+     
+     
+     <h4>Attribute</h4>
+     <dl>
+          <dt>pixel-distance</dt>
+          <dd>The distance (in pixels) to shift
+               the points.</dd>
+     </dl>
+     
+     <h3 id="move-point-to-intersection">&lt;move-point-to-intersection&gt;</h3>
+
+<p>Moves a point to the intersection of two lines.
+Each of the lines must be wholly in
+a single zone, so if specifying the zone use the <tt>zone</tt>
+attribute of the &lt;line&gt; elements rather than the <tt>zone</tt>
+attributes of the &lt;point&gt; elements that make up the
+lines. Example:</p>
+<pre>
+  &lt;move-point-to-intersection&gt;
+    &lt;point num="pt"/&gt;
+    &lt;line&gt;
+      &lt;point num="line-a1"/&gt;
+      &lt;point num="line-a2"/&gt;
+    &lt;/line&gt;
+    &lt;line&gt;
+      &lt;point num="line-b1"/&gt;
+      &lt;point num="line-b2"/&gt;
+    &lt;/line&gt;
+  &lt;/move-point-to-intersection&gt;
+</pre>
+
+
+<h3 id="set-coordinate">&lt;set-coordinate&gt;</h3>
+
+<p>Moves a &lt;point&gt; to a coordinate determined by the
+freedom and projection vectors. On the rare occasions when
+you need a command like this one, it is probably better to
+use &lt;move&gt; with the <tt>pixel-distance</tt> attribute.</p>
+
+     <h4>Attribute</h4>
+
+<dl>
+     <dt>coordinate</dt>
+          <dd>The new coordinate in pixels.</dd>
+</dl>
+
+      <h3 id="flip-on">&lt;flip-off&gt;<br/>&lt;flip-on&gt;</h3>
+
+      <p>
+	"Flips" a range of points so that they all become either
+	on-line points or off-line points. The &lt;flip-off&gt; and
+	&lt;flip-on&gt; elements must contain a single &lt;range&gt;
+	element. The range operated upon always runs from the lowest
+	point to the highest. The &lt;range&gt; element may contain a
+	<tt>zone</tt> attribute, in which case the operation takes
+	place in the specified zone.
+      </p>
+
+<h3 id="toggle-points">&lt;toggle-points&gt;</h3>
+
+<p>Any of the points that are on-line become off-line,
+and any that are off-line become on-line.
+The &lt;toggle-points&gt; element must contain at
+least one point to toggle: that is, a &lt;range&gt; or a &lt;point&gt;
+element.
+It may contain any number of &lt;point&gt;s and &lt;range&gt;s.</p>
+
+
+<h3 id="mirp">&lt;mirp&gt;</h3>
+
+<p>Corresponds to the MIRP instruction, but attempts, insofar as it
+is practical, to separate rounding and the cvt cut-in. You can
+specify <tt>round="no"</tt> and <tt>cut-in="yes"</tt> or both
+<tt>no</tt> or both <tt>yes</tt>,
+but not <tt>round="yes"</tt> and <tt>cut-in="no"</tt>.
+That produces an error-message.</p>
+
+<p>This will take care of setting RP0 beforehand if a reference point
+is included.</p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+     <dt>distance</dt>
+          <dd>distance (from a &lt;control-value&gt; element) relative to the
+          reference point (or to RP0 if that was set by a
+          previous instruction).</dd>
+     <dt>round</dt>
+          <dd>whether/how to round the distance. If <tt>yes</tt> is specified,
+          the round bit is set and nothing more is done: so the
+          current round state is used. If <tt>to-grid</tt>, <tt>to-half-grid</tt> or
+          to <tt>to-double-grid</tt>, the round state is set as specified, the
+          instruction is executed, and then the earlier round state
+          is restored. The default is <tt>yes</tt>.</dd>
+     <dt>cut-in</dt>
+          <dd>whether to use the cvt cut-in. If rounding is used, this
+          will always be <tt>yes</tt>, even if you set it to <tt>no</tt>.</dd>
+     <dt>min-distance</dt>
+          <dd>whether to observe the current minimum distance (1p
+          unless you set it differently using set-minimum-distance).
+          The default is <tt>yes</tt>.</dd>
+     <dt>set-rp0</dt>
+          <dd>whether to set reference point 0 to point at the moved point
+          after the instruction is executed. The default value is
+          <tt>no</tt>.</dd>
+     <dt>color</dt>
+          <dd>Or distance-type, or compensation for engine characteristics.
+          Whatever. It's got to be gray, black or white, and here
+          gray is the default.</dd>
+</dl>
+
+<h3 id="mdrp">&lt;mdrp&gt;</h3>
+
+<p>Corresponds to the MDRP instruction.</p>
+
+<p>Similar to &lt;mirp&gt;. This will also take care of setting RP0 beforehand if a
+reference point is supplied.</p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+     <dt>round</dt>
+          <dd>Whether/how to round the distance from the reference point.</dd>
+     <dt>min-distance</dt>
+          <dd>Whether to maintain a minimum distance from the reference
+          point.</dd>
+     <dt>set-rp0</dt>
+          <dd>Whether to set RP0 to the moved point after the move.</dd>
+     <dt>color</dt>
+          <dd>Or distance-type, or compensation for engine characteristics.
+          Whatever. It's got to be gray, black or white, and here
+          gray is the default.</dd>
+</dl>
+
+<h3 id="miap">&lt;miap&gt;</h3>
+
+     <p>Corresponds to the MIAP instruction.</p>
+
+     <p>As with mirp, it will try to separate rounding and the cvt cut-in.</p>
+
+     <p>Must contain one point element.</p>
+
+<h4>Attributes</h4>
+
+<dl>
+     <dt>distance</dt>
+          <dd>Distance relative to grid origin</dd>
+     <dt>round</dt>
+          <dd>Whether/how to round the distance</dd>
+     <dt>cut-in</dt>
+          <dd>Whether to use the cvt cut-in</dd>
+</dl>
+
+<h3 id="mdap">&lt;mdap&gt;</h3>
+
+     <p>Corresponds to the MDAP instruction</p>
+
+     <p>Will round a point to the grid if the <tt>round</tt> attribute
+     is not <tt>no</tt>; otherwise
+     will just touch the point (i.e. mark it as moved).</p>
+
+
+<h4>Attributes</h4>
+
+<dl>
+     <dt>round</dt>
+          <dd>Whether and how to round</dd>
+</dl>
+</div>
+</body>
+</html>
