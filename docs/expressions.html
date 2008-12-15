@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#expressions">Expressions</a>
+<a href="#formulas">Formulas</a>
+</div>
+
+<div id="content">
+
+          <h1>Expressions and Formulas</h1>
+          <p>
+                    The TrueType engine is capable of performing simple
+                    arithmetical operations, and it is easy to combine these to
+                    perform more complex operations. You must always remember,
+                    however, that TrueType arithmetic operates on F26dot6
+                    fixed-point numbers, and all operations return the same
+                    kind of fixed-point numbers. There is no way to obtain
+                    results with higher precision. Thus certain kinds of
+                    calculations are impossible in TrueType, and you must always
+                    be careful, when combining the operations that TrueType
+                    can do, to consider the limited precision of the
+                    intermediate results that get passed from operation to
+                    operation.
+          </p>
+          <p>
+                    There are two ways to combine operations in Xgridfit. One is
+                    to write expressions rather like the expressions used in
+                    other programming languages (though fewer operators are
+                    available); the other is to use &lt;formula&gt; elements,
+                    within which operations can be chained.
+          </p>
+          <h2 id="expressions">Expressions</h2>
+          <p>
+                    Expressions in Xgridfit resemble expressions in other
+                    programming languages: they consist of numbers and
+                    identifiers coordinated with operators; they can be simple
+                    (e.g. "bottom-pt + 1") or complex; Xgridfit parses them
+                    according to certain rules of precedence which are worth
+                    knowing; and the rules of precedence may be overridden by
+                    using parentheses, which can be nested.
+          </p>
+          <p>
+                    There is little point in describing the syntax of
+                    expressions in detail, since they are so familiar to
+                    everyone who has done any programming; instead this section
+                    will list the operators, note a few peculiarities, and
+                    present some examples
+          </p>
+          <table id="op-table">
+            <thead>
+                      <tr><th colspan="2">Operators</th></tr>
+            </thead>
+            <tbody>
+                      <tr><th colspan="2">First precedence</th></tr>
+                      <tr><td>and</td><td>Logical and.
+                                <b>Example:</b> <tt>pixels-per-em &amp;gt;
+                                10 and pixels-per-em &amp;lt; 20</tt></td></tr>
+                      <tr><td>or</td><td>Logical or.
+                                <b>Example:</b> <tt>pixels-per-em &amp;lt; 10 or
+                                pixels-per-em &amp;gt; 20</tt></td></tr>
+                      <tr><th colspan="2">Second precedence</th></tr>
+                      <tr><td>=</td><td>Equals.
+                                <b>Example:</b> <tt>pixels-per-em = 15</tt></td></tr>
+                      <tr><td>&amp;gt;</td><td>Greater than.
+                                <b>Example:</b> <tt>control-value(lc-vert-stem)
+                                &amp;gt; 1p</tt></td></tr>
+                      <tr><td>&amp;lt;</td><td>Less than.
+                                <b>Example:</b> <tt>control-value(lc-vert-stem)
+                                &amp;lt; 1p</tt></td></tr>
+                      <tr><td>&amp;gt;=</td><td>Greater than or equal.
+                                <b>Example</b> (where <tt>v</tt> has
+                                previously been declared as a variable): <tt>v
+                                          &amp;gt;= 0.35</tt></td></tr>
+                      <tr><td>&amp;lt;=</td><td>Less than or equal.
+                                <b>Example:</b> <tt>v
+                                &amp;lt;= 0.35</tt></td></tr>
+                      <tr><td>!=</td><td>Not equal.
+                                <b>Example:</b> <tt>round(control-value(left-side)) !=
+                                control-value(left-side)</tt></td></tr>
+                      <tr><th colspan="2">Third precedence</th></tr>
+                      <tr><td>+</td><td>Addition. <b>Example:</b>
+                                <tt>top-point + 1</tt></td></tr>
+                      <tr><td>-</td><td>Subtraction. <b>Example:</b>
+                                <tt>top-point - 1</tt></td></tr>
+                      <tr><td>*</td><td>Multiplication. <b>Example:</b>
+                                <tt>lc-vert-stem * 1.2</tt></td></tr>
+                      <tr><td>/</td><td>Division. <b>Example:</b>
+                                <tt>lc-vert-stem / 2.0</tt></td></tr>
+		      <tr><th colspan="2">Fourth precedence</th></tr>
+		      <tr>
+			<td>--</td>
+			<td>
+			  Treats the arguments on both sides of the
+			  operator as point numbers and returns the
+			  current distance (in pixels) between them,
+			  as measured on the projection
+			  vector. Ordinarily the argument on the
+			  left-hand side of the operator should be the
+			  point on the left or bottom; reverse the
+			  numbers to change the sign of the
+			  result.<br/><b>Example:</b>
+			  <tt>round(stem-left -- stem-right)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>---</td>
+			<td>
+			  Like <tt>--</tt>, but returns the distance
+			  between points in the original
+			  outline.<br/><b>Example:</b>
+			  <tt>absolute((stem-left --- stem-right) - (stem-left -- stem-right))</tt>
+			</td>
+		      </tr>
+                      <tr><th colspan="2">Fifth precedence</th></tr>
+                      <tr><td>odd</td><td>True if the argument is odd.
+                                <b>Example:</b> <tt>odd(v)</tt></td></tr>
+                      <tr><td>even</td><td>True if the argument is even.
+                                <b>Example:</b> <tt>even v</tt></td></tr>
+                      <tr><td>not</td><td>Reverses the boolean value of
+                                the argument.
+                                <b>Example:</b> <tt>not(v &amp;gt; 4.0)</tt></td></tr>
+                      <tr><td>floor</td><td>The greatest integer value less than
+                                the argument. <b>Example:</b>
+                                <tt>floor(control-value(lc-vert-stem))</tt></td></tr>
+                      <tr><td>ceiling</td><td>The smallest integer value greater
+                                than the argument. <b>Example:</b>
+                                <tt>ceiling(control-value(lc-vert-stem)&nbsp;/&nbsp;2)</tt></td></tr>
+                      <tr><td>absolute</td><td>The absolute value of the argument.
+                                <b>Example:</b>
+                                <tt>absolute(control-value(lc-vert-stem))</tt></td></tr>
+                      <tr><td>negative</td><td>The negation of the argument.
+                                <b>Example:</b> <tt>negative(v)</tt></td></tr>
+                      <tr>
+			<td>round</td>
+			<td>
+			  The argument rounded according to the
+			  current round state. The "color" is the
+			  &lt;default&gt; set with
+			  <tt>type="color"</tt> (gray if not
+			  set). <b>Example:</b>
+			  <tt>round(control-value(lc-vert-stem))</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>round-gray</td>
+			<td>
+			  The argument rounded according to the
+			  current round state. The "color" is
+			  gray. <b>Example:</b>
+			  <tt>round-gray(control-value(lc-vert-stem))</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>round-black</td>
+			<td>
+			  The argument rounded according to the
+			  current round state. The "color" is
+			  black. <b>Example:</b>
+			  <tt>round-black(control-value(lc-vert-stem))</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>round-white</td>
+			<td>
+			  The argument rounded according to the
+			  current round state. The "color" is
+			  white. <b>Example:</b>
+			  <tt>round-white(control-value(lc-vert-stem))</tt>
+			</td>
+		      </tr>
+		      <tr><td>index</td><td>Returns an index of (pointer to) a
+		                control value or variable. <b>Example:</b>
+		                <tt>index(lc-vert-stem)</tt></td></tr>
+                      <tr>
+			<td>control-value</td>
+			<td>
+			  The control value at the index represented
+			  by the argument.  <b>Example:</b>
+			  <tt>control-value(lc-vert-stem)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>coord</td>
+			<td>
+			  The current coordinate (x or y depending on
+			  the projection vector) of a point. <b>Example:</b>
+			  <tt>coord(stem-left)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>initial-coord</td>
+			<td>
+			  Like <tt>coord</tt>, but returns the
+			  original coordinate of a point: that is, its
+			  coordinate at the beginning of the glyph
+			  program. <b>Example:</b>
+			  <tt>initial-coord(bottom-point + 1)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>x-coord</td>
+			<td>
+			  Like <tt>coord</tt>, but always returns the
+			  current coordinate of a point on the x
+			  axis. The setting of the projection vector
+			  is the same after the operation as
+			  before. <tt>coord</tt> is more efficient
+			  than this and the following three operators
+			  when the coordinate of a point on the
+			  current projection vector is needed.
+			</td>
+		      </tr>
+		      <tr>
+			<td>y-coord</td>
+			<td>
+			  Like <tt>coord</tt>, but always returns the
+			  current coordinate of a point on the y
+			  axis. The setting of the projection vector
+			  is the same after the operation as before.
+			</td>
+		      </tr>
+		      <tr>
+			<td>initial-x-coord</td>
+			<td>
+			  Like <tt>initial-coord</tt>, but always
+			  returns the original coordinate of a point
+			  on the x axis. The setting of the projection
+			  vector is the same after the operation as
+			  before.
+			</td>
+		      </tr>
+		      <tr>
+			<td>initial-y-coord</td>
+			<td>
+			  Like <tt>initial-coord</tt>, but always
+			  returns the original coordinate of a point
+			  on the y axis. The setting of the projection
+			  vector is the same after the operation as
+			  before.
+			</td>
+		      </tr>
+		      <tr>
+			<td>variable</td>
+			<td>
+			  Treats the argument as an index of (pointer
+			  to) a variable and returns its
+			  value. <b>Example:</b> <tt>variable(v)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>nan</td>
+			<td>
+			  Returns true (1) if the argument cannot be
+			  resolved to a number at compile-time
+			  (e.g. it is the name of a variable, or the
+			  name of a &lt;range&gt;). If the argument is
+			  a number, returns false (0).
+			  <b>Example:</b> <tt>nan(v)</tt>
+			</td>
+		      </tr>
+		      <tr>
+			<td>point</td>
+			<td>
+			  Causes the compiler to regard the argument
+			  as a point number. In a &lt;glyph&gt;
+			  program with an <tt>offset</tt> parameter,
+			  the <tt>offset</tt> is automatically added
+			  to the argument. Use this operator in
+			  contexts where the compiler does not
+			  automatically recognize a number as a point
+			  number. Do not use it in the <tt>num</tt>
+			  attribute of a &lt;point&gt; element, as
+			  this will cause the <tt>offset</tt> to be
+			  added twice. <b>Example:</b> <tt>point(a) --
+			  point(b)</tt>
+			</td>
+		      </tr>
+            </tbody>
+          </table>
+          <p>
+                    Here is an example of precedence:
+          </p>
+<pre>
+     &lt;if test="pixels-per-em &amp;lt; 10 or pixels-per-em &amp;gt; 20 and
+          round-state = to-grid"&gt;
+</pre>
+          <p>
+                    Xgridfit breaks the expression at the "or" (which has the
+                    same precedence as the "and" but occurs farther to the
+                    left); it evaluates first <tt>"pixels-per-em &amp;lt;
+                              10"</tt>, second <tt>"pixels-per-em &amp;gt; 20 and
+                                        round-state = to-grid"</tt>, and finally
+                    executes OR on the two values. If that is not what you want,
+                    you may use parentheses to alter the order in which
+                    constituents are evaluated:
+          </p>
+<pre>
+    &lt;if test="(pixels-per-em &amp;lt; 10 or pixels-per-em &amp;gt; 20) and
+          round-state = to-grid"&gt;
+</pre>
+          <p>
+                    Now Xgridfit breaks the expression at the "and" and
+                    evaluates everything to the left of it (inside the
+                    parentheses), then everything to the right of it, and
+                    finally executes AND.
+          </p>
+          <p>
+                    Fifth-precedence operators are all unary: they operate
+                    on a single value. If this is a simple value it may be
+                    separated from the operator by a space; if it is an
+                    expression it must be enclosed in parentheses.
+          </p>
+          <p>
+                    Binary operators (those that operate on two values) must
+                    always be surrounded by whitespace. This will not work:
+          </p>
+<pre>
+     &lt;point num="top+2"/&gt;
+</pre>
+          <p>
+                    It must be like this:
+          </p>
+<pre>
+     &lt;point num="top + 2"/&gt;
+</pre>
+          <p>
+                    However, the whitespace may be any number of spaces, tabs, a
+                    line break, and so on, for the spacing of an expression is
+                    always normalized before it is evaluated.
+          </p>
+          <p>
+                    Note that when all of the values in an expression
+                    are number literals, constants or other
+                    identifiers that can be resolved to numbers at
+                    compile time, and the only operators are first- or
+                    second-precedence operators and the arithmetic
+                    operators "+" and "-", Xgridfit resolves the whole
+                    expression to a single number at compile
+                    time. This optimizes the most common cases, where
+                    a point number is expressed by addition to or
+                    subtraction from a constant.
+          </p>
+          <h2 id="formulas">Formulas</h2>
+          <p>
+                    A &lt;formula&gt; is a list of arithmetical operations whose
+                    result can be assigned to a variable, a control value, or
+                    any of those graphics variables that can be written to. The
+                    format is like this:
+          </p>
+<pre>
+     &lt;formula result-to="minimum-distance"&gt;
+       &lt;divide dividend="minimum-distance" divisor="2.0"/&gt;
+       &lt;add value1="0.5"/&gt;
+     &lt;/formula&gt;
+</pre>
+          <p>
+                    The &lt;formula&gt; may contain any of the arithmetic
+                    elements: &lt;add&gt;, &lt;subtract&gt;, &lt;divide&gt;,
+                    &lt;multiply&gt;, &lt;absolute&gt;, &lt;negate&gt;,
+                    &lt;floor&gt;, &lt;ceiling&gt;, &lt;minimum&gt;,
+                    &lt;maximum&gt;, &lt;round&gt;. These can also occur outside
+                    the &lt;formula&gt;, but they behave differently there. When
+                    one of these elements outside the formula lacks a
+                    <tt>result-to</tt> attribute, Xgridfit tries to write the
+                    result back to one of the operands; failing that, it leaves
+                    the result on the run-time stack and prints a warning. But
+                    within the &lt;formula&gt; no attempt is made to write the
+                    result to one of the operands, and no warning is printed
+                    when the result is left on the stack; instead, it is assumed
+                    that the next arithmetic element will take one or both of
+                    its operands from the stack.
+          </p>
+          <p>
+                    In the example above, the current minimum distance
+                    is divided by two, and the result of that operation
+                    is passed to the &lt;add&gt; element, where 0.5 is added to
+                    this new value; then the sum is passed back to the
+                    &lt;formula&gt; element, which writes it to the
+                    <tt>minimum-distance</tt> graphics variable, thus setting a
+                    new minimum distance.
+          </p>
+          <p>
+                    The &lt;formula&gt; element was added to Xgridfit before the
+                    expression feature, and it looks rather clunky in
+                    comparison. The same operation could be performed more
+                    tersely thus:
+          </p>
+<pre>
+     &lt;set-minimum-distance value="(minimum-distance / 2.0) + 0.5"/&gt;
+</pre>
+          <p>
+                    and the code generated by Xgridfit would be the same.
+          </p>
+</div>
+</body>
+</html>
