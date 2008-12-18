@@ -1,0 +1,178 @@
+/* The big containers */
+
+html           {margin: 0; padding: 0;}
+
+body           {margin: 0; padding: 0; height: 100%;
+                font-family: "linux libertine", "liberation serif", "dejavu serif", Junicode, serif;
+                font-size: medium;
+                line-height: 125%;
+                background: gray url(parch-dark.jpg) fixed;}
+
+
+/* Basic HTML elements */
+
+h1             {line-height: 125%;
+                font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: bold;}
+
+h1 span.chnum  {font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-weight: normal;}
+
+h3             {font-weight: normal;
+                font-weight: bold;}
+
+h4             {font-weight: normal;
+                font-style: italic;}
+
+hr             {background-color: red; color: red;}
+
+p              {line-height: 125%;}
+
+pre            {font-size: small;
+                line-height: 110%;}
+
+blockquote p   {margin-top: 0; margin-bottom: 0;}
+
+li             {line-height: 125%;}
+
+dt             {font-weight: bold;}
+
+table          {font-family: "linux libertine", "liberation serif", "dejavu serif", Junicode, serif;}
+
+th             {background-image: url(parch-dark.jpg);
+                color: white;
+                font-weight: normal;
+                line-height: 125%;
+                padding: 0 10px;
+                border: solid thin #B8860B;}
+
+td             {background-color: transparent;
+                border: solid thin #B8860B;
+                font-size: medium;}
+
+A:link         {text-decoration: none;
+                color: #A52A2A;}
+
+A:visited      {text-decoration: none;
+                color: #8B4513;}
+
+img            {border-style: none;}
+
+
+
+/* Anything we want to say only to old browsers */
+
+.hideme        {display: none;}
+
+
+
+/* Our versions of the elements */
+
+p.first        {text-indent: 0;}
+
+p.continued    {text-indent: 0;}
+
+ul.detnote     {font-size: smaller;
+                line-height: 125%;}
+
+table.std      {margin-top: 10px;
+                margin-bottom: 10px;
+                padding: 1px;
+                background-color: transparent;
+                border: solid thin #B8860B;}
+
+td.blankhdr    {background-image: url(parch-dark.jpg);
+                line-height: 125%;
+                border: solid thin #B8860B;}
+
+td.blank       {background-image: url(parch.jpg);}
+
+td.plain       {vertical-align: top;
+                background-color: transparent;
+                border-style: none;
+                line-height: 125%;}
+
+td.hw          {vertical-align: top;
+                background-color: transparent;
+                border-style: none;
+                line-height: 125%;
+                font-weight: bold;}
+
+/* For poetic extracts that start in mid-line */
+div.bigindent  {text-indent: 7em;}
+
+div.bigindbqtr {text-indent: 7em;}
+
+/* Bad name: actually the side menu */
+div#jumplist   {position: absolute;
+                left: 5px; top: 3em;
+                width: 220px;
+                height: auto;
+                font-size: 10px;
+                color: white;
+                line-height: 115%;
+                overflow: auto;}
+
+div#jumplist a {font-family: Verdana, Arial, Helvetica, sans-serif;}
+
+/* Hide this rule from Internet Explorer 6 */
+body>div#jumplist {position: fixed;
+                   height: 93%;}
+
+div#jumplist a {display: block;
+                color: white;
+                text-decoration: none;
+                text-indent: -2em;
+                padding-left: 2em;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding-right: 5px;}
+
+div#jumplist a em {font-family: Verdana, Arial, Helvetica, sans-serif;
+                   font-style: normal;
+                   text-decoration: underline;}
+
+div#jumplist a:visited {color: white;
+                        text-decoration: none}
+
+div#jumplist a:hover {color: black;
+                      text-decoration: none;
+                      background: transparent url(parch-light.jpg) repeat-x;}
+
+div#jumplist a i {font-family: Verdana, Arial, Helvetica, sans-serif;}
+
+div#jumplist h1 {font-size: x-small;}
+
+div.levone     {margin-left: 1em;
+                display: block;}
+
+div#content    {position: absolute;
+                top: 10px;
+                left: 225px;
+                right: 10px;
+                height: auto;
+                background: white url(parch-light.jpg) fixed;
+                border: solid thin black;
+                padding: 20px;}
+
+span.note      {display: none;
+                border: solid 1px #B8860B;
+                padding-left: 1em;
+                padding-right: 1em;
+                font-size: small;
+                text-indent: 0;}
+
+span.chnum     {font-weight: normal;}
+
+div.alertbox   {position: relative; left: 0; top: 0;
+                border: solid medium red;
+                padding: 0 1em;
+                margin: 1em 0;
+                height: auto;
+                width: auto;
+                background-image: url(parch.jpg);}
+
+div.bqhdr      {font-weight: bold;
+                margin-bottom: 1em;}
+
+div#copyright  {border-top: solid thin black}
