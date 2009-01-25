@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xgf-defaults>
+  <compiler-engine name="xsltproc">
+    <description>
+      Command-line tool for Daniel Veillard's libxslt (default).
+    </description>
+    <template>
+      xsltproc --xinclude @params@ @outfile-t@ @xslt@ @xgf@
+    </template>
+    <param-template>
+      --stringparam @pname@ @arg@
+    </param-template>
+    <outfile-template>
+      --output @outfile@
+    </outfile-template>
+    <executable>
+      xsltproc
+    </executable>
+  </compiler-engine>
+  <compiler-engine name="saxon-6">
+    <description>
+      Michael Kay's Saxon processor for XSLT 1.0, written in Java.
+    </description>
+    <jar>
+      saxon.jar
+    </jar>
+    <template>
+      java -classpath @jar@ com.icl.saxon.StyleSheet -l @outfile-t@ @xgf@ @xslt@ @params@
+    </template>
+    <param-template>
+      @pname@=@arg@
+    </param-template>
+    <outfile-template>
+      -o @outfile@
+    </outfile-template>
+  </compiler-engine>
+  <compiler-engine name="saxon-9">
+    <description>
+      Michael Kay's Saxon processor for XSLT 2.0, written in Java.
+    </description>
+    <jar>
+      saxon9.jar
+    </jar>
+    <template>
+      java -classpath @jar@ net.sf.saxon.Transform -versionmsg:off -l:on @outfile-t@ -s:@xgf@ -xsl:@xslt@ @params@
+    </template>
+    <param-template>
+      @pname@=@arg@
+    </param-template>
+    <outfile-template>
+      -o:@outfile@
+    </outfile-template>
+  </compiler-engine>
+  <compiler-engine name="4xslt">
+    <description>
+      The XSLT processor for 4Suite, written in Python.
+    </description>
+    <template>
+      4xslt @params@ @outfile-t@ @xgf@ @xslt@
+    </template>
+    <param-template>
+      --define=@pname@=@arg@
+    </param-template>
+    <outfile-template>
+      --outfile=@outfile@
+    </outfile-template>
+    <executable>
+      4xslt
+    </executable>
+  </compiler-engine>
+  <compiler-engine name="xalan-j">
+    <description>
+      An XSLT processor from the Apache XML Project, written in Java.
+    </description>
+    <jar>
+      xalan2.jar
+    </jar>
+    <template>
+      java -classpath @jar@ org.apache.xalan.xslt.Process -l @outfile-t@ -in @xgf@ -xsl @xslt@ @params@
+    </template>
+    <param-template>
+      -param @pname@ @arg@
+    </param-template>
+    <outfile-template>
+      -out @outfile@
+    </outfile-template>
+  </compiler-engine>
+  <compiler-engine name="xalan-c">
+    <description>
+      An XSLT processor from the Apache XML Project, written in C++.
+    </description>
+    <template>
+      xalan @outfile-t@ -in @xgf@ -xsl @xslt@ @params@
+    </template>
+    <param-template>
+      -param @pname@ '@arg@'
+    </param-template>
+    <outfile-template>
+      -out @outfile@
+    </outfile-template>
+    <executable>
+      xalan
+    </executable>
+  </compiler-engine>
+  <validator name="xmllint">
+    <description>
+      The command-line validator for Daniel Veillard's libxml2.
+    </description>
+    <template>
+      xmllint --xinclude --noout --relaxng @schema@ @xgf@
+    </template>
+    <schema-type>
+      rng
+    </schema-type>
+    <executable>
+      xmllint
+    </executable>
+  </validator>
+  <validator name="jing">
+    <description>
+      James Clark's RELAX NG validator, written in Java.
+    </description>
+    <template>
+      java -jar @jar@ @schema@ @xgf@
+    </template>
+    <schema-type>
+      rng
+    </schema-type>
+    <jar>
+      jing.jar
+    </jar>
+  </validator>
+  <validator name="msv">
+    <description>
+      The Multi-Schema validator from Sun, written in Java.
+    </description>
+    <template>
+      java -jar @jar@ @schema@ @xgf@
+    </template>
+    <schema-type>
+      rng
+    </schema-type>
+    <jar>
+      msv.jar
+    </jar>
+  </validator>
+  <validator name="rnv">
+    <description>
+      David Tolpin's RELAX NG validator, written in ANSI C.
+    </description>
+    <template>
+      rnv @schema@ @xgf@
+    </template>
+    <schema-type>
+      rnc
+    </schema-type>
+    <executable>
+      rnv
+    </executable>
+  </validator>
+  <validator name="xmlstarlet">
+    <description>
+      Swiss Army Knife for XML: validator is a frontend for libxml2.
+    </description>
+    <template>
+      xmlstarlet val --err --relaxng @schema@ @xgf@
+    </template>
+    <schema-type>
+      rng
+    </schema-type>
+    <executable>
+      xmlstarlet
+    </executable>
+  </validator>
+</xgf-defaults>
