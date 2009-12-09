@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <!--
+      To make the Xgridfit schemas known to the system XML catalog,
+      move these entries into the catalog (e.g. on a Debian system,
+      /etc/xml/catalog).
+  -->
+  <delegateSystem systemIdStartString="http://xgridfit.sourceforge.net/Xgridfit2"
+		  catalog="file://@xgridfit_dir@/schemas/catalog.xml"/>
+  <delegateSystem systemIdStartString="http://xgridfit.sourceforge.net"
+		  catalog="file://@xgridfit_dir@/schemas/catalog.xml"/>
+</catalog>
