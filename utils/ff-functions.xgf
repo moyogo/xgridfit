@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xgridfit xmlns="http://xgridfit.sourceforge.net/Xgridfit2">
+
+  <!--
+      The explanations of the FontForge functions are copied (with
+      minimal editing for clarity in the present context) from the
+      FontForge source file nowakowskittfinstr.c. That file contains
+      the following notice:
+
+      Copyright (C) 2000-2009 by
+         George Williams, Michal Nowakowski & Alexey Kryukov
+
+      Redistribution and use in source and binary forms, with or
+      without modification, are permitted provided that the following
+      conditions are met:
+
+      Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+      Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+      The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+
+      THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
+      EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+      THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+      PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR
+      BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+      EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+      TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+      DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+      ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+      LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+      IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+      THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
+  <macro name="ff-position-point-in-blue-zone">
+    <!--
+	Position a point within a blue zone (given via cvt).  Note: in
+	case of successful init of 'cvt' and 'prep' this function
+	could be much simpler.
+    -->
+    <param name="pt"/>
+    <param name="cv-of-blue"/>
+    <push>pt cv-of-blue 0</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-relative">
+    <!--
+	Place given point relatively to previous, maintaining the
+	minimum distance. Then call FPGM 12 to check if the point's
+	gridfitted position is too far from its original position, and
+	correct it, if necessary.
+    -->
+    <param name="pt"/>
+    <push>pt 1</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-adjust-cv-at-low-res">
+    <!--
+	Below given ppem, substitute the width with cvt entry.  Leave
+	the resulting width on the stack. Used as the first step in
+	normalizing cvt stems, see normalize_stem().
+    -->
+    <param name="width"/>
+    <param name="cv"/>
+    <param name="ppem"/>
+    <push>width cv ppem 2</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-round-no-less-than-one-pixel">
+    <!--
+	Round a stack element as a black distance, respecting minimum
+	distance of 1px. This is used for rounding stems after width
+	normalization. Often preceeded with SROUND, so finally sets
+	RTG.  Leaves the rounded width on the stack.
+    -->
+    <param name="val"/>
+    <push>val 3</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-stem-second-edge">
+    <!--
+	Position the second edge of a stem that is not normally
+	regularized via cvt (but we snap it to cvt width below given
+	ppem).  Vertical stems need special round state when not
+	snapped to cvt (basically, they are shortened by 0.25px before
+	being rounded).
+    -->
+    <param name="pt"/>
+    <param name="cv"/>
+    <param name="chg-rp0"/>
+    <param name="ppem"/>
+    <push>pt cv chg-rp0 ppem 4</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-is-vertical">
+    <!--
+	Determine if we are hinting vertically. The function is crude
+	and it's use is limited to conditions set by SVTCA[].  Syntax:
+	PUSHB_1 5 CALL; leaves boolean on the stack.
+    -->
+    <push>5</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-is-grayscale">
+    <!--
+	Check if we are hinting in grayscale.  CAUTION! Older FreeType
+	versions lie if asked.
+    -->
+    <push>6</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-is-cleartype">
+    <!--
+	Check if we are hinting in cleartype.  CAUTION! FreeType
+	doesn't support that, as subpixel filtering is usually done by
+	higher level library.
+    -->
+    <push>7</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-interpolate-and-snap">
+    <!--
+	Interpolate a point between two other points and snap it to
+	the grid.
+    -->
+    <param name="pt"/>
+    <param name="ref-pt-a"/>
+    <param name="ref-pt-b"/>
+    <push>pt ref-pt-a ref-pt-b 8</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-link-serif-point">
+    <!--
+	Link a serif-like element edge to the opposite edge of the
+	base stem when rounding down to grid, but ensure that its
+	distance from the reference point is larger than the base stem
+	width at least to a specified amount of pixels.
+    -->
+    <param name="min-dist"/>
+    <param name="inner-pt"/>
+    <param name="outer-pt"/>
+    <push>min-dist inner-pt outer-pt 9</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-link-serif-point-conditional">
+    <!--
+	Depending from the hinting mode (grayscale or mono) set rp0
+	either to pt1 or to pt2. This is used to link serif-like
+	elements either to the opposite side of the base stem or to
+	the same side (i. e.  left-to-left and right-to-right).
+    -->
+    <param name="pt2"/>
+    <param name="pt1"/>
+    <push>pt2 pt1 10</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-relative-no-min">
+    <!--
+	Similar to FPGM 1 (ff-position-point-relative), but places a
+	point without maintaining the minimum distance.
+    -->
+    <param name="pt"/>
+    <push>pt 11</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-shift-from-too-far">
+    <!--
+	Check if the gridfitted position of the point is too far from
+	its original position, and shift it, if necessary. The
+	function is used to place vertical stems, it assures almost
+	linear advance width to PPEM scaling. Shift amount is capped
+	to at most 1 px to prevent some weird artifacts at very small
+	ppems. In cleartype mode, no shift is made at all.
+    -->
+    <param name="pt"/>
+    <push>pt 12</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-interpolate-hstem-and-snap">
+    <!--
+	Interpolate a HStem edge's reference point between two other
+	points and snap it to the grid. Then compare its new position
+	with the ungridfitted position of the second edge. If the
+	gridfitted point belongs to the bottom edge and now it is
+	positioned above the top edge's original coordinate, then
+	shift it one pixel down; similarly, if the interpolation
+	resulted in positioning the top edge below the original
+	coordinate of the bottom edge, shift it one pixel up.
+    -->
+    <param name="other-edge-ref-pt"/>
+    <param name="pt"/>
+    <param name="ref-pt-a"/>
+    <param name="ref-pt-b"/>
+    <push> other-edge-ref-pt pt ref-pt-a ref-pt-b 13</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-link-points-no-min">
+    <!--
+	Link two points using MDRP without maintaining the minimum
+	distance. In antialiased mode use rounding to double grid for
+	this operation, otherwise ensure there is no distance between
+	those two points below the given PPEM (i. e.  points are
+	aligned). The function is used for linking nested stems to
+	each other, and guarantees their relative positioning is
+	preserved in the gridfitted outline.
+    -->
+    <param name="ppem"/>
+    <param name="ref-pt"/>
+    <param name="base-pt"/>
+    <push>ppem ref-pt base-pt 14</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-relative-preserve-counter">
+    <!--
+	Similar to FPGM 1 (ff-position-point-relative), but used to
+	position a stem relatively to the previous stem preserving the
+	counter width equal to the distance between another pair of
+	previously positioned stems. Thus it serves nearly the same
+	purpose as PS counter hints.
+    -->
+    <param name="master-counter-start-pt"/>
+    <param name="master-counter-end-pt"/>
+    <param name="current-counter-start-pt"/>
+    <param name="current-counter-end-pt"/>
+    <param name="ppem"/>
+    <push>
+      master-counter-start-pt
+      master-counter-end-pt
+      current-counter-start-pt
+      current-counter-end-pt
+      ppem
+      15
+    </push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-relative-alt">
+    <!--
+	Same as FPGM 1 (ff-position-point-relative), but calls FPGM 18
+	rather than FPGM 12 and thus takes 3 arguments.
+    -->
+    <param name="ref-pt"/>
+    <param name="pt"/>
+    <push>ref-pt pt 16</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-relative-no-min-alt">
+    <!--
+	Same as FPGM 11 (ff-position-point-relative-no-min), but calls
+	FPGM 18 rather than FPGM 12 and thus takes 3 arguments.
+    -->
+    <param name="ref-pt"/>
+    <param name="pt"/>
+    <push>ref-pt pt 17</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-shift-from-too-far-alt">
+    <!--
+	This is a special version of FPGM 12 (ff-shift-from-too-far),
+	used when the counter control is enabled but doesn't directly
+	affect the stem which is going to be positioned. Unlike FPGM
+	12, it doesn't just attempt to position a point closely enough
+	to its original coordinate, but also checks if the previous
+	stem has already been shifted relatively to its "ideal"
+	position FPGM 12 would determine. If so, then the desired
+	point position is corrected relatively to the current
+	placement of the previous stem.
+    -->
+    <param name="ref-pt"/>
+    <param name="pt"/>
+    <push>ref-pt pt 18</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-position-point-on-diagonal">
+    <!--
+	Used to align a point relatively to a diagonal line, specified
+	by two other points. First we check if the point going to be
+	positioned doesn't deviate too far from the line in the
+	original outline. If the deviation is small enough to neglect
+	it, we use ALIGNRP to position the point, otherwise MDRP is
+	used instead. We can't just always use MDRP, because this
+	command may produce wrong results at small PPEMs, if the
+	original and gridfitted coordinates of the line end points
+	specify slightly different unit vectors.
+    -->
+    <param name="pt"/>
+    <param name="diag-start-pt"/>
+    <param name="diag-end-pt"/>
+    <push>pt diag-start-pt diag-end-pt 19</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-compute-projection-vector-adjustments">
+    <!--
+	Compute adjustments for X and Y components of projection
+	vector, for aspect ratios different than 1:1, and store them
+	in storage[0] and storage[1] respectively.
+    -->
+    <push>20</push>
+    <command name="CALL"/>
+  </macro>
+
+  <macro name="ff-adjust-aspect-ratio-before-setting-vector">
+    <!--
+	Compute adjustments for X and Y components of projection
+	vector, for aspect ratios different than 1:1, and store them
+	in storage[0] and storage[1] respectively.
+    -->
+    <param name="x"/>
+    <param name="y"/>
+    <push>x y 21</push>
+    <command name="CALL"/>
+  </macro>
+
+</xgridfit>
