@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+</div>
+
+<div id="content">
+  <h1>Converting Existing Instructions</h1>
+  <p>
+    <i>The method described here is deprecated, though it does still
+    work. For a simpler method, click <a href="merge-mode.html">this
+    link</a>.</i>
+  </p>
+  <p>
+    It is possible to use Xgridfit to add instructions to fonts
+    containing instructions added "by hand" or by other
+    programs. Using a simple utility included with Xgridfit, you can
+    extract from a font all existing control values, functions,
+    pre-program, glyph programs, and such maxp entries as relate to
+    instructions, and make these the basis of a new Xgridfit file. In
+    this new file, existing functions are sequestered in a
+    &lt;legacy-functions&gt; element, and any functions, control
+    values and variables that you add to the file are automatically
+    indexed so as not to conflict with existing ones.
+  </p>
+  <p>
+    To create the new Xgridfit file, you must first install TTX, a
+    utility in the FontTools package: this program converts a TrueType
+    font to XML. Get the latest version <a
+    href="http://sourceforge.net/projects/fonttools/">here</a>
+    and follow the installation instructions (it requires the Python
+    programming language). You also need version 1.0 or later of
+    Xgridfit. Make a directory and copy into it the font you are
+    working with (this must be the TrueType font file, not a FontForge
+    SFD file). Run TTX on the font file:
+  </p>
+  <pre>
+    $ ttx DejaVuSerif.ttf</pre>
+  <p>
+    This creates a TTX file named <tt>DejaVuSerif.ttx</tt>.  Now run
+    <tt>ttx2xgf</tt>, thus:
+  </p>
+  <pre>
+    $ ttx2xgf DejaVuSerif.ttx
+      or
+    $ ttx2xgf DejaVuSerif</pre>
+  <p>
+    The output of either command is an Xgridfit file named
+    <tt>DejaVuSerif.xgf</tt> (if you want a differently named file,
+    just supply the name as a second argument).  Before you use the
+    new file, you should check the &lt;legacy-functions&gt; element
+    for correctness, as explained in the next few paragraphs. This
+    check ensures that Xgridfit will correctly number its predefined
+    functions and functions you define.  (Note, however, that if the
+    font you are working with was hinted by the FontForge
+    auto-instructor, this check is unnecessary. You can be sure that
+    your new Xgridfit program is correct.)
+  </p>
+  <p>
+    Open the new Xgridfit file with a text editor and locate the
+    &lt;legacy-functions&gt; element. Take note of the attribute
+    <tt>max-function-defs</tt>. This number, taken from the font's
+    maxp table, must be one greater than the highest function number
+    (for in TrueType fonts functions are numbered, not named).
+  </p>
+  <p>
+    Very likely the function numbers are assigned in one of two
+    ways. Some fonts push all the function numbers onto the stack
+    before defining any functions. In that case, the first lines of
+    the &lt;legacy-functions&gt; element will look something like this:
+  </p>
+  <pre>
+    &lt;push&gt;6 5 4 3 2 1 0&lt;/push&gt;
+    &lt;command name="FDEF"/&gt;</pre>
+  <p>
+    Alternatively, the function number may be pushed just before each
+    function is defined, thus:
+  </p>
+  <pre>
+    &lt;push&gt;0&lt;/push&gt;
+    &lt;command name="FDEF"/&gt;</pre>
+  <p>
+    In the former case the correct value for
+    <tt>max-function-defs</tt> is one greater than the highest number
+    in the list (here 6, so max-function-defs should be 7). In the
+    latter case you must scan the PUSH instructions that precede each
+    FDEF instruction to find the highest number. Please note, in case
+    this seems esoteric, that the <tt>max-function-defs</tt> attribute
+    will already be correct if the font you are converting was
+    correctly made.
+  </p>
+  <p>
+    Notice that the new Xgridfit file can be run against a FontForge
+    (SFD) file even though it was extracted from a font file. You may
+    either open FontForge and run the script you have generated from
+    within the GUI, or add &lt;infile&gt; and &lt;outfile&gt; elements
+    so that you can run the script from the command line, for example:
+  </p>
+  <pre>
+      &lt;infile&gt;DejaVuSerif.sfd&lt;/infile&gt;
+      &lt;outfile&gt;DejaVuSerif.ttf&lt;/outfile&gt;</pre>
+  <p>
+    Now you are ready to test the new file. It should produce a font
+    that is functionally identical to the one you started with. You
+    may delete the TTX file if you have no further use for it.
+  </p>
+  <h2>Notes and Cautions</h2>
+  <p>
+    <tt>ttx2xgf</tt> breaks up very long PUSH instructions. This can
+    prevent problems later on, when running a generated script in
+    FontForge. However, it may cause problems in a very narrow set of
+    circumstances. Specifically, it can change the offset needed by a
+    nearby JMPR, JROF or JROT instruction. This is unlikely; but if
+    the font you are converting uses JMPR, JROF or JROT, you should
+    make sure that one of these instructions is not trying to jump
+    over a long PUSH instruction that has been broken up.
+  </p>
+  <p>
+    At the end of the list of &lt;control-value&gt; elements,
+    <tt>ttx2xgf</tt> inserts a comment warning that
+    &lt;control-value&gt; elements should not be added to or deleted
+    from the preceding list, and their order should not be
+    changed. Any change of this kind will change the indexing of
+    control values, with serious consequences. New control values may
+    be added to the list only after the comment.
+  </p>
+  <p>
+    The <tt>name</tt> attributes of existing &lt;control-value&gt;
+    elements can and often should be edited, so that legacy control
+    values can more easily be reused. For example, in DejaVu Regular,
+    it takes only a little research to discover that a standard
+    vertical stem for a lower-case letter is regulated with control
+    value 39, for which the generated <tt>name</tt> is
+    <tt>cv-39</tt>. It makes sense to change this <tt>name</tt> to
+    "lc-vertical-stem" or the like, and use it in writing instructions
+    for other lower-case letters with vertical stems.  However, it
+    would be unwise to change the <tt>value</tt> of this
+    &lt;control-value&gt;, and catastrophic to move the element from
+    its original location in the list.
+  </p>
+  <p>
+    Xgridfit has an older method for handling legacy
+    functions--namely, adding a <tt>num</tt> attribute to some
+    functions to force the use of a particular number identifier. This
+    method is <strong>not</strong> compatible with the use of
+    &lt;legacy-functions&gt;, and you should not attempt to use both
+    in the same file.
+  </p>
+  <p>
+    <tt>ttx2xgf</tt> also generates several useful constants:
+  </p>
+  <pre>
+      &lt;constant name="left-sidebearing" value="last + 1"/&gt;
+      &lt;constant name="right-sidebearing" value="last + 2"/&gt;
+      &lt;constant name="vertical" value="0"/&gt;
+      &lt;constant name="horizontal" value="1"/&gt;
+      &lt;constant name="true" value="1"/&gt;
+      &lt;constant name="false" value="0"/&gt;</pre>
+  <p>
+    If you include a constant "last" with the number of the last
+    outline point at the beginning of each glyph program, then
+    <tt>left-sidebearing</tt> and <tt>right-sidebearing</tt> will
+    always point correctly to the left and right sidebearing points,
+    and can be accessed from any glyph program. The values
+    <tt>vertical</tt> and <tt>horizontal</tt> are used by the TrueType
+    vector setting instructions and may be useful in various
+    contexts. The <tt>true</tt> and <tt>false</tt> values can be used
+    to set variables to boolean values or evaluate boolean
+    expressions, and they are boolean expressions themselves.
+  </p>
+  <h2>Non-Linux systems</h2>
+  <p>
+    The <tt>ttx2xgf</tt> utility is a Bash script for Linux, which
+    invokes two programs: one an XSLT script and the other a Sed
+    script. It should also work perfectly well under Mac OS X. If you
+    are using a system other than Linux or OS X, you may reproduce the
+    functionality of <tt>ttx2xgf</tt> by running these scripts
+    yourself. First use your favorite XSLT processor to run the script
+    <tt>convert-ttx.xsl</tt> against the TTX file you generated with
+    the cross-platform TTX utility. Next use Sed (also available for
+    various systems) to run the script convert-asm.sed against the
+    file generated in the first step. The result of these two simple
+    steps should be a valid Xgridfit file.
+  </p>
+</div>
+</body>
+</html>
