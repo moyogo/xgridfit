@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+</div>
+
+<div id="content">
+  <h1>Managing large projects</h1>
+  <h2>XInclude</h2>
+  <p>
+    Instructions for large fonts and font families may be split into
+    parts so as to speed compilation for testing purposes, distribute
+    work among members of a team, or create libraries of shared
+    functions. Xgridfit's mechanism for splitting projects is <a
+    href="http://www.w3.org/TR/xinclude/">XInclude</a>, the W3C "XML
+    Inclusions" specification. XInclude is extremely flexible and
+    simple to use: it allows you to structure a complex project in a
+    number of ways.
+  </p>
+  <p>
+    To use XInclude in an Xgridfit file requires just two
+    steps. First, include the XInclude namespace declaration in the
+    &lt;xgridfit&gt; element:
+  </p>
+  <pre>
+    &lt;xgridfit xmlns="http://xgridfit.sourceforge.net/Xgridfit2"
+              xmlns:xi="http://www.w3.org/2001/XInclude"&gt;</pre>
+  <p>
+    Next, to merge part of another file into the file you're
+    editing, add an &lt;xi:include&gt; element:
+  </p>
+  <pre>
+    &lt;xi:include href="Junicode-Regular-Basic.xgf"
+                xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                xpointer(/x:xgridfit/x:glyph)"/&gt;</pre>
+  <p>
+    Here the <tt>href</tt> attribute (a URI) points to a file. The
+    <tt>xpointer</tt> attribute points to the element or elements that
+    we want to import into the current file; it is an <a
+    href="http://www.w3.org/TR/WD-xptr">XPointer</a> (usually a simple
+    <a href="http://www.w3.org/TR/xpath">XPath</a> expression). In the
+    present example, the XPointer expression pulls in all the
+    &lt;glyph&gt; elements from the file
+    <tt>Junicode-Regular-Basic.xgf</tt>.
+  </p>
+  <p>
+    It is necessary to specify the Xgridfit namespace for each
+    &lt;xi:include&gt; element, and this makes the &lt;xi:include&gt;
+    tag rather verbose; but much of this is boilerplate which can be
+    copied from tag to tag. Indeed, the only variable part of the
+    <tt>xpointer</tt> attribute is inside the final set of
+    parentheses.
+  </p>
+  <p>
+    Several Xgridfit elements can take an <tt>xml:id</tt>
+    attribute, and can be included by referencing that id:
+    &lt;xgridfit&gt;, &lt;pre-program&gt;, &lt;function&gt;,
+    &lt;macro&gt;, &lt;glyph&gt;. To fetch this &lt;function&gt;
+    element
+  </p>
+  <pre>
+    &lt;function name="myfunc" xml:id="jun-reg-myfunc"&gt;
+       . . .
+    &lt;/function&gt;</pre>
+  <p>
+    use one of these &lt;xi:include&gt; elements:
+  </p>
+  <pre>
+    &lt;xi:include href="Junicode-Regular-common.xgf" xpointer="jun-reg-myfunc"/&gt;
+
+    &lt;xi:include href="Junicode-Regular-common.xgf#jun-reg-myfunc"/&gt;</pre>
+  <p>
+    Notice that you do not need to worry about namespaces when you use
+    the <tt>xml:id</tt> method.
+  </p>
+  <p>
+    Some XSLT engines can handle XInclude and others cannot. The
+    XInclude capability in xsltproc (the engine invoked by the
+    xgridfit shell script) is turned on by simply
+    including the parameter <tt>--xinclude</tt> on the command line
+    (this is done for you in the shell script). For some other
+    engines, turning on XInclude capability is an arcane and difficult
+    matter: you must check the documentation for your preferred
+    engine. The <tt>xgridfit</tt> shell script uses <tt>xmllint</tt>
+    when necessary to work around difficulties with XSLT engines and
+    XML validators.
+  </p>
+  <h2>Example of a large project</h2>
+  <p>
+    XInclude is flexible enough to permit you to structure your
+    project in many different ways (you must just remember to avoid
+    recursive includes). Here is a simple example involving the <a
+    href="http://junicode.sf.net">Junicode</a> font (complete source
+    code available at the download site).
+  </p>
+  <p>
+    Instructions for Junicode-Regular are compiled by running xgridfit
+    against a master file, <tt>Junicode-Regular.xgf</tt>, which contains
+    little besides &lt;xi:include&gt; elements:
+  </p>
+  <pre>
+    &lt;?xml version="1.0"?&gt;
+    &lt;xgridfit xmlns:xi="http://www.w3.org/2001/XInclude"&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:infile)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:outfile)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:constant)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(//x:control-value)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(//x:function)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(//x:macro)"/&gt;
+      &lt;xi:include href="Junicode-Regular-common.xgf" xpointer="jun-reg-prep"/&gt;
+      &lt;xi:include href="Junicode-Regular-Basic.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-Latin1.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-LatExtA.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-LatExtA-dotlessi.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-LatExtB.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-IPA.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-SpacMod.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-CombDiac.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                              xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-LatExtAdd.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-GenPunct.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-Greek.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-PUA.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+      &lt;xi:include href="Junicode-Regular-NoEncode.xgf"
+                  xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                            xpointer(/x:xgridfit/x:glyph)"/&gt;
+    &lt;/xgridfit&gt;</pre>
+  <p>
+    The file <tt>Junicode-Regular-common.xgf</tt> contains no
+    &lt;glyph&gt; elements, but only global elements: &lt;infile&gt;,
+    &lt;outfile&gt;, &lt;constant&gt;, &lt;control-value&gt;,
+    &lt;function&gt;, &lt;macro&gt;, &lt;pre-program&gt;. These are
+    included with the first seven xi:include elements (the
+    &lt;pre-program&gt; is included by <tt>xml:id</tt>, just by way of
+    illustration). The other files contain only &lt;glyph&gt; elements
+    organized by Unicode range. These are included with a specific
+    XPointer, <tt>/x:gridfit/x:glyph</tt>, rather than
+    <tt>//x:glyph</tt>, to avoid pulling in &lt;glyph&gt; elements
+    inside of &lt;no-compile&gt; elements. Each file validates against
+    the Relax NG schema xgridfit.rnc.
+  </p>
+  <p>
+    When working with any particular Unicode range, most or all of the
+    other &lt;xi:include&gt; elements can be commented out in the
+    master file, speeding compilation. If more than one developer were
+    working on this font, the file
+    <tt>Junicode-Regular-common.xgf</tt> might be controlled by the
+    lead developer so as to avoid conflicts introduced by individual
+    contributors, who when necessary would submit patches on that file
+    for approval.
+  </p>
+  <h2>Shared functions and libraries</h2>
+  <p>
+    You very likely have some favorite functions that you insert in
+    all your fonts. In addition, similar members of a font family are
+    likely to share functions. For a library of shared functions,
+    simply create an Xgridfit program file in which the only children
+    of the &lt;xgridfit&gt; element are &lt;function&gt; elements. An
+    Xgridfit program file can very easily merge the functions from
+    this library anywhere in the sequence of your own functions:
+  </p>
+  <pre>
+    &lt;function name="local-function"&gt;
+      . . .
+    &lt;/function&gt;
+
+    &lt;xi:include href="My-Library.xgf#xpointer(//function)"/&gt;
+
+    &lt;function name="another-local-function"&gt;
+      . . .
+    &lt;/function&gt;</pre>
+  <p>
+    Alternatively, you can merge a single function from the library if
+    you have supplied that function with an <tt>xml:id</tt> attribute:
+  </p>
+  <pre>
+    &lt;function name="local-function"&gt;
+      . . .
+    &lt;/function&gt;
+
+    &lt;xi:include href="My-Library.xgf#set-left-sidebearing"/&gt;
+
+    &lt;function name="another-local-function"&gt;
+      . . .
+    &lt;/function&gt;</pre>
+  <p>
+    Note that the included function must be called by its required
+    <tt>name</tt> attribute and not by the <tt>xml:id</tt> attribute,
+    which is needed only when a function is merged, before it gets
+    compiled.  The <tt>name</tt> and <tt>xml:id</tt> attributes should
+    probably be the same when both are present.
+  </p>
+  <h2>Separate compilation of source files</h2>
+  <p>
+    Though an Xgridfit file is destined to be included in a master
+    file, it can also be compiled separately. This may be convenient
+    when writing instructions for a specific range of glyphs. To
+    prepare a file for separate compilation, simply use XInclude to
+    pull in global elements from the common file. For example, one of
+    the Junicode source files containing only glyphs has these
+    XIncludes:
+  </p>
+  <pre>
+  &lt;xi:include href="Junicode-Regular-common.xgf"
+	      xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+			xpointer(/x:xgridfit/x:constant)"/&gt;
+  &lt;xi:include href="Junicode-Regular-common.xgf"
+	      xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+			xpointer(//x:control-value)"/&gt;
+  &lt;xi:include href="Junicode-Regular-common.xgf"
+	      xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+			xpointer(//x:function)"/&gt;
+  &lt;xi:include href="Junicode-Regular-common.xgf"
+	      xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+			xpointer(//x:pre-program)"/&gt;
+  &lt;xi:include href="Junicode-Regular-common.xgf"
+	      xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+			xpointer(//x:macro)"/&gt;</pre>
+  <p>
+    If any glyph program in the file needs to refer to a glyph program
+    in another file, this can also be pulled in via
+    XInclude. &lt;xi:include&gt; elements for this purpose should be
+    placed in a &lt;no-compile&gt; element, which makes them visible
+    to all the programming in the file but prevents their being
+    compiled. This is from <tt>Junicode-Regular-Latin1.xgf</tt>:
+  </p>
+  <pre>
+  &lt;no-compile&gt;
+    &lt;xi:include href="Junicode-Regular-Basic.xgf"
+                xpointer="xmlns(x=http://xgridfit.sourceforge.net/Xgridfit2)
+                          xpointer(/x:xgridfit/x:glyph)"/&gt;
+    &lt;xi:include href="Junicode-Regular-NoEncode.xgf" xpointer="CapAcute"/&gt;
+    &lt;xi:include href="Junicode-Regular-NoEncode.xgf" xpointer="CapCircumflex"/&gt;
+    &lt;xi:include href="Junicode-Regular-NoEncode.xgf" xpointer="CapDieresis"/&gt;
+    &lt;xi:include href="Junicode-Regular-NoEncode.xgf" xpointer="CapGrave"/&gt;
+    &lt;xi:include href="Junicode-Regular-NoEncode.xgf" xpointer="CapTilde"/&gt;
+    &lt;xi:include href="Junicode-Regular-SpacMod.xgf" xpointer="circumflex"/&gt;
+    &lt;xi:include href="Junicode-Regular-SpacMod.xgf" xpointer="tilde"/&gt;
+    &lt;xi:include href="Junicode-Regular-LatExtA-dotlessi.xgf" xpointer="dotlessi"/&gt;
+  &lt;/no-compile&gt;</pre>
+  <p>
+    Note that any of these included glyphs <em>will</em> be compiled
+    if specified in a &lt;glyph-select&gt; element or with the
+    <tt>-g</tt> command-line option.
+  </p>
+  <p>
+    Remember that you must either take care to avoid recursive
+    XIncludes or comment out the XIncludes in a file before including
+    elements from it it in another file.
+  </p>
+  <p>
+    Another strategy for speeding development is to create a
+    quick-and-dirty Makefile for compiling and displaying a single
+    file of glyph programs. The following example uses merge-mode, in
+    which it is necessary first to compile the file containing the
+    font's common elements (functions, control-values, etc.) and run
+    that script. The Makefile compiles the common file only when it
+    has changed.
+  </p>
+  <pre>
+FONTNAME = MyFont
+RANGE = IPA
+
+COMMON = $(FONTNAME)-common
+COMMONSCRIPT = $(COMMON).py
+COMMONXGF = $(COMMON).xgf
+
+GLYPH = $(FONTNAME)-$(RANGE)
+GLYPHSCRIPT = $(GLYPH).py
+GLYPHXGF = $(GLYPH).xgf
+
+SOURCEFONT = $(FONTNAME).sfd
+
+OUTPUTFONT = $(FONTNAME).ttf
+
+INTERMEDIATEFONT = temporary.sfd
+
+$(COMMONSCRIPT) : $(COMMONXGF)
+	xgridfit -m -D -c yes -O $(COMMONSCRIPT) -o $(INTERMEDIATEFONT) \
+	    -i $(SOURCEFONT) $(COMMONXGF)
+
+$(GLYPHSCRIPT) : $(GLYPHXGF)
+	xgridfit -m -c no -O $(GLYPHSCRIPT) -o $(OUTPUTFONT) \
+	    -i $(INTERMEDIATEFONT) $(GLYPHXGF)
+
+$(INTERMEDIATEFONT) : $(COMMONSCRIPT) $(SOURCEFONT)
+	fontforge -script $(COMMONSCRIPT)
+
+$(OUTPUTFONT) : $(COMMONSCRIPT) $(GLYPHSCRIPT) $(INTERMEDIATEFONT)
+	fontforge -script $(GLYPHSCRIPT)</pre>
+  <p>
+    When you type <tt>make MyFont.ttf</tt>, this Makefile does the
+    following:
+  </p>
+  <ul>
+    <li>
+      Compiles MyFont-common.xgf to make MyFont-common.py
+    </li>
+    <li>
+      Compiles MyFont-IPA.xgf to make MyFont-IPA.py
+    </li>
+    <li>
+      Runs the script MyFont-common.py against MyFont.sfd to create
+      temporary.sfd
+    </li>
+    <li>
+      Runs the script MyFont-IPA.py against temporary.sfd to make
+      MyFont.ttf
+    </li>
+  </ul>
+  <p>
+    This font contains all the glyphs in MyFont.sfd, but TrueType
+    instructions only for the glyphs in the IPA range. To do the same
+    with a file containing glyphs for another range, you need only
+    change the <tt>RANGE</tt> variable near the top of the file.
+  </p>
+</div>
+</body>
+</html>
