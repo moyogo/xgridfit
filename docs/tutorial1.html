@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+</div>
+
+<div id="content">
+  <h1>Tutorial 1: Gentium's period</h1>
+  <p>
+    To introduce the basics of Xgridfit, let's instruct one of the
+    simplest possible glyphs: the period. Here's what it looks like in
+    Gentium Italic when opened in FontForge:
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    Our aim in instructing this glyph is to move key points onto the
+    gridlines (which run between pixels) so that the TrueType
+    rasterizer always renders the glyph cleanly, without relying too
+    much on anti-aliasing and other tricks. Here's how the
+    uninstructed period sits on the raster grid at twenty pixels per
+    em; notice that none of the points falls on a gridline. The
+    darkened squares show that the anti-aliased glyph will be a
+    shapeless blob.
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period_num.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    We need to fit only the four points at the extrema to the grid:
+    these are numbered 0, 5, 8, and 13: a sensible start on our
+    project would be to name these points. At the same time we will
+    erect the elements that every Xgridfit program and every glyph
+    program must have: &lt;xgridfit&gt;, &lt;pre-program&gt; (needed
+    even when empty), and &lt;glyph&gt;:
+  </p>
+  <pre>
+    &lt;?xml version="1.0"?&gt;
+    &lt;xgridfit xmlns="http://xgridfit.sourceforge.net/Xgridfit2"&gt;
+
+      &lt;constant name="left-sidebearing" value="last + 1"/&gt;
+
+      &lt;pre-program&gt;
+      &lt;/pre-program&gt;
+
+      &lt;glyph ps-name="period"&gt;
+        &lt;constant name="last" value="15"/&gt;
+        &lt;constant name="left" value="8"/&gt;
+        &lt;constant name="right" value="0"/&gt;
+        &lt;constant name="bottom" value="5"/&gt;
+        &lt;constant name="top" value="13"/&gt;
+
+      &lt;/glyph&gt;
+
+    &lt;/xgridfit&gt;
+  </pre>
+  <p>
+    We have also included a global constant <tt>left-sidebearing</tt>,
+    which gives us access to the left sidebearing point for any glyph
+    for which we have defined the constant <tt>last</tt> (which points
+    to the number of the last point in the glyph outline).
+  </p>
+  <p>
+    Let us deal first with the horizontal movements of points
+    <tt>left</tt> and <tt>right</tt>. We'll put all the programming
+    for horizontal movement in a with-block:
+  </p>
+  <pre>
+    &lt;with-vectors axis="x"&gt;
+
+    &lt;/with-vectors&gt;
+  </pre>
+  <p>
+    Our strategy will be to position point <tt>left</tt>, and then
+    position point <tt>right</tt> relative to it.  In deciding how to
+    position <tt>left</tt>, it would help to know whether its distance
+    from the <tt>left-sidebearing</tt> point is a standard distance in
+    this font--that is, whether other glyphs have the same left
+    sidebearing. In fact, the colon and the exclamation mark have the
+    same left sidebearing of 51 font units; a control value will help
+    us control those glyphs in a consistent way. We'll put it right
+    after the global constant:
+  </p>
+  <pre>
+    &lt;control-value name="period-left-sidebearing" value="51"/&gt;
+  </pre>
+  <p>
+    Now we can add our first instruction to the glyph program We will
+    position point <tt>left</tt> distance
+    <tt>period-left-sidebearing</tt> from point
+    <tt>left-sidebearing</tt>:
+  </p>
+  <pre>
+    &lt;move distance="period-left-sidebearing"&gt;
+      &lt;reference&gt;
+        &lt;point num="left-sidebearing"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="left"/&gt;
+    &lt;/move&gt;
+  </pre>
+  <p>
+    Since we have not said otherwise, it is implicit that we want the
+    distance to be rounded so that <tt>left</tt> is positioned on a
+    gridline.
+  </p>
+  <p>
+    The width of the period is also standard in this font, shared by
+    various dots in (for example) the colon, semicolon and exclamation
+    mark. So we need to add another control value:
+  </p>
+  <pre>
+    &lt;control-value name="period-width" value="232"/&gt;
+  </pre>
+  <p>
+    To control the width of the period we position point
+    <tt>right</tt> relative to point <tt>left</tt>. We
+    <em>could</em> do this by adding a &lt;move&gt; element
+    right after the one we just wrote, like this:
+  </p>
+  <pre>
+    &lt;move distance="period-width"&gt;
+      &lt;reference&gt;
+        &lt;point num="left"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="right"/&gt;
+    &lt;/move&gt;
+  </pre>
+  <p>
+    But it is better to nest the new &lt;move&gt; element inside the
+    other. The point in a nested &lt;move&gt; is always positioned
+    relative to the point moved by the parent &lt;move&gt;, so we can
+    omit the &lt;reference&gt; element:
+  </p>
+  <pre>
+    &lt;move distance="period-left-sidebearing"&gt;
+      &lt;reference&gt;
+        &lt;point num="left-sidebearing"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="left"/&gt;
+      &lt;move distance="period-width"&gt;
+        &lt;point num="right"/&gt;
+      &lt;/move&gt;
+    &lt;/move&gt;
+  </pre>
+  <p>
+    That finishes our work on the x axis. Let's look at the
+    result. The program so far looks like this:
+  </p>
+  <pre>
+&lt;?xml version="1.0"?&gt;
+&lt;xgridfit xmlns="http://xgridfit.sourceforge.net/Xgridfit2"&gt;
+
+  &lt;constant name="left-sidebearing" value="last + 1"/&gt;
+
+  &lt;control-value name="period-left-sidebearing" value="51"/&gt;
+  &lt;control-value name="period-width" value="232"/&gt;
+
+  &lt;pre-program&gt;
+  &lt;/pre-program&gt;
+
+  &lt;glyph ps-name="period"&gt;
+    &lt;constant name="last" value="15"/&gt;
+    &lt;constant name="left" value="8"/&gt;
+    &lt;constant name="right" value="0"/&gt;
+    &lt;constant name="bottom" value="5"/&gt;
+    &lt;constant name="top" value="13"/&gt;
+
+    &lt;with-vectors axis="x"&gt;
+      &lt;move distance="period-left-sidebearing"&gt;
+	&lt;reference&gt;
+	  &lt;point num="left-sidebearing"/&gt;
+	&lt;/reference&gt;
+	&lt;point num="left"/&gt;
+	&lt;move distance="period-width"&gt;
+	  &lt;point num="right"/&gt;
+	&lt;/move&gt;
+      &lt;/move&gt;
+    &lt;/with-vectors&gt;
+
+  &lt;/glyph&gt;
+
+&lt;/xgridfit&gt;
+  </pre>
+  <p>
+    And when we run it from inside FontForge, the glyph looks like
+    this:
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period_horz.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    It doesn't look like much yet, but you can see that points
+    <tt>left</tt> and <tt>right</tt> are positioned on gridlines.
+  </p>
+  <p>
+    We'll start work on vertical moves by adding a with-block for the
+    y axis:
+  </p>
+  <pre>
+    &lt;with-vectors axis="y"&gt;
+
+    &lt;/with-vectors&gt;
+  </pre>
+  <p>
+    The distances we have to work with here are that of point
+    <tt>bottom</tt> from the baseline (-31) and that of point
+    <tt>top</tt> from <tt>bottom</tt> (277). These are also standard
+    in the font, found in the colon, exclamation mark and
+    elsewhere. So we add control values:
+  </p>
+  <pre>
+    &lt;control-value name="period-bottom" value="-31"/&gt;
+    &lt;control-value name="period-height" value="277"/&gt;
+  </pre>
+  <p>
+    We'll start by positioning point <tt>bottom</tt> at position
+    <tt>period-bottom</tt>. Since we are positioning the point on the
+    grid rather than relative to another point, we don't need a
+    &lt;reference&gt; element; and the distance will be rounded since
+    we haven't said otherwise:
+  </p>
+  <pre>
+    &lt;move distance="period-bottom"&gt;
+      &lt;point num="bottom"/&gt;
+    &lt;/move&gt;
+  </pre>
+  <p>
+    Then we'll position point <tt>top</tt> relative to point
+    <tt>bottom</tt>. Once again, the preferred method is to nest a
+    &lt;move&gt; element in the one we've just written:
+  </p>
+  <pre>
+    &lt;move distance="period-bottom"&gt;
+      &lt;point num="bottom"/&gt;
+      &lt;move distance="period-height"&gt;
+        &lt;point num="top"/&gt;
+      &lt;/move&gt;
+    &lt;/move&gt;
+  </pre>
+  <p>
+    Here's the result:
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period_hv.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    It looks really bad because we have moved only four points of the
+    fifteen that make up the glyph. We can position the rest
+    automatically by adding this instruction at the end of the
+    program:
+  </p>
+  <pre>
+    &lt;interpolate-untouched-points/&gt;
+  </pre>
+  <p>
+    And the result looks like this:
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period_int.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    The glyph is rather narrow and tall at the resolution we have been
+    using for illustration (20 pixels per em). If we want it to
+    be rounder, we should adjust the control value
+    <tt>period-height</tt>: that way, all of the various dots
+    controlled by that control value will be adjusted at the same
+    time. We add these elements to the &lt;pre-program&gt;:
+  </p>
+  <pre>
+    &lt;round value="period-height"/&gt;
+    &lt;control-value-delta&gt;
+      &lt;delta-set size="11" distance="-8" cv="period-height"/&gt;
+    &lt;/control-value-delta&gt;
+  </pre>
+  <p>
+    The &lt;round&gt; element rounds the control value
+    <tt>period-height</tt> at all resolutions. The
+    &lt;control-value-delta&gt; element shrinks the distance by one
+    pixel at 20 pixels per em (for details about the operation of
+    delta instructions, see <a href="deltas.html">here</a>). Since the
+    distance <tt>period-height</tt> is already rounded, we can add an
+    attribute <tt>round="no"</tt> to the element that moves
+    <tt>top</tt>. Now when the program is run, the result looks like
+    this:
+  </p>
+  <table>
+    <tr>
+      <td>
+	<img src="Gentium_period_final.png" alt="Gentium period"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    You can check the appearance of the period at various resolutions
+    in FontForge or using ftview (a utility that accompanies
+    FreeType), and add &lt;delta-set&gt; elements to the
+    &lt;control-value-delta&gt; element as needed. Now the complete
+    Xgridfit file is as follows:
+  </p>
+  <pre>
+    &lt;?xml version="1.0"?&gt;
+    &lt;xgridfit xmlns="http://xgridfit.sourceforge.net/Xgridfit2"&gt;
+
+      &lt;constant name="left-sidebearing" value="last + 1"/&gt;
+
+      &lt;control-value name="period-left-sidebearing" value="51"/&gt;
+      &lt;control-value name="period-width" value="232"/&gt;
+      &lt;control-value name="period-bottom" value="-31"/&gt;
+      &lt;control-value name="period-height" value="277"/&gt;
+
+      &lt;pre-program&gt;
+	&lt;round value="period-height"/&gt;
+	&lt;control-value-delta&gt;
+	  &lt;delta-set size="11" distance="-8" cv="period-height"/&gt;
+	&lt;/control-value-delta&gt;
+      &lt;/pre-program&gt;
+
+      &lt;glyph ps-name="period"&gt;
+	&lt;constant name="last" value="15"/&gt;
+	&lt;constant name="left" value="8"/&gt;
+	&lt;constant name="right" value="0"/&gt;
+	&lt;constant name="bottom" value="5"/&gt;
+	&lt;constant name="top" value="13"/&gt;
+
+	&lt;with-vectors axis="x"&gt;
+	  &lt;move distance="period-left-sidebearing"&gt;
+	    &lt;reference&gt;
+	      &lt;point num="left-sidebearing"/&gt;
+	    &lt;/reference&gt;
+	    &lt;point num="left"/&gt;
+	    &lt;move distance="period-width"&gt;
+	      &lt;point num="right"/&gt;
+	    &lt;/move&gt;
+	  &lt;/move&gt;
+	&lt;/with-vectors&gt;
+	&lt;with-vectors axis="y"&gt;
+	  &lt;move distance="period-bottom"&gt;
+	    &lt;point num="bottom"/&gt;
+	    &lt;move distance="period-height" round="no"&gt;
+	      &lt;point num="top"/&gt;
+	    &lt;/move&gt;
+	  &lt;/move&gt;
+	&lt;/with-vectors&gt;
+	&lt;interpolate-untouched-points/&gt;
+      &lt;/glyph&gt;
+
+    &lt;/xgridfit&gt;
+  </pre>
+  <p>
+    The illustrations above were generated by running the Xgridfit
+    program from the FontForge GUI (File--Execute Script). If we want
+    to run it from the command line, we must add &lt;infile&gt; and
+    &lt;outfile&gt; elements somewhere near the top of the file:
+  </p>
+  <pre>
+    &lt;infile&gt;Gentium-Italic.sfd&lt;/infile&gt;
+    &lt;outfile&gt;Gentium-Italic.ttf&lt;/outfile&gt;
+  </pre>
+  <p>
+    And now, supposing we have named the file
+    <tt>Gentium-Italic.xgf</tt>, we can run the program with this
+    command:
+  </p>
+  <pre>
+    xgridfit -f Gentium-Italic.xgf
+  </pre>
+</div>
+</body>
+</html>
