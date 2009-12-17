@@ -1,0 +1,137 @@
+#!@python_prog@
+"""Extracts instructions from a font and prints them on stdout."""
+"""
+	Copyright (c) 2009 by Peter .S Baker
+
+	Issued under the GNU Public License, v. 2.
+
+	This file is part of the Xgridfit package.
+"""
+import sys
+try:
+    import fontforge
+except ImportError:
+    print "You must install the FontForge Python extension before running"
+    print "this program."
+    sys.exit(1)
+from optparse import OptionParser
+
+def get_token_type(tok):
+    """Returns 'int' if tok is an integer, 'instruction' if it is not."""
+    try:
+        dummy = int(tok)
+        return "int"
+    except ValueError:
+        return "instruction"
+
+def make_instruction(tok):
+    """Transforms a raw instruction into an Xgridfit <command>."""
+    istr = INST_SPACE + "<command name=\"" + tok
+    if "[" in istr:
+        istr = istr.replace("[", "\" modifier=\"")
+        istr = istr.replace("]", "\"")
+    else:
+        istr += "\""
+    istr += "/>"
+    return istr
+
+def make_glyph_program(gname, instrs):
+    """Converts a string containing newline-delimited instructions
+    into an Xgridfit glyph program and prints it on stdout."""
+    push_cmd = INST_SPACE + "<push>"
+    sys.stdout.write(GLYPH_SPACE)
+    sys.stdout.write("<glyph ps-name=\"")
+    sys.stdout.write(gname)
+    sys.stdout.write("\" xml:id=\"")
+    sys.stdout.write(gname)
+    sys.stdout.write("\" init-graphics=\"no\">\n")
+    inst_list = instrs.split("\n")
+    token_type = "instruction"
+    eat_first_number = False
+    for token in inst_list:
+        token_str = token.strip()
+        # allow blank lines in input
+        if len(token_str) == 0:
+            continue
+        this_type = get_token_type(token_str)
+        if this_type == "int":
+            if this_type != token_type:
+                if eat_first_number:
+                    num_string = push_cmd
+                else:
+                    num_string = push_cmd + token_str
+            else:
+                if num_string == push_cmd:
+                    num_string += token_str
+                else:
+                    num_string += " " + token_str
+            eat_first_number = False
+        else:
+            if this_type != token_type:
+                num_string += "</push>"
+                print num_string
+            if "PUSH" in token_str:
+                if "NPUSH" in token_str:
+                    eat_first_number = True
+            else:
+                print make_instruction(token_str)
+        token_type = this_type
+    sys.stdout.write(GLYPH_SPACE)
+    sys.stdout.write("</glyph>\n")
+
+USAGE_MSG = "usage: %prog [options] fontname glyphname ..."
+PARSER = OptionParser(usage = USAGE_MSG)
+PARSER.add_option("-r", "--raw", action="store_true",
+                  dest="plain_output", default=False,
+                  help="Output raw instructions")
+PARSER.add_option("-x", "--xgridfit", action="store_true",
+                  dest="xgf_element", default=False,
+                  help="Output XML declaration and Xgridfit element")
+(OPTIONS, ARGS) = PARSER.parse_args()
+
+if len(ARGS) < 2:
+    print
+    print "Error: not enough arguments"
+    print
+    PARSER.print_help()
+    sys.exit(1)
+
+FONT_NAME = ARGS[0]
+GLYPH_LIST = ARGS[1:]
+PLAIN_OUTPUT = OPTIONS.plain_output
+XGF_ELEMENT = OPTIONS.xgf_element
+GLYPH_SPACE = ""
+INST_SPACE = "  "
+
+try:
+    FONT = fontforge.open(FONT_NAME)
+except EnvironmentError as detail:
+    print "Error opening file", FONT_NAME
+    print detail
+    sys.exit(1)
+
+if XGF_ELEMENT:
+    print "<?xml version=\"1.0\"?>"
+    print "<xgridfit xmlns=\"http://xgridfit.sourceforge.net/Xgridfit2\">"
+    GLYPH_SPACE = "  "
+    INST_SPACE = "    "
+for glyphname in GLYPH_LIST:
+    try:
+        INSTR_BINARY = FONT[glyphname].ttinstrs
+        if len(INSTR_BINARY) == 0:
+            print "glyph", glyphname, "has no instructions"
+        else:
+            INSTR_STRING = fontforge.unParseTTInstrs(INSTR_BINARY)
+            if PLAIN_OUTPUT:
+                print "# glyph", glyphname
+                print INSTR_STRING
+                print
+            else:
+                make_glyph_program(glyphname, INSTR_STRING)
+    except TypeError as detail:
+        sys.stderr.write("Error retrieving instructions from glyph \"")
+        sys.stderr.write(glyphname)
+        sys.stderr.write("\"\n")
+        print detail
+if XGF_ELEMENT:
+    print "</xgridfit>"
