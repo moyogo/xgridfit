@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+  <hr/>
+  <a href="#running">Running in merge-mode</a>
+  <a href="#auto-instruct">Auto-instructing the font</a>
+  <a href="#howitworks">How merge-mode works</a>
+  <a href="#settingblue">Setting blue values</a>
+  <a href="#defaults">Defaults relating to merge-mode</a>
+  <a href="#saving">Saving in merge-mode</a>
+</div>
+
+<div id="content">
+  <h1>Merge-mode</h1>
+  <p>
+    <i>The method described here replaces earlier, more cumbersome
+    methods, which do, however, still work. Those earlier methods are
+    described <a href="convert.html">here</a> and
+    <a href="fontforge-old.html">here</a>.</i>
+  </p>
+  <p>
+    If you have used Xgridfit to write all the TrueType programming
+    for a font, the process of getting that programming into the font
+    is quite simple: just run the Xgridfit compiler to generate a
+    Python script and run the script in FontForge. But your job may
+    not be so simple. You may need to add instructions to a font that
+    already contains them, or you may wish to let FontForge's
+    excellent auto-instructor do the bulk of the work, hinting only a
+    few glyphs by hand. If this is your situation, merge-mode may be
+    the tool you need. Xgridfit running in merge-mode produces a
+    Python script that can:
+  </p>
+  <ul>
+    <li>
+      Set a font's "Blue" values.
+    </li>
+    <li>
+      Run FontForge's auto-hinter and auto-instructor.
+    </li>
+    <li>
+      Merge Xgridfit programming into the font without disturbing
+      existing programming.
+    </li>
+    <li>
+      Preserve information about the original state of the font so
+      that Xgridfit can be run against it repeatedly without adding
+      redundant code.
+    </li>
+  </ul>
+  <p>
+    In short, Xgridfit in merge-mode aims to serve as a one-stop shop
+    for everything related to TrueType programming.
+  </p>
+  <h2 id="running">Running in merge-mode</h2>
+  <p>
+    To run in merge-mode, include the -m option on the command-line
+    when you invoke Xgridfit:
+  </p>
+  <pre>
+    xgridfit -m -i oldfont.sfd -o oldfont.ttf newstuff.xgf</pre>
+  <p>
+    This command produces a script, <tt>newstuff.py</tt>, that reads a
+    file oldfont.sfd, merges in Xgridfit programming without
+    disturbing the programming it already contains, and generates the
+    font <tt>oldfont.ttf</tt>. Run it in FontForge thus:
+  </p>
+  <pre>
+    fontforge -script newstuff.py</pre>
+  <h2 id="auto-instruct">Auto-instructing the font</h2>
+  <p>
+    To make FontForge auto-instruct the font before merging in
+    Xgridfit programming, include the -A option:
+  </p>
+  <pre>
+    xgridfit -m -A -i oldfont.sfd -o oldfont.ttf newstuff.xgf</pre>
+  <p>
+    Now newstuff.py makes FontForge delete all existing TrueType
+    programming and data, auto-hint the font, and then auto-instruct
+    it. If you have already hinted the font or refined the hints by
+    hand, add an option <tt>-H no</tt> to skip the auto-hint step.
+  </p>
+  <h2 id="howitworks">Programming for merge-mode</h2>
+  <p>
+    There are almost no differences between a program written for
+    merge-mode and any other Xgridfit program: programs you have
+    already written will probably compile in merge-mode without
+    alteration. To understand the few differences, it may help to know
+    a little about how merge-mode handles functions, the pre-program,
+    variables (storage locations) and control-values:
+  </p>
+  <ul>
+    <li>
+      Xgridfit functions are added to the end of the font's fpgm
+      table. TrueType functions are indexed, not named, and Xgridfit
+      functions always have higher indexes than those already in the
+      fpgm table.
+    </li>
+    <li>
+      The Xgridfit pre-program is normally appended to the existing
+      prep table, but you can choose instead to discard a font's prep
+      table and use only your own pre-programming.
+    </li>
+    <li>
+      Like functions, TrueType variables are indexed, not named;
+      Xgridfit expands the existing storage area to make room for its
+      own variables, which all receive higher indexes than those
+      already in the font.
+    </li>
+    <li>
+      Xgridfit adds control-values to the font only when necessary; it
+      attempts to avoid duplication in the control-value table by
+      adopting existing entries for its own use.
+    </li>
+  </ul>
+  <p>
+    The Xgridfit compiler knows nothing about the font that is the
+    target of its operations. Instead, the Python script generated by
+    the compiler queries the font and fixes all the indexing in the
+    Xgridfit-generated TrueType code before installing it. The
+    following sections explain the implications of merge-mode's
+    behavior.
+  </p>
+  <h3>Control-values</h3>
+  <p>
+    The default behavior of merge-mode, when it adds control-values to
+    a font, is to avoid duplication. If your Xgridfit program contains
+    a control-value like this one:
+  </p>
+  <pre>
+    &lt;control-value name="lc-vert-stem" value="125"/&gt;</pre>
+  <p>
+    and the target font already has a control-value with value 125 at
+    index 23, then the control-value "lc-vert-stem" is <em>not</em>
+    appended to the control-value table. Rather, any &lt;move&gt;
+    instruction that refers to the control-value "lc-vert-stem"
+    actually uses the control-value at index 23.
+  </p>
+  <p>
+    You may have good reasons for overriding this behavior. For
+    example, the x-height of your font may be 1000, and also the width
+    of <b>o</b>. You may want to apply a &lt;control-value-delta&gt;
+    to the width of <b>o</b> but not the x-height, and in that case
+    the control-value 1000 should be in the font twice. To make sure
+    that a value is appended to the end of the control-value table,
+    add the attribute <tt>index="append"</tt>:
+  </p>
+  <pre>
+    &lt;control-value name="lc-vert-stem" value="1010" index="append"/&gt;</pre>
+  <p>
+    You may find that the font you are working with already has two
+    control-values with the same value; in that case, supply the index
+    of the control-value you want to use:
+  </p>
+  <pre>
+    &lt;control-value name="lc-vert-stem" value="1063" index="156"/&gt;</pre>
+  <p>
+    Note that if you specify a value different from the one found at
+    the index you specify, a warning will be printed and the value in
+    the control-value table will be updated.
+  </p>
+  <p>
+    In merge-mode, the index of a control-value is unknown at
+    compile-time. This can cause problems with the &lt;compile-if&gt;
+    element and the <tt>compile-if</tt> attribute, which may have to
+    decide, on the basis of a control-value, whether to compile, say,
+    a &lt;move&gt; with or without a <tt>distance</tt>
+    attribute. Before the appearance of merge-mode, the recommended
+    way of accomplishing this was as follows:
+  </p>
+  <pre>
+    &lt;macro name="move-pt"&gt;
+      &lt;param name="cv" value="-1"/&gt;
+      &lt;param name="p"/&gt;
+      &lt;compile-if test="cv &amp;gt;= 0"&gt;
+	&lt;move distance="cv"&gt;
+	  &lt;point num="p"/&gt;
+	&lt;/move&gt;
+	&lt;else&gt;
+	  &lt;move&gt;
+	    &lt;point num="p"/&gt;
+	  &lt;/move&gt;
+	&lt;/else&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;</pre>
+  <p>
+    In merge-mode, a control-value index cannot be evaluated against a
+    number at compile-time without causing an error. However, since
+    you can count on a control-value index evaluating to something
+    <em>other</em> than a number in merge-mode, this will work:
+  </p>
+  <pre>
+    &lt;macro name="move-pt"&gt;
+      &lt;param name="cv" value="1"/&gt;
+      &lt;param name="p"/&gt;
+      &lt;compile-if test="nan(cv)"&gt;
+	&lt;move distance="cv"&gt;
+	  &lt;point num="p"/&gt;
+	&lt;/move&gt;
+	&lt;else&gt;
+	  &lt;move&gt;
+	    &lt;point num="p"/&gt;
+	  &lt;/move&gt;
+	&lt;/else&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;</pre>
+  <p>
+    If you want the macro to compile the same way in merge-mode and
+    other modes, you can do it this way:
+  </p>
+  <pre>
+    &lt;macro name="move-pt"&gt;
+      &lt;param name="cv" value="-1"/&gt;
+      &lt;param name="p"/&gt;
+      &lt;compile-if test="(not(merge-mode) and cv &gt;= 0) or
+                        (merge-mode and nan(cv))"&gt;
+	&lt;move distance="cv"&gt;
+	  &lt;point num="p"/&gt;
+	&lt;/move&gt;
+	&lt;else&gt;
+	  &lt;move&gt;
+	    &lt;point num="p"/&gt;
+	  &lt;/move&gt;
+	&lt;/else&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;</pre>
+  <p>
+    If you like, you can approximate the behavior of other modes in
+    merge-mode by including this &lt;default&gt; element in the top
+    level of your file:
+  </p>
+  <pre>
+    &lt;default type="cv-num-in-compile-if" value="yes"/&gt;</pre>
+  <p>
+    Now a control-value index in the <tt>test</tt> attribute of a
+    &lt;compile-if&gt; element is always resolved as a number.  This
+    number is <em>not</em> guaranteed to be the one actually used in
+    the font. However, it <em>is</em> guaranteed to be useful in
+    validity and equality tests; that is, it will evaluate as &gt;= 0
+    if the referenced control-value is present in the file, and an
+    &lt;alias&gt; that references a control-value will evaluate to the
+    same index as that control-value. Thus the first example above
+    remains valid in merge-mode if the <tt>cv-num-in-compile-if</tt>
+    directive is present.
+  </p>
+  <h3>The pre-program</h3>
+  <p>
+    The pre-program generated by the FontForge auto-instructor is
+    quite simple: it disables instructions at certain resolutions,
+    sets dropout control, and sets the default value of the
+    control-value cut-in for various resolutions. By default,
+    merge-mode appends your pre-program to the one generated by
+    FontForge; but you can override this behavior if you wish, by
+    adding the option <tt>-P no</tt> on the command line:
+  </p>
+  <pre>
+    xgridfit -m -A -P no oldfont.xgf</pre>
+  <p>
+    Now your own pre-program is substituted for the one in the font
+    (or the one generated by the auto-instructor) instead of added to
+    it.
+  </p>
+  <h3>Functions</h3>
+  <p>
+    The <tt>num</tt> attribute for functions has been deprecated since
+    version 1.0; it is incompatible with the
+    &lt;legacy-functions&gt; element. In merge-mode, the
+    &lt;legacy-functions&gt; element is unneeded, and it is
+    ignored. Also, any &lt;function&gt; elements with the <tt>num</tt>
+    attribute are ignored. If your code contains a
+    &lt;legacy-functions&gt; element, you should edit to convert the
+    functions it contains to &lt;function&gt; elements. If your code
+    contains &lt;function&gt; elements with the <tt>num</tt>
+    attribute, you should remove that attribute. The <tt>num</tt>
+    attribute, of course, accommodates "raw" code that looks like
+    this:
+  </p>
+  <pre>
+    &lt;push&gt;3&lt;/push&gt;
+    &lt;command name="CALL"/&gt;</pre>
+  <p>
+    To keep such older functions, search out these CALL instructions
+    and substitute the name of the function for the number in the
+    &lt;push&gt; command. The Python script generated by Xgridfit will
+    correctly fix up the number.
+  </p>
+  <h3>Variables</h3>
+  <p>
+    Xgridfit uses the TrueType storage area to track the graphics
+    state and to store variables. It has never been advisable to use
+    number literals to refer to storage locations, and in merge-mode
+    it is impossible to do so.
+  </p>
+  <h2 id="settingblue">Setting blue values</h2>
+  <p>
+    "Blue values" are appropriate to PostScript (Type 1 and
+    OpenType/CFF) fonts; but FontForge needs them for proper
+    auto-hinting, and it needs hints for auto-instructing. If you wish
+    to accept the values supplied by FontForge, then simply press the
+    "Guess" button for the blue values in the font info dialog;
+    otherwise, you may set them here. Include &lt;ps-private&gt; as a
+    top-level element (a child of &lt;xgridfit&gt;), thus:
+  </p>
+  <pre>
+    &lt;ps-private&gt;
+      &lt;entry name="BlueValues" value="-33 -2 856 873 1358 1385"/&gt;
+      &lt;entry name="OtherBlues" value="-578 -553"/&gt;
+      &lt;entry name="BlueFuzz" value="0"/&gt;
+    &lt;/ps-private&gt;</pre>
+  <p>
+    Any entries here are set in the font's PS private dictionary; any
+    existing entries not specified here are left alone. Values for all
+    entries except the one for "BlueFuzz" must be space-delimited
+    lists; FontForge will complain if there is not an even number of
+    entries. "BlueFuzz" must be a single number.
+  </p>
+  <p>
+    The &lt;ps-private&gt; element is ignored in all of Xgridfit's
+    modes other than merge-mode. Note also that the PS private
+    dictionary is not stored in a TrueType font, but only in the
+    FontForge .sfd file.
+  </p>
+  <h2 id="defaults">Defaults relating to merge-mode</h2>
+  <p>
+    The command-line options relevant to merge-mode can also be set in
+    the file with &lt;default&gt; elements. Here they are, with their
+    default values:
+  </p>
+  <pre>
+    &lt;default type="auto-instruct" value="no"/&gt;
+    &lt;default type="auto-hint" value="yes"/&gt;
+    &lt;default type="delete-all" value="no"/&gt;
+    &lt;default type="combine-prep" value="yes"/&gt;
+    &lt;default type="cv-num-in-compile-if" value="no"/&gt;</pre>
+  <p>
+    Remember that command-line options always override &lt;default&gt;
+    elements.
+  </p>
+  <h2 id="saving">Saving in merge-mode</h2>
+  <p>
+    When Xgridfit running in merge-mode first reads a font (either .ttf
+    or .sfd) containing TrueType programming, it reads the existing
+    fpgm and prep tables, and also the relevant maxp entries, and
+    saves them in a dictionary of its own. It also stores in this
+    dictionary a record of the control-values and functions it
+    installs in the font. When merge-mode saves the font in .sfd
+    format, it attempts to save this Xgridfit dictionary in
+    FontForge's font.persistent object; if you prefer, you may instead
+    store it in an external file.
+  </p>
+  <p>
+    When merge-mode opens an .sfd file containing an Xgridfit
+    dictionary, it uses the saved information as follows:
+  </p>
+  <ul>
+    <li>
+      reverts the font's fpgm, prep and maxp tables to their original
+      state. Earlier Xgridfit programming is discarded and freshly
+      compiled versions of your functions, pre-program, and maxp
+      settings are merged in. You need not worry about stale copies of
+      your Xgridfit programming getting stranded in the font.
+    </li>
+    <li>
+      keeps the control-value table as revised by an earlier Xgridfit
+      script, but when it finds that a control-value has previously
+      been added to the font it declines to add it again. This is true
+      even if the &lt;control-value&gt; element has the <tt>index</tt>
+      attribute. However, if you have changed the <tt>value</tt> of a
+      control-value, the new value is substituted for the old one (a
+      warning is printed telling you that this has been done).
+    </li>
+  </ul>
+  <p>
+    Things happen a little differently when Xgridfit in merge-mode
+    compiles an Xgridfit program with option <tt>-c&nbsp;no</tt> or a
+    &lt;default&gt; element with <tt>type="compile-globals"</tt> and
+    <tt>value="no"</tt>. The generated Python script uses the saved
+    data from the previous run to resolve the indexes of
+    control-values, functions and variables; it cannot install its
+    glyph programs unless this data is available. Thus you must always
+    run a script that installs these global elements before you run
+    any script that installs only glyph programs.
+  </p>
+  <p>
+    As mentioned earlier, merge-mode normally stores data in
+    FontForge's font.persistent object. This can be saved only in an
+    .sfd file, not in a .ttf font. You may, if you prefer, store the
+    data in an external file. To do so, either include the option
+    <tt>-F filename</tt> on the command-line or include a
+    &lt;datafile&gt; element in every Xgridfit file that needs one:
+  </p>
+  <pre>
+    &lt;datafile&gt;myfont.data&lt;/datafile&gt;</pre>
+  <p>
+    Now the generated Python script will store data in, and read it
+    from, the file <tt>myfont.data</tt>.
+  </p>
+</div>
+</body>
+</html>
