@@ -1,0 +1,45 @@
+.TH XGFUPDATE 1 "2009-12-18"
+.SH NAME
+.B xgfupdate 
+\- updates an Xgridfit program file to the latest version.
+.SH SYNOPSIS
+.B xgfupdate
+.IR file
+.SH DESCRIPTION
+.B Xgfupdate
+is a utility that updates an Xgridfit program file so that it validates
+against the current xgridfit.rnc schema.
+.B Xgfupdate
+outputs the updated file to stdout. To capture the output
+in a file, use this syntax:
+
+     $xgfupdate [options] infile > outfile
+.hy .
+.SH OPTIONS
+.IP "\-h"
+Display a help message and exit.
+.IP "\-v 1|2"
+Choose a mode in which to run Xgfupdate. "1" updates an Xgridfit
+program so that it will validate against the 2.0 schema. "2" updates an
+Xgridfit program from version 1.x or 2.0 to version 2.1 by adding
+the Xgridfit namespace; it also revises XInclude elements to be
+aware of the Xgridfit namespace.
+.SH FILES
+.TP
+.I /usr/share/xml/xgridfit/util/xgf-update.xsl
+.I /usr/share/xml/xgridfit/util/xgf-add-namespace.xsl
+XSLT scripts that do the updating.
+.TP
+.I /usr/share/xml/xgridfit/util/add-blanks.sed
+A Sed script that does some formatting of the output.
+.SH SEE ALSO
+.BR xgridfit (1).
+.\" .br
+.SH AUTHOR
+.B Xgfupdate
+was written by Peter Baker
+.nh
+<psb6m@virginia.edu>.
+.hy 
+.PP
+This manual page was written by Peter Baker

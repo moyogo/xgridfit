@@ -1,0 +1,216 @@
+#!/bin/bash
+
+UTIL_PREFIX=@xgridfit_dir@/utils/
+PARAMLIST=''
+RESOLVE_XINCLUDES=1
+FILE_A=''
+SORT_OUTPUT=1
+VERBOSE=1
+ECHO_TIME=1
+
+usage() {
+    cat <<Here-is-the-usage-text
+
+usage: xgfmerge [options] file-a file-b [...]
+
+Options:
+  -c       Ignore globals in files other than file-a when value of
+           "compile-globals" default is "no"
+  -h       Display this help message
+  -n       Include <no-compile> element
+  -o file  Write result to file (otherwise to stdout)
+  -p       Prefer <pre-program> from file other than file-a
+  -s       Sort glyph elements in output
+  -v       Verbose messages
+  -x       Resolve XIncludes (except from file-a)
+
+Here-is-the-usage-text
+}
+
+parseopts () {
+  while getopts "cEhno:psvx" optname
+    do
+    case "$optname" in
+	"c")
+	    PARAMLIST=$PARAMLIST" --stringparam use-compile-globals yes"
+	    ;;
+	"E")
+	    ECHO_TIME=0
+	    ;;
+	"h")
+	    usage
+	    exit 0
+	    ;;
+	"n")
+	    PARAMLIST=$PARAMLIST" --stringparam skip-b-no-compile no"
+	    ;;
+	"o")
+	    OUTFILE=$OPTARG
+	    ;;
+	"p")
+	    PARAMLIST=$PARAMLIST" --stringparam prep-mode priority"
+	    ;;
+	"s")
+	    SORT_OUTPUT=0
+	    ;;
+	"v")
+	    VERBOSE=0
+	    ;;
+	"x")
+	    RESOLVE_XINCLUDES=0
+	    ;;
+	"\?")
+            usage 1>&2
+            exit 1
+            ;;
+	":")
+            usage 1>&2
+            exit 1
+            ;;
+	*)
+            usage 1>&2
+	    exit 1
+            ;;
+    esac
+  done
+  return $OPTIND
+}
+
+runscript () {
+    START_TIME=`date +"%s"`
+    if [ $# -lt 2 ]
+    then
+	echo "You must supply the names of at least two files." 1>&2
+	echo "Type \"xgfmerge -h\" or \"man xgfmerge\" for help." 1>&2
+	exit 1
+    fi
+    if [ $VERBOSE -eq 0 ]
+    then
+	echo "Settings: " 1>&2
+	if [ ${#OUTFILE} -gt 0 ]
+	then
+	    echo "Output will be written to $OUTFILE" 1>&2
+	fi
+	if [ $RESOLVE_XINCLUDES -eq 0 ]
+	then
+	    echo "XIncludes will be resolved in all files except $1" 1>&2
+	fi
+	if [ $SORT_OUTPUT -eq 0 ]
+	then
+	    echo "Output will be sorted" 1>&2
+	fi
+    fi
+    for f in $@
+    do
+	if [ ${#FILE_A} -eq 0 ]
+	then
+	    FILE_A=$f
+	    if [ ! -f "$FILE_A" ]
+	    then
+		echo "Can't find file $FILE_A" 1>&2
+		exit 1
+	    fi
+	    CURRENT_A=$FILE_A
+	else
+	    FILE_B=$f
+	    if ! echo $FILE_B | grep -q "^\/"
+	    then
+		FILE_B=`pwd`'/'$FILE_B
+	    fi
+	    if [ ! -f "$FILE_B" ]
+	    then
+		echo "Can't find file $FILE_B" 1>&2
+		exit 1
+	    fi
+	    if [ $VERBOSE -eq 0 ]
+	    then
+		echo "Merging $CURRENT_A and $FILE_B" 1>&2
+	    fi
+	    DELTMP=1
+	    if [ $RESOLVE_XINCLUDES -eq 0 ]
+	    then
+		if grep -q "http://www\.w3\.org/2001/XInclude" $FILE_B
+		then
+		    TMP_X_FILE=`$MKTEMP_CMD` || exit 1
+		    xsltproc --stringparam file-a $FILE_A ${UTIL_PREFIX}xinclude.xsl $FILE_B | \
+			xmllint --xinclude - >> $TMP_X_FILE
+		    if [ $VERBOSE -eq 0 ]
+		    then
+			echo "$FILE_B with XIncludes written to $TMP_X_FILE" 1>&2
+		    fi
+		    FILE_B=$TMP_X_FILE
+		    DELTMP=0
+		fi
+	    fi
+	    TMP_RESULT=`$MKTEMP_CMD` || exit 1
+	    if [ $VERBOSE -eq 0 ]
+	    then
+		echo "Result will be written to $TMP_RESULT" 1>&2
+	    fi
+	    CMD="xsltproc --stringparam file-b $FILE_B $PARAMLIST ${UTIL_PREFIX}merge.xsl $CURRENT_A >> $TMP_RESULT"
+	    if [ $VERBOSE -eq 0 ]
+	    then
+		echo "executing $CMD" 1>&2
+	    fi
+	    eval $CMD
+	    if [ $DELTMP -eq 0 ]
+	    then
+		if [ $VERBOSE -eq 0 ]
+		then
+		    echo "Removing $TMP_X_FILE" 1>&2
+		fi
+		rm -f $TMP_X_FILE
+	    fi
+	    if [ $FILE_A != $CURRENT_A ]
+		then
+		if [ $VERBOSE -eq 0 ]
+		then
+		    echo "Removing $CURRENT_A" 1>&2
+		fi
+		rm -f $CURRENT_A
+	    fi
+	    CURRENT_A=$TMP_RESULT
+	fi
+    done
+    OUTCMD="cat $TMP_RESULT"
+    if [ $SORT_OUTPUT -eq 0 ]
+    then
+	OUTCMD=$OUTCMD" | xsltproc ${UTIL_PREFIX}sort-glyphs.xsl -"
+    fi
+    OUTCMD=$OUTCMD" | xmllint --format -  | sed -f ${UTIL_PREFIX}add-blanks.sed"
+    if [ ${#OUTFILE} -gt 0 ]
+    then
+	OUTCMD="$OUTCMD > $OUTFILE"
+    fi
+    if [ $VERBOSE -eq 0 ]
+    then
+	echo "executing $OUTCMD" 1>&2
+    fi
+    eval $OUTCMD
+    if [ $VERBOSE -eq 0 ]
+    then
+	echo "Removing $TMP_RESULT" 1>&2
+    fi
+    rm -f $TMP_RESULT
+    END_TIME=`date +"%s"`
+    if [ $ECHO_TIME -eq 0 ]
+    then
+	echo "Finished in "$(( $END_TIME - $START_TIME ))" seconds" 1>&2
+    fi
+}
+
+if [ $# -lt 2 ]
+    then
+    usage 1>&2
+    exit 1
+fi
+if uname | grep -q "Darwin"
+then
+    MKTEMP_CMD='mktemp -t xgfmerge'
+else
+    MKTEMP_CMD='mktemp -t xgfmerge.XXXXXXXXXX'
+fi
+parseopts "$@"
+argstart=$?
+runscript "${@:$argstart}"
+

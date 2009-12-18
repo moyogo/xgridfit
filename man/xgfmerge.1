@@ -1,0 +1,87 @@
+.TH XGFMERGE 1 "2009-12-18"
+.SH NAME
+.B xgfmerge
+\- merges two Xgridfit program files
+.SH SYNOPSIS
+.B xgfmerge
+[options]
+.IR file-a
+.IR file-b
+.IR [...]
+.SH DESCRIPTION
+.B Xgfmerge
+merges two or more Xgridfit program files, where file-a is a program
+generated automatically from an existing font using TTX and
+ttx2xgf, and file-b and any other files in the list contain
+other programming for the font.
+.B Xgfmerge
+outputs the merged programming to stdout.
+To capture the output in a file, use this syntax:
+
+     $xgfmerge -o merged-file.xgf file-a.xgf file-b.xgf
+.hy .
+.PP
+.B "Note:"
+To merge Xgridfit instructions with those already in a font, the
+best method is now to run Xgridfit in merge-mode (option \-m).
+.SH OPTIONS
+.IP "\-c"
+Look for a <default type="compile-globals"/> element in each file
+after the first in the list. If value="no" then ignore all
+<default>, <control-value>, <function>, <macro> and <pre-program>
+elements in the file.
+.IP "\-h"
+Display a help message.
+.IP "\-n"
+Merge <no-compile> elements from all files. <glyph> elements
+with duplicate "ps-name" attributes are ignored.
+.IP "\-o file"
+The file to write the output to. If this option is not used,
+output is written to stdout.
+.IP "\-p"
+When a <pre-program> element in a file other than file-a is
+available, use it instead of the one from file-a. If this option
+is not present, xgfmerge merges the programming in the
+<pre-program> of file-a with that in the <pre-program>
+of whichever file is being merged at the moment.
+The result is unlikely to be good
+if a single run of xgfmerge merges the contents of more than two
+<pre-program> elements.
+.IP "\-s"
+Sort <glyph> elements in the output file into alphabetical order.
+.IP "\-v"
+Verbose output: xgfmerge tells you what it is doing at each
+step.
+.IP "\-x"
+Resolve XIncludes before merging all files in the list except for
+file-a. Any XIncludes
+from file-a.xgf are stripped out of the files before
+this operation is performed. If XInclude is used to bring
+global elements (<control-value>, <function>, etc.) into these
+files, it is probably a good idea to use the \-c option as well.
+.SH FILES
+.TP
+.I /usr/share/xml/xgridfit/util/merge.xsl
+An XSLT script that performs the merge.
+.TP
+.I /usr/share/xml/xgridfit/util/xinclude.xsl
+An XSLT script that strips out unwanted XIncludes.
+.TP
+.I /usr/share/xml/xgridfit/util/sort-glyphs.xsl
+An XSLT script that sorts glyph elements in a file.
+.TP
+.I /usr/share/xml/xgridfit/utils/add-blanks.sed
+Does some formatting of the output.
+.SH SEE ALSO
+.BR xgridfit (1),
+.BR ttx (1),
+.BR ttx2xgf (1).
+.\" .br
+.SH AUTHOR
+.B Xgfmerge
+was written by Peter Baker
+.nh
+<psb6m@virginia.edu>.
+.hy 
+.PP
+This manual page was written by Peter Baker

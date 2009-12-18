@@ -1,0 +1,88 @@
+#!/bin/bash
+
+XSLT_DIR=@xgridfit_dir@/utils/
+#XSLT_DIR=/usr/local/share/xml/xgridfit/utils/
+ACTION='2'
+
+usage() {
+    cat <<Here-is-the-usage-text
+
+usage: xgfupdate file
+
+Options:
+ -h      display this help message
+ -v 1|2  1=Update Xgridfit program to version 1.0
+         2=Update Xgridfit program to version 2.1
+             (default is 2)
+
+Output is written to stdout. Redirect to a file as follows:
+$ xgfupdate myfont.xgf > myfont-new.xgf
+
+Here-is-the-usage-text
+}
+
+parseopts() {
+    while getopts "hv:" optname
+    do
+      case "$optname" in
+	  "h")
+	      usage
+	      exit 0
+	      ;;
+	  "v")
+	      ACTION=$OPTARG
+	      ;;
+	  "?")
+              usage 1>&2
+              exit 1
+              ;;
+	  ":")
+              usage 1>&2
+              exit 1
+              ;;
+	  *)
+              echo "mysterious error"
+	      usage 1>&2
+	      exit 1
+              ;;
+      esac
+    done
+    return $OPTIND
+}
+
+runscript() {
+    FNAME=$1
+    if [ -z "$FNAME" ]
+    then
+	usage 1>&2
+	exit 1
+    fi
+    if [ ! -f "$FNAME" ]
+    then
+	echo "File $FNAME does not exist" 1>&2
+	exit 1
+    fi
+    case $ACTION in
+	'1')
+	    CMD="xsltproc ${XSLT_DIR}xgf-update.xsl $FNAME"
+	    CMD=$CMD" | xmllint --format - | sed -f ${XSLT_DIR}add-blanks.sed"
+	    eval $CMD
+	    ;;
+	'2')
+	    CMD="xsltproc ${XSLT_DIR}xgf-add-namespace.xsl"
+	    if grep -q "<xgridfit" $FNAME
+		then
+		CMD=$CMD" $FNAME"
+		else
+		echo "Warning: file \"$FNAME\" contains no <xgridfit> element. I will add one." 1>&2
+		CMD="xsltproc ${XSLT_DIR}add-xgridfit-element.xsl $FNAME | "$CMD" -"
+	    fi
+	    CMD=$CMD" | xmllint --format - | sed -f ${XSLT_DIR}add-blanks.sed"
+	    eval $CMD
+	    ;;
+    esac
+}
+
+parseopts "$@"
+argstart=$?
+runscript "${@:$argstart}"
