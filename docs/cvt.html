@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#control-values">&lt;control-value&gt;</a>
+<a href="#set-control-value">&lt;set-control-value&gt;</a>
+<a href="#set-control-value">&lt;with-control-value&gt;</a>
+<a href="#set-control-value-cut-in">&lt;set-control-value-cut-in&gt;</a>
+<a href="#set-control-value-cut-in">&lt;with-control-value-cut-in&gt;</a>
+<a href="#control-value-index">&lt;control-value-index&gt;</a>
+</div>
+
+<div id="content">
+
+  <h1>Control Values</h1>
+  <p>
+    A control value is a specialized variable consulted by TrueType
+    instructions that position points precise distances from the grid
+    origin or from other points. The TrueType instructions that use
+    control values are MIRP and MIAP; the Xgridfit instructions that
+    use them are &lt;mirp&gt;, &lt;miap&gt;, &lt;move&gt; and
+    &lt;diagonal-stem&gt;.
+  </p>
+  <p>
+    All control values are global--visible to all functions and glyph
+    programs, and also the pre-program. (But see below.)  Control
+    values are defined by &lt;control-value&gt; elements; these are
+    top-level elements (children of &lt;xgridfit&gt;).
+  </p>
+  <p>
+    A &lt;control-value&gt; element looks like this:
+  </p>
+  <pre>
+    &lt;control-value name="lc-vert-stem" value="230"/&gt;</pre>
+  <p>
+    The <tt>name</tt> attribute names the control value, and
+    <tt>value</tt> is a distance in "font units," the units of the
+    grid on which the font was designed (for TrueType fonts, usually
+    2048 units per em, but frequently 1000, as in PostScript Type 1
+    fonts). Before any of your programming runs, the TrueType engine
+    converts all control values to the units of the current raster
+    grid. The numbers you supply must be integers; but by the time
+    your &lt;pre-program&gt; runs, they are "f26dot6" fixed-point
+    numbers. Your &lt;pre-program&gt; may make any necessary
+    adjustments by rounding these numbers, applying deltas to them, or
+    setting new values.
+  </p>
+  <p>
+    Put a control value to use by passing its <tt>name</tt> to a
+    TrueType instruction--in Xgridfit, usually via the
+    <tt>distance</tt> attribute of the &lt;move&gt; element:
+  </p>
+  <pre>
+    &lt;move distance="lc-horz-thin-curve"&gt;
+      &lt;reference&gt;
+        &lt;point num="top"/&gt;
+      &lt;/reference&gt;
+      &lt;point num="top-below"/&gt;
+    &lt;/move&gt;</pre>
+  <p>
+    This element moves the point "top-below" along the freedom vector
+    until it is positioned the distance "lc-horz-thin-curve" (as
+    measured along the projection vector) from the reference point
+    "top." Notice how the name "lc-horz-thin-curve" suggests a
+    standard measurement that is likely to occur repeatedly in a
+    font. In fact, the thin curves at the tops or bottoms of certain
+    characters (e.g. <b>0</b> and <b>o</b>) may differ slightly in
+    width; but at low resolutions such slight differences can get
+    magnified, causing the font to look blobby.  One important
+    function of control values is to standardize such approximately
+    equal distances.
+  </p>
+  <h2 id="local">Simulating Local Control Values</h2>
+  <p>
+    Though all control values are global, you can simulate local
+    variables by reserving certain control values for local use and
+    assigning them names within the glyph program. For example, if you
+    want to reserve two control values for local use, define these
+    somewhere in your list of global control values:
+  </p>
+  <pre>
+    &lt;control-value name="cvt-local-1" value="0"/&gt;
+    &lt;control-value name="cvt-local-2" value="0"/&gt;</pre>
+  <p>
+    These same two control values can be assigned different values by
+    various glyph programs.  Simply rename them with &lt;alias&gt;
+    elements among the declarations at the top of the glyph program:
+  </p>
+  <pre>
+    &lt;alias name="thin-diagonal" target="cvt-local-1"/&gt;
+    &lt;alias name="thick-diagonal" target="cvt-local-2"/&gt;</pre>
+  <p>
+    Now use &lt;set-control-value&gt; to assign values to these
+    control values. By default this element uses font units (the units
+    of the grid on which you designed your font--usually 1000 or 2048
+    units per em).
+  </p>
+  <pre>
+    &lt;set-control-value name="thin-diagonal" value="64"/&gt;
+    &lt;set-control-value name="thick-diagonal" value="114"/&gt;</pre>
+  <p>
+    Now you can use the names you have assigned these control values
+    as you would the name of any control value.
+  </p>
+  <h2 id="cut-in-expl">The Control Value Cut-in</h2>
+  <p>
+    The normalizing function of the control value is desirable only at
+    low resolutions.  Slight irregularities (assuming they are part of
+    the font's design) should be allowed to emerge at higher
+    resolutions. The mechanism for permitting this to take place is
+    the control value cut-in. The cut-in is an F26dot6 fixed-point
+    number, set via the &lt;set-control-value-cut-in&gt; and
+    &lt;with-control-value-cut-in&gt; elements; the <tt>cut-in</tt>
+    attribute of the &lt;mirp&gt;, &lt;miap&gt;, &lt;move&gt; and
+    &lt;diagonal-stem&gt; elements determines whether the cut-in is
+    consulted when executing those instructions.  The cut-in is used
+    by default, so you only need to specify the <tt>cut-in</tt>
+    attribute when its value is "no."
+  </p>
+  <p>
+    When executing the MIRP or MIAP instruction, the TrueType engine
+    compares the cut-in to the difference between the distance in the
+    control value table and the distance in the original outline. If
+    this difference is greater than the value of the cut-in, the
+    original distance is used; otherwise the distance is that of the
+    control value.
+  </p>
+  <p>
+    For an illustration, let's return to the example of the
+    &lt;move&gt; element above. If executed with the default cut-in
+    value of 17/16 (1.0625) at 500 pixels per em, the original
+    distance is used in preference to the control value, and the
+    result is as in the leftmost figure (where the original outline is
+    in black and the gridfitted outline in green). If the cut-in is
+    set at 5.0p and the same instruction is executed, the control
+    value is used rather than the original distance, with the result
+    that the gridfitted outline differs significantly from the
+    original.
+  </p>
+  <table>
+    <tr><td>
+      <img alt="at 500 ppem with default cut-in" src="o-top-500-n.gif"/>
+    </td>
+      <td>
+        <img alt="at 500 ppem with cut-in of 5p" src="o-top-500-y.gif"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    By contrast, if we were to make the same experiment at 50 pixels
+    per em, the outlines would look the same, since the control value
+    would be used in both cases.
+  </p>
+  <h2>Elements Relating to Control Values</h2>
+  <p>
+    The <tt>name</tt> of a control value can be used in many
+    contexts. In an <a href="arithmetic.html">arithmetic</a> element,
+    the <tt>name</tt> always resolves to the actual value of the
+    control value. In an <a href="expressions.html">expression</a>, on
+    the other hand, it always resolves to the index of the control
+    value (its position in the table of control values; the number
+    that must be passed to the MIRP or MIAP instruction). You must use
+    the <tt>control-value()</tt> operator if you wish to reference the
+    actual value in an expression.
+  </p>
+  <p>
+    Probably the arithmetic element used most often to operate on a
+    control value is &lt;round&gt;. In the &lt;pre-program&gt; it is
+    common to round frequently used control values; this instruction
+    will do it:
+  </p>
+  <pre>
+     &lt;round value="lc-vert-stem"/&gt;</pre>
+  <p>
+    That element does the same as this, which uses an <a
+    href="expressions.html">expression</a> in the <tt>source</tt>
+    attribute:
+  </p>
+  <pre>
+     &lt;set-equal target="lc-vert-stem"
+                source="round(control-value(lc-vert-stem))"/&gt;</pre>
+  <p>
+    or this, which does essentially the same job:
+  </p>
+  <pre>
+    &lt;set-control-value name="lc-vert-stem" unit="pixel"
+                value="round(control-value(lc-vert-stem))"/&gt;</pre>
+  <h3 id="control-values">&lt;control-value&gt;</h3>
+  <p>
+    The font's Control Value Table is built from the
+    &lt;control-value&gt; elements. Each &lt;control-value&gt; has a
+    <tt>name</tt> (which must be unique) and a numerical
+    <tt>value</tt>. The index of the &lt;control-value&gt; is
+    generated by Xgridfit, and no attempt should be made to predict
+    it: Xgridfit instructions should use only the names of
+    &lt;control-value&gt;s, though the index may be derived and used
+    at run time.
+  </p>
+
+  <h3 id="set-control-value">&lt;set-control-value&gt;<br/>
+  &lt;with-control-value&gt;</h3>
+  <p>
+    You can assign a value to a control value anywhere: in the
+    &lt;pre-program&gt;, a &lt;function&gt;, or a &lt;glyph&gt;
+    program. The value you assign can be either in font units (the
+    units of the grid on which you designed the font) or in pixel
+    units (the grid on which the glyph is now being rasterized). To
+    specify which, include the attribute <tt>unit="font"</tt> or
+    <tt>unit="pixel"</tt> ("font" is the default). You must specify
+    the name of the control value with the <tt>name</tt> attribute and
+    the value (an integer in font units or an "F26Dot6" number in
+    pixel units) with the <tt>value</tt> attribute.
+  </p>
+  <p>
+    Use &lt;with-control-value&gt;, which takes attributes exactly
+    like those of &lt;set-control-value&gt;, to assign a control value
+    to be used only within the &lt;with-control-value&gt;
+    element. After this element, the value will be the same as it was
+    before.
+  </p>
+
+  <h3 id="set-control-value-cut-in">&lt;set-control-value-cut-in&gt;<br/>
+  &lt;with-control-value-cut-int&gt;</h3>
+  <p>
+    A distance in 64ths of a pixel. If the difference between a
+    distance from a &lt;control-value&gt; element and the original
+    distance is greater than this, the original distance is used.  The
+    effect is generally to use the &lt;control-value&gt; distance at
+    low resolutions and the original distance at high
+    resolutions. This can be used to promote evenness at small sizes,
+    where a 1-pixel difference between the width of (say) p and b can
+    look bad. The default value is 17/16: that is, 1.0625p or 68.
+  </p>
+
+  <h3 id="control-value-index">&lt;control-value-index&gt;</h3>
+  <p>
+    Assigns the index of a control value to a variable. Use this if
+    you need to get such an index for any reason, since the
+    &lt;set-equal&gt; instruction yields the value, not the index, of
+    a control value.
+  </p>
+</div>
+</body>
+</html>

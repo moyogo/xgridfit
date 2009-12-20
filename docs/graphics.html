@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img
+  src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4"
+  width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+  <hr/>
+  <a href="#read-write">Reading and Writing</a>
+  <a href="#set-default">Setting Defaults</a>
+  <a href="#engine">Engine and Glyph Info</a>
+  <a href="#storage">Graphics and Storage Area</a>
+  <a href="#other-defaults">Other Defaults</a>
+</div>
+
+<div id="content">
+  <h1>The Graphics State and Xgridfit Defaults</h1>
+  
+  <p>
+    The graphics state is a collection of variables that control the
+    behavior of TrueType instructions. These include the <a
+    href="round.html">round state</a>, <a
+    href="vectors.html">vectors</a>, <a
+    href="cvt.html#cvt-cut-in">control-value cut-in</a>, <a
+    href="reference.html#set-minimum-distance">minimum distance</a>,
+    <a href="reference.html#set-single-width">single width</a>, <a
+    href="reference.html#set-auto-flip">auto flip</a>, <a
+    href="reference.html#set-dropout-control">dropout control</a>, <a
+    href="deltas.html#set-delta-shift">delta shift</a>, <a
+    href="deltas.html#set-delta-base">delta base</a>, and <a
+    href="reference.html#enable-instructions">enable</a>/<a
+    href="reference.html#disable-instructions">disable
+    instructions</a>. The graphics state also includes the <a
+    href="reference.html#srp">reference pointers</a> and <a
+    href="reference.html#szp">zone pointers</a>, but it is not
+    recommended that you set these directly in Xgridfit. The uses of
+    the graphics variables are described elsewhere in this
+    documentation: this section describes how the graphics variables
+    are controlled in Xgridfit.
+  </p>
+  <h2 id="read-write">Reading and Writing the Graphics State</h2>
+  <p>
+    The most important graphics variables can be accessed in any of
+    three ways: they can be set via a "set" instruction or a "with"
+    block, and they can be read or set via a special variable.
+  </p>
+  <p>
+    A "set" instruction simply sets the graphics variable, which
+    remains as set until the end of the glyph program, or until set by
+    another instruction. These are the "set"
+    instructions in Xgridfit:
+  </p>
+  <ul>
+    <li><a href="reference.html#set-auto-flip">&lt;set-auto-flip&gt;</a></li>
+    <li><a href="reference.html#set-control-value-cut-in">&lt;set-control-value-cut-in&gt;</a></li>
+    <li><a href="reference.html#set-delta-base">&lt;set-delta-base&gt;</a></li>
+    <li><a href="reference.html#set-delta-shift">&lt;set-delta-shift&gt;</a></li>
+    <li><a href="reference.html#set-dropout-control">&lt;set-dropout-control&gt;</a></li>
+    <li><a href="reference.html#set-dropout-type">&lt;set-dropout-type&gt;</a></li>
+    <li><a href="reference.html#set-dual-projection-vector">&lt;set-dual-projection-vector&gt;</a></li>
+    <li><a href="reference.html#set-freedom-vector">&lt;set-freedom-vector&gt;</a></li>
+    <li><a href="reference.html#set-minimum-distance">&lt;set-minimum-distance&gt;</a></li>
+    <li><a href="reference.html#set-projection-vector">&lt;set-projection-vector&gt;</a></li>
+    <li><a href="reference.html#set-round-state">&lt;set-round-state&gt;</a></li>
+    <li><a href="reference.html#set-single-width">&lt;set-single-width&gt;</a></li>
+    <li><a href="reference.html#set-single-width-cut-in">&lt;set-single-width-cut-in&gt;</a></li>
+    <li><a href="reference.html#set-vectors">&lt;set-vectors&gt;</a></li>
+  </ul>
+  <p>
+    A "with" block is a block of code enclosed by an element whose
+    name begins "with-": a graphics variable is set before the code in
+    the "with" block is executed, and afterwards is restored to its
+    former state. Example:
+  </p>
+  <pre>
+    &lt;with-minimum-distance value="0.55"&gt;
+       &lt;diagonal-stem round="no"&gt;
+         &lt;line ref="line1"/&gt;
+         &lt;line ref="line2"/&gt;
+       &lt;/diagonal-stem&gt;
+    &lt;/with-minimum-distance&gt;
+  </pre>
+  <p>
+    These are the "with" elements in Xgridfit (note that a few "set"
+    elements do not have corresponding "with" elements):
+  </p>
+  <ul>
+    <li><a href="reference.html#set-control-value-cut-in">&lt;with-control-value-cut-in&gt;</a></li>
+      <li><a href="reference.html#set-delta-base">&lt;with-delta-base&gt;</a></li>
+      <li><a href="reference.html#set-delta-shift">&lt;with-delta-shift&gt;</a></li>
+      <li><a href="reference.html#set-freedom-vector">&lt;with-freedom-vector&gt;</a></li>
+      <li><a href="reference.html#set-minimum-distance">&lt;with-minimum-distance&gt;</a></li>
+      <li><a href="reference.html#with-param">&lt;with-param&gt;</a></li>
+      <li><a href="reference.html#set-projection-vector">&lt;with-projection-vector&gt;</a></li>
+      <li><a href="reference.html#set-round-state">&lt;with-round-state&gt;</a></li>
+      <li><a href="reference.html#set-single-width">&lt;with-single-width&gt;</a></li>
+      <li><a href="reference.html#set-single-width-cut-in">&lt;with-single-width-cut-in&gt;</a></li>
+      <li><a href="reference.html#set-vectors">&lt;with-vectors&gt;</a></li>
+  </ul>
+  <p>
+    A graphics variable can be read by any instruction that can read
+    variables, and most of them can be written by any instruction that
+    can write to variables. Here is an example of how a graphics
+    variable might be read:
+  </p>
+  <pre>
+    &lt;with-minimum-distance value="minimum-distance * 0.66"&gt;
+       &lt;diagonal-stem round="no"&gt;
+         &lt;line ref="line1"/&gt;
+         &lt;line ref="line2"/&gt;
+       &lt;/diagonal-stem&gt;
+    &lt;/with-minimum-distance&gt;
+  </pre>
+  <p>
+    And here is an example of how a graphics variable might be written
+    to:
+  </p>
+  <pre>
+    &lt;set-equal target="minimum-distance" source="minimum-distance * 0.66"/&gt;
+  </pre>
+  <p>
+    The code above has the same effect as this:
+  </p>
+  <pre>
+    &lt;set-minimum-distance value="minimum-distance * 0.66"/&gt;
+  </pre>
+  <p>
+    These graphics variables can be both read and written to:
+  </p>
+  <ul>
+    <li>minimum-distance</li>
+    <li>control-value-cut-in</li>
+    <li>single-width</li>
+    <li>single-width-cut-in</li>
+    <li>delta-base</li>
+    <li>delta-shift</li>
+  </ul>
+  <p>
+    Each of these variables has a "default" variant,
+    e.g. <tt>minimum-distance-default</tt>, which records the default
+    value, that is, the value the variable has at the beginning of
+    each glyph program. These may be written to only in the
+    &lt;pre-program&gt; (where writing to them sets the default
+    value); but they may be used elsewhere to restore a default value:
+  </p>
+  <pre>
+    &lt;set-minimum-distance value="minimum-distance-default"/&gt;
+  </pre>
+  <p>
+    There are two graphics variables that relate to the round state:
+    <tt>round-state</tt> and <tt>custom-round-state</tt>. These are
+    both read-only: the round state can be set only via
+    &lt;set-round-state&gt; and &lt;with-round-state&gt;. The
+    value of <tt>round-state</tt> can be tested against these
+    constants:
+  </p>
+  <ul>
+    <li>to-grid</li>
+    <li>to-half-grid</li>
+    <li>to-double-grid</li>
+    <li>down-to-grid</li>
+    <li>up-to-grid</li>
+    <li>no</li>
+    <li>custom</li>
+  </ul>
+  <p>
+    When <tt>round-state = custom</tt>, the value of the period, phase
+    and threshold is stored in <tt>custom-round-state</tt>. The three
+    values are not separated here, as they are in the
+    &lt;round-state&gt; element; rather, the three values are ANDed
+    into a single number, which is more suitable for storage and
+    retrieval than for analysis.
+  </p>
+  <p>
+    There are two other read-only values in the graphics state:
+    <tt>pixels-per-em</tt> and <tt>point-size</tt>. Of these,
+    <tt>pixels-per-em</tt> tends to be the more useful, and it is
+    often used to decide when to alter the outline at low resolution:
+  </p>
+  <pre>
+    &lt;if test="pixels-per-em &amp;lt; 20"&gt;
+      . . .
+    &lt;/if&gt;
+  </pre>
+  <h2 id="set-default">Setting Defaults</h2>
+  <p>
+    A default value for a graphics variable is the value it has at the
+    beginning of each glyph program. There are two ways to set
+    defaults in Xgridfit: one is simply to place a "set" element
+    anywhere in the &lt;pre-program&gt;. The second, and recommended,
+    method is to include a &lt;default&gt; element in the top level of
+    your program file, thus:
+  </p>
+  <pre>
+    &lt;default type="minimum-distance" value="0.9"&gt;
+  </pre>
+  <p>
+    That is, in the &lt;default&gt; element, the <tt>type</tt>
+    attribute identifies the graphics default to set, and the
+    <tt>value</tt> attribute is the value. These types are available
+    for use in &lt;default&gt; elements:
+  </p>
+  <ul>
+    <li>minimum-distance</li>
+    <li>control-value-cut-in</li>
+    <li>single-width</li>
+    <li>single-width-cut-in</li>
+    <li>delta-base</li>
+    <li>delta-shift</li>
+    <li>round-state</li>
+  </ul>
+  <p>
+    To reset any of these to the default value you have set (or to the
+    TrueType default if you have not set one yourself), pass one of
+    these types to &lt;restore-default&gt;, thus:
+  </p>
+  <pre>
+    &lt;restore-default name="delta-shift"/&gt;
+  </pre>
+  <p>
+    If you want the TrueType engine to reject all attempts to set
+    defaults (that is, if you want to use only the defaults that are
+    standard for TrueType), include this:
+  </p>
+  <pre>
+    &lt;default type="use-truetype-defaults" value="yes"/&gt;
+  </pre>
+  <p>
+    The result will be that "set" instructions encountered in the
+    &lt;pre-program&gt; will not set defaults, and &lt;default&gt;
+    elements that set the graphics state will be ignored.
+  </p>
+  <h2 id="engine">Getting Information about the Engine and Glyph</h2>
+  <p>
+    You can get a limited amount of information about the TrueType
+    engine.  These read-only values are available for use in such
+    contexts as &lt;if&gt; elements and expressions:
+  </p>
+  <ul>
+    <li>
+      <tt>engine-version</tt>: returns a number that corresponds to a
+      specific version of the TrueType engine (or "scaler"). (This is
+      different from a version number such as "Xgridfit version
+      1.6."). The result can be tested against any of these constants:
+      <ul>
+	<li>engine-mac-6-init (1)</li>
+	<li>engine-mac-7 (2)</li>
+	<li>engine-windows-3-1 (3)</li>
+	<li>engine-freetype-1 (3)</li>
+	<li>engine-kanjitalk-6-1 (4)</li>
+	<li>engine-ms-1-5 (33)</li>
+	<li>engine-ms-1-6 (34)</li>
+	<li>engine-ms-1-6-plus (36)</li>
+	<li>engine-ms-1-7 (35)</li>
+	<li>engine-freetype-2 (35)</li>
+	<li>engine-ms-1-8 (37)</li>
+	<li>engine-ms-1-9 (38)</li>
+      </ul>
+      Here's a snippet of code to illustrate:
+      <pre>
+	&lt;if test="engine-version = engine-freetype-2"&gt;
+	  &lt;!-- code here --&gt;
+	&lt;/if&gt;</pre>
+    </li>
+    <li>
+      <tt>is-cleartype-enabled</tt>. This value will be true
+      (non-zero) if Microsoft's ClearType system is enabled.
+    </li>
+    <li>
+      <tt>is-compatible-width-enabled</tt>. This value will be true if
+      "compatible-width" ClearType is enabled. In this system, the
+      engine makes sure that use of ClearType does not change the text
+      layout.
+    </li>
+    <li>
+      <tt>is-symmetrical-smoothing-enabled</tt>. True if "symmetrical
+      smoothing" ClearType is enabled. If you have a use for this, you
+      presumably know what "symmetrical smoothing" is.
+    </li>
+    <li>
+      <tt>is-BGR-order</tt>. According to the Microsoft specification,
+      this is true if "ClearType is processing the LCD stripes in BGR
+      (Blue, Green, Red) order."
+    </li>
+  </ul>
+  <p>
+    You can also get information about the current glyph, which may
+    influence whether or how to write instructions:
+  </p>
+  <ul>
+    <li>
+      <tt>is-glyph-rotated</tt>. True (non-zero) if the current glyph
+      has been rotated.
+    </li>
+    <li>
+      <tt>is-glyph-stretched</tt>. True if the current glyph has been
+      stretched.
+    </li>
+    <li>
+      <tt>is-glyph-grayscale</tt>. True if the current glyph has been
+      rasterized for grayscale.
+    </li>
+    <li>
+      <tt>is-glyph-transformed</tt>. True if one or more of the above
+      three transformations has been performed.
+    </li>
+  </ul>
+  <h2 id="storage">The Graphics State and the Storage Area</h2>
+  <p>
+    Most TrueType graphics variables are write-only; that is, the
+    TrueType engine provides no instructions for determining their
+    current values. Xgridfit tracks the values of graphics variables
+    by using several reserved locations in the TrueType storage
+    area--the same area that is used to store variables. In order to
+    make sure that this system functions correctly, you should take
+    the following precautions:
+  </p>
+  <ul>
+    <li>
+      If your program file contains legacy code, set &lt;default
+      type="legacy-storage"/&gt; so that Xgridfit and the legacy code
+      will not be writing to the same storage locations. The easiest
+      way to determine the correct value for <tt>legacy-storage</tt>
+      is to copy the maxStorage value from the maxp table. Xgridfit's
+      conversion utility <tt>ttx2xgf</tt> does this for you
+      automatically. (<b>N.B. Merge-mode manages the storage area for
+      you automatically.</b>)
+    </li>
+    <li>
+      Avoid using low-level &lt;command&gt; elements to set graphics
+      variables, except in legacy code. This instruction:
+      <pre>
+	&lt;command name="SMD" value="54"/&gt;</pre>
+      will set the minimum distance, but subsequent attempts to read
+      the <tt>minimum-distance</tt> graphics variable will yield
+      mistaken results, and the &lt;with-minimum-distance&gt; element
+      will restore the wrong value at the end of the block.
+    </li>
+  </ul>
+  <h2 id="other-defaults">Other Defaults</h2>
+  <p>
+    Several important defaults other than those relating to the
+    graphics state are also controlled with &lt;default&gt; elements
+    in the top level of your program file. These set values in the
+    TrueType maxp table or control aspects of the Xgridfit compiler's
+    behavior:
+  </p>
+  <ul>
+    <li>
+      <tt>max-twilight-points</tt>. Sets the number of points
+      available in the twilight zone.
+    </li>
+    <li>
+      <tt>max-storage</tt>. Sets the number of locations available in
+      the TrueType storage area. The default value is 64, which allows
+      for 24 reserved locations used by Xgridfit and 40 variables
+      defined by your programming. Increase or decrease this value
+      depending on the number of variables that are likely to be in
+      use at one time in your programs.
+    </li>
+    <li>
+      <tt>max-stack</tt>. Sets the size of the run-time stack. The
+      default is 256, which is usually large enough for Xgridfit's
+      purposes; but if your font includes legacy programming it may
+      have to be bigger.
+    </li>
+    <li>
+      <tt>legacy-storage</tt>. As explained above, the amount of
+      storage to be reserved for the use of legacy programming. This
+      is determined automatically when an older font is converted for
+      use with Xgridfit.
+    </li>
+    <li>
+      <tt>function-base</tt> tells Xgridfit where to start numbering
+      functions. Use this if you have declared some functions with the
+      <tt>num</tt> attribute (to support legacy code) and you are not
+      satisfied with Xgridfit's standard way of handling that
+      situation (starting the numbering after the highest numbered
+      function).
+    </li>
+    <li>
+      <tt>init-graphics</tt> tells Xgridfit whether or not to
+      initialize variables that will help it to track the graphics
+      state. Usually this is necessary, so the default is "yes"; but
+      if this value is "no," it is not done. This setting may be
+      overridden by including the <tt>init-graphics</tt> attribute on
+      any &lt;glyph&gt; element.
+    </li>
+    <li>
+      <tt>color</tt> is the "color" used for those elements
+      that can perform rounding (chiefly &lt;move&gt;, but also
+      &lt;mirp&gt;, &lt;mdrp&gt;, &lt;round&gt; and &lt;no-round&gt;;
+      also the round() operator) when no other color is
+      specified. Possible values are "black," "white" and "gray"; the
+      default is "gray."
+    </li>
+    <li>
+      <tt>auto-instr</tt> tells the compiler (running in merge-mode)
+      to generate code that makes FontForge auto-instruct a font.
+    </li>
+    <li>
+      <tt>auto-hint</tt> tells the compiler (running in merge-mode) to
+      generate code that makes FontForge auto-hint a font before
+      auto-instructing it. This has no effect except when
+      <tt>auto-instr</tt> is "yes," and then its default value is
+      "yes."
+    </li>
+    <li>
+      <tt>combine-prep</tt> tells the compiler (running in merge-mode)
+      to append the &lt;pre-program&gt; generated by Xgridfit to the
+      one that is already in the font or that is generated by the
+      FontForge auto-instructor. The default value is "yes."
+    </li>
+    <li>
+      <tt>delete-all</tt> tells the compiler to delete all TrueType
+      programming and data before installing Xgridfit code in a
+      font. It is always "yes" if <tt>auto-instr</tt> is "yes."
+    </li>
+    <li>
+      <tt>cv-num-in-compile-if</tt> tells the Xgridfit compiler
+      (running in merge-mode) to resolve any control-value index as a
+      number rather than as a symbol for use in the <tt>test</tt>
+      attribute of the &lt;compile-if&gt; element and in the
+      <tt>compile-if</tt> attribute on various elements. The default
+      value is "no."
+    </li>
+  </ul>
+</div>
+</body>
+</html>
