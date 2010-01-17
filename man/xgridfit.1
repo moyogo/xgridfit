@@ -1,0 +1,213 @@
+.TH XGRIDFIT 1 "2009-12-18"
+.SH NAME
+.B xgridfit 
+\- a program for gridfitting, or "hinting," TrueType fonts
+.SH SYNOPSIS
+.B xgridfit [options]
+.IR file. \|{ xgf
+or
+.IR xml \|}...
+.SH DESCRIPTION
+.B Xgridfit
+is a simple program that implements an XML-based language for gridfitting,
+or "hinting," TrueType fonts. 
+It compiles an XML source file into
+tables and instructions that relate to the gridfitting of glyphs.
+.B Xgridfit
+does not insert these elements into a font itself, but rather relies on
+FontForge, the Open Source font editor, to do this.
+.PP
+For each input file specified on the command line, the
+.B xgridfit
+command generates a script named
+.I file.py.
+You may run this script in
+.I FontForge
+thus:
+
+    $ fontforge \-script file.py
+.PP
+Alternatively, you can skip generation of a script file and
+execute the script (the FontForge Python bindings are required
+for this):
+
+    $ xgridfit --execute file.xgf
+.PP
+For more information about
+.B Xgridfit,
+point your browser to
+.nh
+.I file:///usr/share/doc/xgridfit/html/index.html
+.hy
+or
+.nh
+.I http://xgridfit.sourceforge.net
+.hy .
+.SH OPTIONS
+Note that many of these options can also be
+specified by "default" elements in the program file.
+However, command-line options always override these defaults.
+.IP "\-a value, \-\-max\-stack=value"
+Size of TrueType stack (default is 256)
+.IP "\-A, \-\-auto\-instr"
+Auto-instruct all glyphs in the font before installing Xgridfit
+programming. This option has no effect except in merge-mode
+(option \-m).
+.IP "\-b value, \-\-delta\-break=value"
+Delta Break value: formerly the maximum number of delta pairs that
+could be placed on the stack with a single push instruction.
+As of version 1.11 it approximates that behavior by setting \-p
+option to twice the specified value. This option has no effect
+in Python mode (option \-l py).
+.IP "\-c yes|no, \-\-compile\-globals=yes|no"
+Compile functions, control values,
+pre-program and maxp entries (default is "yes")
+.IP "\-C gray|grey|black|white, \-\-color=gray|grey|black|white"
+Use this color for rounded distances except where specified otherwise
+(default is "gray").
+.IP "\-\-config=file"
+Read this configuration file instead of the default.
+.IP "\-d, \-\-debug\-mode"
+Run in debug mode. Output is
+.I file.debug
+rather than
+.I file.py
+.IP "\-D, \-\-delete-all"
+Delete all instruction-related programming and data before installing
+Xgridfit programming. This option has no effect except in merge-mode
+(option \-m). Otherwise, when the output language is Python, TrueType
+data is deleted except when \-\-compile\-globals=no.
+.IP "\-e"
+Display diagnostic messages (mainly for debugging Xgridfit).
+.IP "\-E, \-\-elapsed\-time"
+Report the time (in seconds) used to run Xgridfit.
+.IP "\-f, \-\-execute"
+Execute the generated script, and do not save it in a file.
+This option overrides \-O, and it is incompatible with \-d, \-S and \-z.
+.IP "\-F file, \-\-data\-file=file"
+In merge-mode, Xgridfit stores and reads information about the
+font's state. By default, this is stored in FontForge's
+font.persistent object, which can be stored only in an .sfd
+file. Use this option to store font information in a file
+instead.
+.IP "\-g glyph+list, \-\-glyph\-select=glyph+list"
+Compile only the specified glyphs, ignoring all others.
+The argument is a list of one or more glyph names, delimited by plus
+signs ("+"). The list must contain no spaces.
+.IP "\-G yes|no, \-\-init\-graphics=yes|no"
+Include or omit at the beginning of each glyph program a function call
+that initializes variables used to track the graphics state.
+The default is "yes." This option can be overridden with the
+init-graphics attribute on any glyph element.
+.IP "\-h, \-\-help"
+Display a help message and exit.
+.IP "\-H yes|no, \-\-auto\-hint=yes|no"
+Auto-hint all glyphs in the font before auto-instructing. This option
+has no effect except when auto-instructing is requested (option \-A).
+.IP "\-i file, \-\-infile=file"
+File to be input by generated script. Must have extension
+.I .sfd
+or
+.I .ttf
+.IP "\-l py|ff, \-\-language=py|ff"
+Whether the output of Xgridfit should be a Python script or
+one in the native
+FontForge scripting language. The default is
+.I py.
+Alternatively, set the environment variable XGRIDFIT_OUTPUT_LANG
+to "ff" or "py".
+.IP "\-m, \-\-merge\-mode"
+Run in merge-mode. Xgridfit produces a Python script that merges
+Xgridfit programming with TrueType programming already present
+in the font.
+.IP "\-o file, \-\-outfile=file"
+File to be output by generated script. Must have extension
+.I .sfd
+or
+.I .ttf
+.IP "\-O file, \-\-output\-script=file"
+Name of script file to be output by Xgridfit, rather than the
+default, which replaces
+.I .xgf
+in the input file with
+.I .py
+.IP "\-p value, \-\-push\-break=value"
+The number of values that can be pushed with a single PUSHB or
+PUSHW instruction. The default is 255, except when the output
+language is ff (\-l ff); then the default is 20.
+.IP "\-P yes|no, \-\-combine\-prep=yes|no"
+Combine the Xgridfit pre-program with the prep table already
+present in the font (merge-mode only; default is yes).
+.IP "\-\-processor=libxslt|lxml|xsltproc|saxon-6|saxon-9|xalan-j|xalan-c|4xslt"
+Select a preferred XSLT processsor. Xgridfit will use this one
+if possible.
+.IP "\-q, \-\-quiet"
+Run in quiet mode. Routine messages are suppressed.
+.IP "\-s value, \-\-max\-storage=value"
+Maximum places in TrueType storage area. This area is used
+to store variables, and also Xgridfit's own run-time data.
+The number must always be 24 or greater
+.IP "\-S name, \-\-output\-base=name"
+Save script for each glyph in a separate file named
+.I name_glyph-name.py
+- or
+.I .pe
+or
+.I .debug
+.IP "\-\-skip\-validation"
+Do not validate the Xgridfit program before compiling.
+.IP "\-t value, \-\-max\-twilight=value"
+Maximum number of points in Twilight zone. The default is
+25, but few fonts require so many
+.IP "\-T file, \-\-temp\-file=file"
+Name of a temporary file in which to store result of XInclude
+processing: the compiler and/or validator is run against this file. If this
+option is used, the file is not deleted after processing;
+if it is not used, the file (named by Xgridfit) is deleted.
+This option is ignored when a temporary file is not needed.
+.IP "\-v, \-\-version"
+Print version number and exit
+.IP \-V
+Validate the Xgridfit program against a schema
+before compiling. Compilation is performed only if
+validation suceeds. By default xmllint is used for
+validation; run xgfconfig to choose another validator.
+.IP "\-\-validator=libxml2|lxml|jing|msv|rnv"
+Select a preferred Relax NG validator. Xgridfit will use this
+validator if possible.
+.IP "\-x, \-\-skip\-compilation"
+Do not compile. Validation is performed unless suppressed.
+.IP "\-X, \-\-no\-xinclude"
+Assume that XInclude processing is unnecessary; do not check.
+.IP "\-z file, \-\-output\-outfile\-script=file"
+When the \-S option is present and the \-o option or the
+<outfile> element has been used to make the output script
+save a font or FontForge source file, the output of the
+<outfile> script is saved in a separate script file. Xgridfit
+will supply a default name for this file, but this option
+lets you supply your own name.
+.SH FILES
+.TP
+.I /usr/share/xml/xgridfit/lib/*.xsl
+All XSLT scripts of the
+.B Xgridfit
+program.
+.SH SEE ALSO
+.BR fontforge (1),
+.BR xgfconfig (1),
+.BR ttx2xgf (1),
+.BR xgfupdate (1).
+.\" .br
+.SH AUTHOR
+.B xgridfit
+was written by Peter Baker
+.nh
+<psb6m@virginia.edu>.
+.hy 
+.PP
+This manual page was written by Kestutis Biliunas
+.nh
+<kebil@kaunas.init.lt>,
+.hy
+for the Debian project (but may be used by others).
+Revised and OPTIONS section added by P. Baker.
