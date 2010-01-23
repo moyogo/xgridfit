@@ -1,0 +1,57 @@
+.TH TTX2XGF 1 "2009-12-18"
+.SH NAME
+.B ttx2xgf
+\- extracts instructions from a TTX file and creates an Xgridfit program.
+.SH SYNOPSIS
+.B ttx2xgf [options]
+.IR infile[.ttx]
+.IR [outfile]
+.SH DESCRIPTION
+.B ttx2xgf
+is a utility that extracts instructions (hints) and other information
+relating to instructions from a TTX file (an XML representation of a
+TrueType font) and creates a new Xgridfit program.
+.PP
+If
+.I infile
+lacks the
+.I .ttx
+extension, it is assumed. If
+.I outfile
+is not given, output is written to
+.I infile.xgf.
+.PP
+.SH OPTIONS
+.IP "\-\-config"
+Path to a configuration file (relative paths are permitted).
+If this is not given, ttx2xgf will look first for a file
+.I config.xml
+in the current directory, next in the user's Xgridfit configuration
+directory, and finally in the Xgridfit base directory.
+.IP "\-e"
+Display diagnostic messages (for debugging).
+.IP "\-E, \-\-elapsed-time"
+Time the running of this program and display the result.
+.IP "\-\-processor=libxslt|lxml|xsltproc|saxon-6|saxon-9|xalan-j|xalan-c|4xslt"
+Select a preferred XSLT processsor; ttx2xgf will use this one
+if possible.
+.SH FILES
+.TP
+.I /usr/share/xml/xgridfit/util/convert-ttx.xsl
+An XSLT script that performs the initial conversion.
+.TP
+.I /usr/share/xml/xgridfit/util/convert-asm.sed
+A Sed script that completes the conversion.
+.SH SEE ALSO
+.BR xgridfit (1),
+.BR xgfconfig (1),
+.BR ttx (1)
+.\" .br
+.SH AUTHOR
+.B ttx2xgf
+was written by Peter Baker
+.nh
+<psb6m@virginia.edu>.
+.hy 
+.PP
+This manual page was written by Peter Baker
