@@ -1,0 +1,95 @@
+.TH XGFCONFIG 1 "2010-01-16"
+.SH NAME
+.B xgfconfig
+\- configuration program for Xgridfit
+.SH SYNOPSIS
+.B xgfconfig options [list]
+.SH DESCRIPTION
+.B Xgfconfig
+selects XSLT processors and RELAX NG validators
+for Xgridfit to use; it can also be used to specify a new Xgridfit
+base directory.
+.PP
+Xgridfit maintains lists of validators and processors; on starting,
+it consults these lists and runs the first validator and processor
+it can find. Xgfconfig reorders these lists so that your preferred
+programs are looked for first. Xgfconfig may be invoked in one of
+these forms:
+
+     $ xgfconfig --processors processor-list
+
+     $ xgfconfig --validators validator-list
+
+     $ xgfconfig --xgridfit-dir /xgridfit/directory
+
+     $ xgfconfig --show
+.PP
+The first of these selects processors (one or more of libxslt, lxml,
+xsltproc, saxon-6, saxon-9, xalan-j, xalan-c, 4xslt); the second
+selects validators (one or more of libxml2, lxml, jing, msv, rnv);
+the third specifies a complete path to the Xgridfit base directory
+(use it if you have installed Xgridfit in your own account rather
+than system wide); the fourth displays the current configuration.
+.PP
+Several of the processors and validators that Xgridfit knows about
+are Java programs; for these, Xgridfit needs the name and location
+of a .jar file (by default it assumes certain standard file names,
+found in /usr/share/java). Specify this with a hash-mark followed
+by a complete
+path-name for the file. Here are sample command lines:
+
+     $ xgfconfig -p saxon-9#/usr/local/share/java/saxon9he.jar lxml
+
+     $ xgfconfig --config=config.xml -V rnv msv#/home/me/java/msv.jar
+.PP
+The second of these commands stores the configuration in the file
+.I config.xml
+in the current directory. (When it starts, Xgridfit looks first for
+a file
+.I config.xml
+in the
+current directory; failing that, it looks for
+.I ~/.xgridfit/config.xml
+(Linux/Mac) or
+.I some-path
+(Windows); finally it looks in the
+Xgridfit base directory before giving up and using the default
+configuration.)
+.PP
+An Xgridfit configuration file is a simple XML file, easily editable
+by users. The entries in it should be all but self-explanatory.
+.hy .
+.SH OPTIONS
+.IP "\-\-config"
+The configuration file to read or write. If this is not specified,
+Xgfconfig will search in the standard places (see above) for an
+existing configuration file for which the user has write privileges.
+Failing that, it will create a configuration file in the directory
+~/.xgridfit (Linux/Mac) or some-dir (Windows). If the user is root
+or has administrative privileges, Xgfconfig will create the file
+in the Xgridfit base directory.
+.IP "\-h, \-\-help"
+Display a help message and exit.
+.IP "\-p, \-\-processors"
+The list following the options is a list of processors.
+.IP "\-s, \-\-show"
+Display the current configuration and exit.
+.IP "\-V, \-\-validators"
+The list following the options is a list of validators.
+.IP "\-x, \-\-xgridfit\-dir"
+Following the options is the full pathname of the Xgridfit base
+directory.
+.SH SEE ALSO
+.BR fontforge (1),
+.BR xgridfit (1),
+.BR ttx2xgf (1),
+.BR xgfupdate (1).
+.\" .br
+.SH AUTHOR
+.B Xgfconfig
+was written by Peter Baker
+.nh
+<psb6m@virginia.edu>.
+.hy 
+.PP
+This manual page was written by Peter Baker
