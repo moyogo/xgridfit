@@ -1,0 +1,7 @@
+#!@python_prog@
+
+from xgflib import run_ttx2xgf
+from sys import exit
+
+if not run_ttx2xgf(xgfdir="@xgridfit_dir@"):
+    exit(1)

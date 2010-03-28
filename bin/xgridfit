@@ -1,0 +1,7 @@
+#!@python_prog@
+
+from sys import exit
+from xgflib import run_xgridfit
+
+if not run_xgridfit(xgfdir="@xgridfit_dir@"):
+    exit(1)
