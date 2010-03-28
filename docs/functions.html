@@ -1,0 +1,801 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+<hr/>
+<a href="#functions">Functions</a>
+<a href="#macros">Macros</a>
+<a href="#glyph">Glyph Programs</a>
+<a href="#callable">Callable Parameters</a>
+<a href="#nesting">Nesting and Recursion</a>
+</div>
+
+<div id="content">
+  <h1>Functions, Macros and Glyph Programs</h1>
+  <p>
+    Functions and macros are blocks of code that you write once and
+    invoke wherever they are needed. The compiled code for a function
+    is stored separately from other code in a font; the function is
+    "called" at run time. The compiled code for a macro is inserted in
+    the program stream at the place where it is called: after
+    compilation there is nothing to distinguish the macro code from
+    any other code in a glyph program. Both the function and the macro
+    can take parameters--that is, values passed to the function or
+    macro from the code that calls it and then consulted or operated
+    upon by the function or macro.
+  </p>
+  <p>
+    A &lt;glyph&gt; program can be called from another &lt;glyph&gt;
+    program, very much as a macro is called. This feature is useful
+    for hinting accented glyphs if you prefer not to use TrueType
+    components. Like a macro, a &lt;glyph&gt; program can take
+    parameters.
+  </p>
+  <h2 id="functions">Functions</h2>
+  <p>
+    In most programming languages, the great value of a function is
+    that it can act upon information that is not known until passed in
+    one or more parameters at run time, and it can operate on a value
+    and return it transformed. And yet there is no standard way to
+    pass parameters to a TrueType function, and no way to return a
+    value from it. In TrueType, functions are numbered rather than
+    named as in most programming languages. Xgridfit overcomes these
+    limitations, providing for the naming of functions, enabling the
+    passing of parameters, and providing a mechanism for returning
+    values.
+  </p>
+  <h3>Defining functions</h3>
+  <p>
+    Each function for a font is defined in a &lt;function&gt;
+    element.  Each &lt;function&gt; is identified by a <tt>name</tt>
+    attribute. If the function takes parameters, these must be defined
+    in &lt;param&gt; elements, which come first in the function:
+  </p>
+  <pre>
+    &lt;function name="my-function"&gt;
+      &lt;param name="first-param"/&gt;
+      &lt;param name="second-param"/&gt;
+      . . .
+    &lt;/function&gt;</pre>
+  <p>
+    A function parameter is a read-only value: it can be referenced in
+    any instruction element that reads values:
+  </p>
+  <pre>
+    &lt;function name="my-function"&gt;
+      &lt;param name="ref-point"/&gt;
+      &lt;param name="move-point"/&gt;
+      &lt;move&gt;
+        &lt;reference&gt;
+          &lt;point num="ref-point"/&gt;
+        &lt;/reference&gt;
+        &lt;point num="move-point"/&gt;
+      &lt;/move&gt;
+    &lt;/function&gt;</pre>
+  <p>
+    A parameter may have a default value, used if the parameter is not
+    specified when the function is called. The value may be a number
+    literal or a global constant. Specify the default value with the
+    <tt>value</tt> attribute (e.g. <tt>value="0"</tt>).
+  </p>
+  <p>
+    A function may return one value (and that value, like all others
+    in Xgridfit, must be a number). A function that returns a value
+    must have the attribute <tt>return="yes"</tt>. Then, within, the
+    function, assign a value to "return," e.g.
+  </p>
+  <pre>
+    &lt;set-equal target="return" source="control-value(stem-width) / 2"/&gt;</pre>
+  <p>
+    For a way around the one-value return limitation, see "Passing
+    parameters by reference" below.
+  </p>
+  <h3>Calling functions</h3>
+  <p>
+    A function may be called (its code executed) from a glyph program,
+    the pre-program, or another function. To call a function, use the
+    &lt;call-function&gt; element, which may contain one or more
+    &lt;with-param&gt; elements, one for each of the function's
+    parameters:
+  </p>
+  <pre>
+    &lt;call-function name="cap-half-standard-serif"&gt;
+      &lt;with-param name="base" value="bottom"/&gt;
+      &lt;with-param name="near-base" value="bottom-serif-bottom"/&gt;
+      &lt;with-param name="opposite-base" value="bottom-serif-top"/&gt;
+    &lt;/call-function&gt;
+  </pre>
+  <p>
+    It frequently makes sense to call a function repeatedly, once for
+    each instance of some visible feature (such as a serif). In that
+    case the content of &lt;call-function&gt; may be several
+    &lt;param-set&gt; elements, each containing one or more
+    &lt;with-param&gt; elements specifing the parameters for one
+    running of the function:
+  </p>
+  <pre>
+    &lt;call-function name="auto-cap-vert-serif"&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="base" value="top-right"/&gt;
+      &lt;/param-set&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="base" value="top-left"/&gt;
+      &lt;/param-set&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="base" value="bottom-right"/&gt;
+      &lt;/param-set&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="base" value="bottom-left"/&gt;
+      &lt;/param-set&gt;
+    &lt;/call-function&gt;
+  </pre>
+  <p>
+    The function is called once for each &lt;param-set&gt; using
+    TrueType's efficient LOOPCALL instruction.
+  </p>
+  <p>
+    The list of parameters for each call to the function must be
+    complete, except for any parameters with default values. Omitting
+    a parameter generates a fatal compile error. The order of
+    parameters in a call is not significant.
+  </p>
+  <p>
+    A parameter <tt>value</tt> can be any value or expression, as long
+    as it can be resolved to a number at run time. It cannot be a more
+    complex structure--a &lt;line&gt;, &lt;range&gt; or &lt;set&gt;.
+    Variables are by default passed to functions by value, while
+    control values are passed by reference. This may seem like an
+    inconsistency, but it is the behavior that is most often
+    wanted. It can easily be overridden, as the next section explains.
+  </p>
+  <p>
+    Global constants and variables are visible from a function; and
+    the function can contain its own variables, defined in
+    &lt;variable&gt; elements just after the &lt;param&gt; elements.
+  </p>
+  <p>
+    A &lt;call-function&gt; element for a function that returns a
+    value should ordinarily have a <tt>result-to</tt> attribute
+    specifying a variable, control value, or a graphics variable that
+    can be written to. If this element is missing, the Xgridfit
+    compiler issues a warning and the value is left on the stack.
+  </p>
+  <h3 id="function-variant">Function Variants</h3>
+  <p>
+    Function variants are alternative versions of a function to be
+    used at different sizes or resolutions. Define function variants
+    by including one or more &lt;variant&gt; elements at the end of a
+    function definition, thus:
+  </p>
+  <pre>
+    &lt;function name="myfunc"&gt;
+      &lt;param name="myparam"/&gt;
+      &lt;!-- default function programming --&gt;
+      &lt;variant test="pixels-per-em &amp;lt; 20"&gt;
+        &lt;!-- programming to be used at less than 20 pixels per em. --&gt;
+      &lt;/variant&gt;
+      &lt;variant test="pixels-per-em &amp;gt; 100"&gt;
+        &lt;!-- programming to be used at greater than 100 pixels per em. --&gt;
+      &lt;/variant&gt;
+    &lt;/function&gt;
+  </pre>
+  <p>
+    Though you define functions with variants along with other
+    functions (those that lack variants), the TrueType engine actually
+    defines them when the &lt;pre-program&gt; is run. Thus the
+    <tt>test</tt> attribute of the &lt;variant&gt; element, which
+    determines whether a particular variant is to be used, may be
+    based on whatever is known at that time--typically size and
+    resolution information.
+  </p>
+  <p>
+    A function variant cannot have its own &lt;param&gt; or
+    &lt;variable&gt; definitions; it always uses those of the function
+    in which it is embedded. In the example above, the
+    <tt>myparam</tt> parameter is visible inside the &lt;variant&gt;
+    elements just as it is in the default programming (that which is
+    not inside a &lt;variant&gt; element and which is used if none of
+    the <tt>test</tt> attribute evaluate as true at run-time).
+  </p>
+  <p>
+    If you have defined more than one &lt;variant&gt; for a function,
+    the <tt>test</tt> attributes should be exclusive: that is, no more
+    than one should evaluate as true at any given time. If you do the
+    following:
+  </p>
+  <pre>
+    &lt;function name="myfunc"&gt;
+      . . .
+      &lt;variant test="pixels-per-em &amp;lt; 20"&gt;
+        . . .
+      &lt;/variant&gt;
+      &lt;variant test="pixels-per-em &amp;lt;= 10"&gt;
+        . . .
+      &lt;/variant&gt;
+    &lt;/function&gt;
+  </pre>
+  <p>
+    then at 10 pixels-per-em the TrueType engine will first define the
+    first function variant and then overwrite it with the second. This
+    should not produce an error, but it certainly is an inefficient
+    way of doing things. This is far better:
+  </p>
+  <pre>
+    &lt;function name="myfunc"&gt;
+      . . .
+      &lt;variant test="pixels-per-em &amp;lt; 20 and pixels-per-em &amp;gt; 10"&gt;
+        . . .
+      &lt;/variant&gt;
+      &lt;variant test="pixels-per-em &amp;lt;= 10"&gt;
+        . . .
+      &lt;/variant&gt;
+    &lt;/function&gt;
+  </pre>
+  <p>
+    The advantage of using function variants over using &lt;if&gt;
+    elements within functions to produce different behavior depending
+    on size or resolution is that in the former case the decision
+    which programming to use is made just once, when the
+    &lt;pre-program&gt; is run, while in the latter case the decision
+    is made over and over again, whenever the function is called.
+  </p>
+  <h3>Passing parameters by reference</h3>
+  <p>
+    Suppose you want to write a function that returns a vector. The
+    function can return only a single number, but a vector is a
+    structure consisting of two numbers: x and y coordinates. The
+    limitation on the return from a function can be overcome by
+    passing two variables to the function by reference so that the
+    function can store the vector in those variables. Use the
+    <tt>index()</tt> operator to do so:
+  </p>
+  <pre>
+    &lt;variable name="vector-x"/&gt;
+    &lt;variable name="vector-y"/&gt;
+    . . .
+    &lt;call-function name="get-vector-from-line"&gt;
+      &lt;with-param name="line-a" value="a"/&gt;
+      &lt;with-param name="line-b" value="b"/&gt;
+      &lt;with-param name="x" value="index(vector-x)"/&gt;
+      &lt;with-param name="y" value="index(vector-y)"/&gt;
+    &lt;/call-function&gt;</pre>
+  <p>
+    Since a number in TrueType carries no type information with it,
+    the code inside your function must recognize that the parameters
+    <tt>x</tt> and <tt>y</tt> are references to variables instead of
+    the values of variables, and that they can be written to. Use the
+    <tt>variable()</tt> operator for this purpose.
+  </p>
+  <pre>
+    &lt;function name="get-vector-from-line"&gt;
+      &lt;param name="line-a"/&gt;
+      &lt;param name="line-b"/&gt;
+      &lt;param name="x"/&gt;
+      &lt;param name="y"/&gt;
+      &lt;with-projection-vector to-line="parallel"&gt;
+        &lt;line&gt;
+          &lt;point num="line-a"/&gt;
+          &lt;point num="line-b"/&gt;
+        &lt;/line&gt;
+        &lt;store-projection-vector x-component="variable(x)"
+                                 y-component="variable(y)"/&gt;
+      &lt;/with-projection-vector&gt;
+    &lt;/function&gt;</pre>
+  <p>
+    After the function returns the vector will be stored in variables
+    <tt>vector-x</tt> and <tt>vector-y</tt>.
+  </p>
+  <h2 id="macros">Macros</h2>
+  <p>
+    A macro is a good way to regulate features (such as serifs) that
+    occur frequently and yet do not require large or complex stretches
+    of code. Using a macro can save the overhead of a function call
+    and bypass the somewhat bulky code required to read function
+    parameters. The downside of macros is that, since the compiled
+    code is inserted repeatedly into the font, they can increase the
+    font's size significantly. Macros, then, are most useful for
+    features that are very frequent but also fairly simple.
+  </p>
+  <p>
+    Each macro is defined in a &lt;macro&gt; element. Here is a macro
+    definition that regulates a standard vertical stem with attached
+    serif when one point on the stem is anchored to another point:
+  </p>
+  <pre>
+      &lt;macro name="lc-vert-stem-serif-anchor-dist"&gt;
+        &lt;param name="anchor"/&gt;
+        &lt;param name="distance-from-anchor"/&gt;
+        &lt;param name="stem-a"/&gt;
+        &lt;param name="serif-a"/&gt;
+        &lt;param name="stem-b"/&gt;
+        &lt;param name="serif-b"/&gt;
+        &lt;move distance="distance-from-anchor"&gt;
+          &lt;reference&gt;
+            &lt;point num="anchor"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="stem-a"/&gt;
+          &lt;move distance="lc-serif-width"&gt;
+            &lt;point num="serif-a"/&gt;
+          &lt;/move&gt;
+          &lt;move distance="lc-vert-stroke"&gt;
+            &lt;point num="stem-b"/&gt;
+            &lt;move distance="lc-serif-width"&gt;
+              &lt;point num="serif-b"/&gt;
+            &lt;/move&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+      &lt;/macro&gt;
+  </pre>
+  <p>
+    Here is a call to that macro:
+  </p>
+  <pre>
+    &lt;call-macro name="lc-vert-stem-serif-anchor-dist"&gt;
+      &lt;with-param name="anchor" value="left-left"/&gt;
+      &lt;with-param name="distance-from-anchor" value="hn-width"/&gt;
+      &lt;with-param name="stem-a" value="right-right"/&gt;
+      &lt;with-param name="serif-a" value="right-serif-right"/&gt;
+      &lt;with-param name="stem-b" value="right-left"/&gt;
+      &lt;with-param name="serif-b" value="right-serif-left"/&gt;
+    &lt;/call-macro&gt;</pre>
+  <p>
+    The compiled code, once inserted in the font, is twenty-four bytes
+    in length.
+  </p>
+  <p>
+    Like a function, a macro can take parameters (and the
+    &lt;param&gt; element can contain a <tt>value</tt> attribute with
+    a default value). The <tt>value</tt> of the &lt;param&gt; or
+    &lt;with-param&gt; element is substituted at compile time rather
+    than passed at run time. The &lt;call-macro&gt; element may
+    contain &lt;with-param&gt; elements, if the macro code is to be
+    compiled and inserted just once where the &lt;call-macro&gt;
+    element occurs. Alternatively, the &lt;call-macro&gt; element may
+    contain any number of &lt;param-set&gt; elements, each containing
+    a complete set of &lt;with-param&gt; elements, and the macro code
+    is inserted for each one.
+  </p>
+  <h3>Macro parameters</h3>
+  <p>
+    Though macro parameters look like function parameters, they are
+    much more flexible. The Xgridfit compiler substitutes the
+    <tt>value</tt> in the &lt;with-param&gt; element for the
+    identifier that references the &lt;param&gt; inside the macro;
+    then it proceeds to resolve the <tt>value</tt> as it would any
+    other value. Thus the <tt>value</tt> passed as a parameter may be
+    any kind of expression. The name of a &lt;line&gt;, &lt;range&gt;
+    or &lt;set&gt; can also be passed, and referenced by a
+    <tt>ref</tt> inside the macro.
+  </p>
+  <p>
+    You may not only pass a &lt;line&gt;, &lt;range&gt; or &lt;set&gt;
+    by name, but also declare it as the content of a
+    &lt;with-param&gt; element. This is a convenience when you do not
+    need to use the structure elsewhere in the glyph program:
+  </p>
+  <pre>
+    &lt;with-param name="s"&gt;
+      &lt;set&gt;
+        &lt;point num="p1"/&gt;
+        &lt;point num="p2"/&gt;
+        &lt;point num="p3"/&gt;
+      &lt;/set&gt;
+    &lt;/with-param&gt;
+  </pre>
+  <p>
+    When &lt;with-param&gt; has content the <tt>value</tt> attribute
+    is optional: assign it some arbitrary value if your macro code <a
+    href="points.html#nan-test">tests for the presence of a
+    parameter</a>.
+  </p>
+  <h3>Macros and conditional compilation</h3>
+  <p>
+    You can make macros more flexible by using conditional
+    compilation. Any stretch of code may be compiled conditionally by
+    enclosing it in a <a
+    href="if.html#compile-if">&lt;compile-if&gt;</a> element, and a
+    &lt;move&gt;, &lt;align&gt;, &lt;interpolate&gt;, &lt;shift&gt; or
+    &lt;delta&gt; element can be compiled conditionally by including
+    the <tt>compile-if</tt> attribute. The <tt>test</tt> attribute of
+    &lt;compile-if&gt; and the <tt>compile-if</tt> attribute may
+    contain only expressions that can be evaluated at compile
+    time. But since point numbers in Xgridfit are usually constants,
+    and thus known at compile time, it is usually possible to base
+    conditional compilation on point numbers. For example, the
+    following macro takes eleven parameters, of which six are optional:
+    it can control a visual structure that is either more or less
+    complex:
+  </p>
+  <pre>
+    &lt;macro name="lc-vertical-stem-with-serif-anchor"&gt;
+      &lt;param name="anchor"/&gt;
+      &lt;param name="distance-from-anchor" value="-1"/&gt;
+      &lt;param name="stem-a"/&gt;
+      &lt;param name="stem-a1" value="-1"/&gt;
+      &lt;param name="stem-a2" value="-1"/&gt;
+      &lt;param name="serif-a"/&gt;
+      &lt;param name="stem-b"/&gt;
+      &lt;param name="stem-b1" value="-1"/&gt;
+      &lt;param name="stem-b2" value="-1"/&gt;
+      &lt;param name="serif-b"/&gt;
+      &lt;param name="serif-top" value="-1"/&gt;
+      &lt;compile-if test="distance-from-anchor &amp;gt;= 0"&gt;
+        &lt;move distance="distance-from-anchor"&gt;
+          &lt;reference&gt;
+            &lt;point num="anchor"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="stem-a"/&gt;
+          &lt;move distance="lc-serif-width"&gt;
+            &lt;point num="serif-a"/&gt;
+          &lt;/move&gt;
+        &lt;/move&gt;
+        &lt;else&gt;
+          &lt;move&gt;
+            &lt;reference&gt;
+              &lt;point num="anchor"/&gt;
+            &lt;/reference&gt;
+            &lt;point num="stem-a"/&gt;
+            &lt;move distance="lc-serif-width"&gt;
+              &lt;point num="serif-a"/&gt;
+            &lt;/move&gt;
+          &lt;/move&gt;
+        &lt;/else&gt;
+      &lt;/compile-if&gt;
+      &lt;align compile-if="stem-a1 &amp;gt;= 0 and stem-a2 &amp;lt; 0"&gt;
+        &lt;point num="stem-a1"/&gt;
+      &lt;/align&gt;
+      &lt;align compile-if="stem-a1 &amp;gt;= 0 and stem-a2 &amp;gt;= 0"&gt;
+        &lt;point num="stem-a1"/&gt;
+        &lt;point num="stem-a2"/&gt;
+      &lt;/align&gt;
+      &lt;move distance="lc-vert-stroke"&gt;
+        &lt;reference&gt;
+          &lt;point num="stem-a"/&gt;
+        &lt;/reference&gt;
+        &lt;point num="stem-b"/&gt;
+        &lt;align compile-if="stem-b1 &amp;gt;= 0 and stem-b2 &amp;lt; 0"&gt;
+          &lt;point num="stem-b1"/&gt;
+        &lt;/align&gt;
+        &lt;align compile-if="stem-b1 &amp;gt;= 0 and stem-b2 &amp;gt;= 0"&gt;
+          &lt;point num="stem-b1"/&gt;
+          &lt;point num="stem-b2"/&gt;
+        &lt;/align&gt;
+        &lt;move distance="lc-serif-width"&gt;
+          &lt;point num="serif-b"/&gt;
+        &lt;/move&gt;
+      &lt;/move&gt;
+      &lt;compile-if test="serif-top &amp;gt;= 0"&gt;
+        &lt;move distance="ascender-serif-x-width"&gt;
+          &lt;reference&gt;
+            &lt;point num="stem-a"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="serif-top"/&gt;
+        &lt;/move&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;
+  </pre>
+  <p>
+    This macro can control the points of a simple structure like this one
+  </p>
+  <table>
+    <tr>
+      <td>
+        <img src="l-bottom.png" alt="l"/>
+      </td>
+    </tr>
+  </table>
+  <p>
+    with this call:
+  </p>
+  <pre>
+    &lt;call-macro name="lc-vertical-stem-with-serif-anchor"&gt;
+      &lt;with-param name="anchor" value="an"/&gt;
+      &lt;with-param name="stem-a" value="a"/&gt;
+      &lt;with-param name="stem-b" value="b"/&gt;
+      &lt;with-param name="serif-a" value="c"/&gt;
+      &lt;with-param name="serif-b" value="d"/&gt;
+    &lt;/call-macro&gt;
+  </pre>
+  <p>
+    If points must be aligned with "stem-a" or "stem-b," they can be
+    passed via parameters "stem-a1," "stem-b1," and so on. If there is
+    a top serif, as on a lower-case <b>i</b>, the end point for that
+    serif can also be passed to the macro, and the appropriate code
+    will be compiled:
+  </p>
+  <table>
+    <tr>
+      <td>
+        <img src="i-no-dot.png" alt="l"/>
+      </td>
+    </tr>
+  </table>
+  <pre>
+    &lt;call-macro name="lc-vertical-stem-with-serif-anchor"&gt;
+      &lt;with-param name="anchor" value="an"/&gt;
+      &lt;with-param name="stem-a" value="a"/&gt;
+      &lt;with-param name="stem-b" value="b"/&gt;
+      &lt;with-param name="serif-a" value="c"/&gt;
+      &lt;with-param name="serif-b" value="d"/&gt;
+      &lt;with-param name="serif-top" value="e"/&gt;
+    &lt;/call-macro&gt;
+  </pre>
+  <h2 id="glyph">Glyph Programs</h2>
+  <p>
+    A glyph program may stand by itself and also be called from within
+    another glyph program. It is a simple matter to prepare a glyph
+    program to play such a dual role, and equally simple to call the
+    program. It is handy to be able to call a glyph program if, like a
+    number of font makers, you prefer to avoid using the TrueType
+    component mechanism to make accented glyphs. If you are adding
+    instructions to, say, <b>eacute</b>, then as long as the
+    outlines that constitute the <b>e</b> and the <b>acute</b>
+    portions of the glyph are identical to those of the <b>e</b> and
+    <b>acute</b> glyphs, it makes sense to call the glyph programs
+    for <b>e</b> and <b>acute</b> to instruct the composite. The
+    resulting glyph program might look something like this:
+  </p>
+  <pre>
+    &lt;glyph ps-name="eacute"&gt;
+      &lt;constant name="last" value="89"/&gt;
+      &lt;call-glyph ps-name="e"&gt;
+        &lt;with-param name="interpolate" value="0"/&gt;
+        &lt;with-param name="left-sidebearing" value="last + 1"/&gt;
+        &lt;with-param name="right-sidebearing" value="last + 2"/&gt;
+      &lt;/call-glyph&gt;
+      &lt;call-glyph ps-name="acute" variables="no"&gt;
+        &lt;with-param name="offset" value="66"/&gt;
+        &lt;with-param name="left-sidebearing" value="last + 1"/&gt;
+      &lt;/call-glyph&gt;
+    &lt;/glyph&gt;
+  </pre>
+  <p>
+    The first elements in the &lt;glyph&gt; program being called must
+    be &lt;param&gt; elements; these are exactly like the
+    &lt;param&gt; elements in functions and macros. Because a
+    &lt;glyph&gt; program must be able to run by itself as well as be
+    called, the <tt>value</tt> attribute, which supplies a default
+    value for the &lt;param&gt;, is usually obligatory.
+  </p>
+  <p>
+    The glyph program may take one special parameter, named
+    <tt>offset</tt>. If the <tt>offset</tt> parameter is present, then
+    its value is automatically added to all point numbers. The
+    sensible default value for <tt>offset</tt> will usually be
+    zero. With the <tt>offset</tt> parameter, the beginning of the
+    glyph program for <b>acute</b> might look like this:
+  </p>
+  <pre>
+  &lt;glyph ps-name="acute"&gt;
+    &lt;param name="offset" value="0"/&gt;
+    &lt;param name="left-sidebearing" value="last + 1"/&gt;
+    &lt;constant name="last" value="17"/&gt;
+    &lt;constant name="bottom" value="3"/&gt;
+    &lt;constant name="top" value="10"/&gt;
+    . . .
+  </pre>
+  <p>
+    Note that the Xgridfit compiler cannot always recognize which
+    numbers are point numbers.  It will always handle &lt;point&gt;
+    elements correctly, but when point numbers are passed as
+    parameters to functions, macros, and other glyph programs, you
+    must either add the <tt>offset</tt> value manually or (perhaps
+    better) use the <tt>point</tt> operator to indicate to the
+    compiler that the number is a point:
+  </p>
+  <pre>
+    &lt;with-param name="p" value="pt + offset"/&gt;
+    &lt;with-param name="p" value="point(pt)"/&gt;
+  </pre>
+  <p>
+    You must do the same in &lt;push&gt; elements and in all
+    expressions that do not appear in &lt;point&gt; elements. To avoid
+    complications, it might be best to arrange glyphs in such a way
+    that offsets are not needed for the more complex features. In the
+    glyph program for <b>eacute</b>, illustrated above, <b>acute</b>
+    is less complex than <b>e</b>, so <b>acute</b> has the offset.
+  </p>
+  <p>
+    An important difference between a glyph program run by the
+    TrueType engine and one called by another glyph program is that
+    the TrueType engine sets the various graphics variables to their
+    default values before running the program; it does not perform the
+    same service for the called glyph program. If your program has
+    changed the graphics state, you should set the variables you've
+    changed to their default values before calling a glyph
+    program. For most graphics variables (those whose state Xgridfit
+    tracks), you may do this by calling &lt;restore-default&gt;,
+    including the <tt>name</tt> attribute with one of the following
+    values:
+  </p>
+  <ul>
+    <li>minimum-distance</li>
+    <li>control-value-cut-in</li>
+    <li>single-width</li>
+    <li>single-width-cut-in</li>
+    <li>delta-base</li>
+    <li>delta-shift</li>
+    <li>round-state</li>
+    <li>all</li>
+  </ul>
+  <p>
+    The <tt>all</tt> option sets all of the above graphics variables
+    to the defaults set by your Xgridfit program, or the TrueType
+    defaults if you have not explicitly set any defaults. It also sets
+    several graphics variables that Xgridfit does not track (the
+    freedom and projection vectors and the auto-flip toggle) to their
+    TrueType defaults. The <tt>all</tt> option is an expensive one, of
+    course; it is best to be aware of the condition in which your
+    program so far has left the graphics state and call
+    &lt;restore-default&gt; only for those graphics variables that
+    must be reset.
+  </p>
+  <h2 id="callable">Callable Parameters</h2>
+  <p>
+    A parameter to a macro or glyph program (but not a function) may
+    contain code to be executed within the called code block. A call
+    to a glyph program, for example, might look like this:
+  </p>
+  <pre>
+    &lt;call-glyph ps-name="dieresis"&gt;
+      &lt;with-param name="offset" value="A/total"/&gt;
+      &lt;with-param name="delta"&gt;
+        &lt;delta&gt;
+          &lt;delta-set size="3" distance="4"&gt;
+            &lt;point num="dieresis/left-left + A/total"/&gt;
+          &lt;/delta-set&gt;
+        &lt;/delta&gt;
+      &lt;/with-param&gt;
+    &lt;/call-glyph&gt;
+  </pre>
+  <p>
+    Within the glyph program, the parameter is "called" with the
+    &lt;call-param&gt; element:
+  </p>
+  <pre>
+    &lt;call-param name="delta"/&gt;
+  </pre>
+  <p>
+    The parameter is declared at the top of the macro or glyph
+    program. It is like other parameters, except that a <tt>value</tt>
+    attribute, if present, is ignored, and that the &lt;param&gt;
+    element can contain code to be executed if a &lt;with-param&gt;
+    element of that <tt>name</tt> is not found in the call to the
+    macro or glyph program. In the following &lt;param&gt; element,
+    for example, the default code simply touches a point:
+  </p>
+  <pre>
+    &lt;param name="delta"&gt;
+      &lt;move round="no"&gt;
+        &lt;point num="left-left"/&gt;
+      &lt;/move&gt;
+    &lt;/param&gt;
+  </pre>
+  <p>
+    It is an error if no &lt;param&gt; is found to match the
+    &lt;call-param&gt; element. However, if there is no matching
+    &lt;with-param&gt; element in the call to the macro or glyph
+    program and the &lt;param&gt; contains no default code, that is
+    not an error. In that case, the Xgridfit compiler issues a warning
+    and does nothing.
+  </p>
+  <p>
+    The &lt;call-param&gt; element can pass no parameters to the
+    called code: if it contains &lt;with-param&gt; elements, they are
+    ignored. When writing code to be passed via a parameter to a macro
+    or glyph program, it is important to take context into
+    account. Constants, variables, and other elements declared within,
+    say, a &lt;glyph&gt; element are not visible from outside of
+    it. Thus, in the &lt;call-glyph&gt; example above, the
+    <tt>left-left</tt> point in the called glyph must be referenced
+    via glyph/constant syntax as <tt>dieresis/left-left</tt>. But for
+    the &lt;param&gt; example this is not necessary, since the default
+    code is declared within the glyph program itself.
+  </p>
+  <h2 id="nesting">Nesting and Recursion</h2>
+  <p>
+    A TrueType function can call another TrueType function, including
+    itself. Before Xgridfit version 2.2 there were significant
+    limitations on the ability of macros to call other macros and of
+    called glyph programs to call macros. But in version 2.2 these
+    limitations have been removed. Thus it is practical to construct a
+    macro that does a complex job by calling several macros that do
+    simple jobs. For example:
+  </p>
+  <pre>
+    &lt;macro name="single-serif"&gt;
+      &lt;param name="base"/&gt;
+      &lt;param name="serif-end"/&gt;
+      &lt;move distance="serif-width"&gt;
+        &lt;reference&gt;
+          &lt;point num="base"/&gt;
+        &lt;/reference&gt;
+        &lt;point num="serif-end"/&gt;
+      &lt;/move&gt;
+    &lt;/macro&gt;
+
+    &lt;macro name="double-serif"&gt;
+      &lt;param name="left-base"/&gt;
+      &lt;param name="left-serif-end"/&gt;
+      &lt;param name="right-base"/&gt;
+      &lt;param name="right-serif-end"/&gt;
+      &lt;call-macro name="single-serif"&gt;
+        &lt;with-param name="base" value="left-base"/&gt;
+        &lt;with-param name="serif-end" value="left-serif-end"/&gt;
+      &lt;/call-macro&gt;
+      &lt;call-macro name="single-serif"&gt;
+        &lt;with-param name="base" value="right-base"/&gt;
+        &lt;with-param name="serif-end" value="right-serif-end"/&gt;
+      &lt;/call-macro&gt;
+    &lt;/macro&gt;
+  </pre>
+  <p>
+    It is also perfectly all right for a macro to call itself
+    recursively; though it must be remembered that recursion, for a
+    macro, is in the compilation, not in the execution. Thus this
+    macro:
+  </p>
+  <pre>
+    &lt;macro name="touch-points"&gt;
+      &lt;param name="first"/&gt;
+      &lt;param name="last"/&gt;
+      &lt;move round="no"&gt;
+        &lt;point num="first"/&gt;
+      &lt;/move&gt;
+      &lt;compile-if test="first &lt; last"&gt;
+        &lt;call-macro name="touch-points"&gt;
+          &lt;with-param name="first" value="first + 1"/&gt;
+          &lt;with-param name="last" value="last"/&gt;
+        &lt;/call-macro&gt;
+      &lt;/compile-if&gt;
+    &lt;/macro&gt;
+  </pre>
+  <p>
+    if called like this:
+  </p>
+  <pre>
+    &lt;call-macro name="touch-points"&gt;
+      &lt;with-param name="first" value="0"/&gt;
+      &lt;with-param name="last" value="2"/&gt;
+    &lt;/call-macro&gt;
+  </pre>
+  <p>
+    will generate code that looks like this:
+  </p>
+  <pre>
+    PUSHB_1
+    0
+    MDAP[0]
+    PUSHB_1
+    1
+    MDAP[0]
+    PUSHB_1
+    2
+    MDAP[0]
+  </pre>
+  <p>
+    which may or may not be what you want.
+  </p>
+</div>
+</body>
+</html>
