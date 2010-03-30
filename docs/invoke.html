@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="euc-jp"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+  <hr/>
+  <a href="#fontforge">Using xgridfit and FontForge</a>
+  <a href="#useother">Bypassing xgridfit script</a>
+</div>
+
+<div id="content">
+  <h1>Running Xgridfit</h1>
+  <h2 id="fontforge">Using <tt>xgridfit</tt> and FontForge</h2>
+  <p>
+    Open your Xgridfit program file and make sure it contains an
+    &lt;infile&gt; element containing the name of the FontForge source
+    file (.sfd) or TrueType file (.ttf) to which instructions are to
+    be added and an &lt;outfile&gt; element containing the name of the
+    file (.sfd or .ttf) to be output.  Now invoking Xgridfit is simply
+    a matter of typing <tt>xgridfit</tt> on the command line, with the
+    name of the program file (the extension should be <tt>.xgf</tt> or
+    <tt>.xml</tt>) as a parameter, e.g.
+  </p>
+  <pre>
+    $ xgridfit Junicode-Bold.xgf</pre>
+  <p>
+    If all goes well, Xgridfit will produce a script named
+    <tt>Junicode-Bold.py</tt>.  If the file named in the &lt;infile&gt;
+    element is present, you may simply run your script in FontForge:
+  </p>
+  <pre>
+    $ fontforge -script Junicode-Bold.py</pre>
+  <p>
+    Alternatively, if you're feeling confident, Xgridfit will pipe its
+    output directly to FontForge without saving it in a file. Just
+    include <tt>-f</tt> on the command line:
+  </p>
+  <pre>
+    $ xgridfit -f Junicode-Bold.xgf</pre>
+  <p>
+    The script produced by Xgridfit will open the <tt>.sfd</tt> or
+    <tt>.ttf</tt> file, add cvt, fpgm and prep tables, add
+    instructions to each glyph, and either save an <tt>.sfd</tt> file
+    or generate a TrueType (<tt>.ttf</tt>) font.
+  </p>
+  <p>
+    The <tt>xgridfit</tt> script for Linux and Mac OS&nbsp;X takes
+    several command-line options (the long forms in parentheses are
+    the parameters to use if you bypass the <tt>xgridfit</tt> script,
+    as explained below):
+  </p>
+  <dl>
+    <dt>-a value (max-stack)</dt>
+    <dd>
+      The amount of memory reserved for the TrueType runtime
+      stack. The default is 256, which is probably generous for most
+      fonts; increase it if you sometimes write &lt;delta&gt; or
+      &lt;control-value-delta&gt; elements containing a great many
+      &lt;delta-set&gt; elements.
+    </dd>
+    <dt>-A (auto-instruct)</dt>
+    <dd>
+      Auto-instruct all glyphs in the font before installing Xgridfit
+      programming. This option has no effect except in merge-mode
+      (option -m).
+    </dd>
+    <dt>-b value (delta-break)</dt>
+    <dd>
+      Obsolete, but retained for backwards compatibility. This
+      parameter formerly governed the number of &lt;delta-set&gt;
+      elements that could be pushed onto the stack at one
+      time. Beginning with version 1.11, it sets <tt>push-break</tt>
+      to twice its value (since a &lt;delta-set&gt; has two
+      values). If <tt>push-break</tt> is supplied, this parameter has
+      no effect. It has no effect except when FontForge-language
+      output is requested via the option <tt>-l ff</tt>.
+    </dd>
+    <dt>-c yes|no (compile-globals)</dt>
+    <dd>
+      Determines whether Xgridfit should compile functions, control
+      values, pre-program and maxp entries (default is "yes").
+    </dd>
+    <dt>-C gray|black|white (color)</dt>
+    <dd>
+      Default color of rounded distances. This is the setting used by
+      &lt;move&gt; and other instructions that move points; also the
+      &lt;round&gt; and &lt;no-round&gt; elements and the
+      <tt>round()</tt> operator. It can also be set with a
+      &lt;default&gt; element, and it can be overridden by a
+      <tt>color</tt> attribute on the elements affected by it. For an
+      explanation of color, see the <a
+      href="http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#engine_compensation">Apple
+      TrueType Reference</a>.
+    </dd>
+    <dt>-d</dt>
+    <dd>
+      Run in <a href="debug.html">debug mode</a>. Output is file.debug
+      rather than file.pe or file.py.
+    </dd>
+    <dt>-D (delete-all)</dt>
+    <dd>
+      Delete all instruction-related programming and data before
+      installing Xgridfit programming.  This option has no effect
+      except in merge-mode (option -m). In Python mode (option -l py),
+      instruction-related programming and data are always deleted.
+    </dd>
+    <dt>-e</dt>
+    <dd>
+      Echo the commands used to launch the XML validator and XSLT
+      processor.
+    </dd>
+    <dt>-E</dt>
+    <dd>
+      Report the time (in seconds) used to run Xgridfit.
+    </dd>
+    <dt>-f</dt>
+    <dd>
+      Pipe generated script to FontForge. Do not save it in a file.
+      This option overrides -O, and it is incompatible with -d, -S and
+      -z.
+    </dd>
+    <dt>-F file (datafile)</dt>
+    <dd>
+      In merge-mode, Xgridfit stores and reads information about the
+      font's state. By default, this is stored in FontForge's
+      font.persistent object, but this can be stored only in an .sfd
+      file. Use this option to store font information in a file
+      instead.
+    </dd>
+    <dt>-g glyph (glyph-select)</dt>
+    <dd>
+      Compile only the specified glyphs and skip all others. If more
+      than one <tt>ps-name</tt> is given, they must be separated by
+      "+" signs. Spaces are not permitted. See also the <a
+      href="reference.html#glyph-select">&lt;glyph-select&gt;</a>
+      element.
+    </dd>
+    <dt>-G yes|no (init-graphics)</dt>
+    <dd>
+      Include or omit at the beginning of each glyph program a
+      function call that initializes variables used to track the
+      graphics state.  The default is "yes." This option can be
+      overridden with the <tt>init-graphics</tt> attribute on any
+      glyph element.
+    </dd>
+    <dt>-h</dt>
+    <dd>
+      Display a help message and exit.
+    </dd>
+    <dt>-H (auto-hint)</dt>
+    <dd>
+      Auto-hint all glyphs in the font before auto-instructing. This
+      option has no effect except when auto-instructing is requested
+      (option -A).
+    </dd>
+    <dt>-i file (infile)</dt>
+    <dd>
+      This is the name of a FontForge source file (.sfd) or TrueType
+      font (.ttf) to be opened by the FontForge script generated by
+      Xgridfit.
+    </dd>
+    <dt id="l-option">-l py|ff</dt>
+    <dd>
+      As of version 1.19, Xgridfit can generate a script for FontForge
+      in either of two flavors: Python or FontForge's native scripting
+      language. Use this option to specify which one. In Python mode
+      the default extension of the output script is <tt>.py</tt>; in
+      FontForge native mode it is <tt>.pe</tt>. The default, beginning
+      with version 2.0, is <tt>py</tt>. An alternative to using the
+      command-line option (in version 2.1 and later) is to set an
+      environment variable XGRIDFIT_OUTPUT_LANG to either "py" or
+      "ff".
+    </dd>
+    <dt>-m</dt>
+    <dd>
+      Run in merge-mode. Xgridfit produces a Python script that merges
+      Xgridfit programming with TrueType programming already present
+      in the font.
+    </dd>
+    <dt>-o file (outfile)</dt>
+    <dd>
+      The name of the file to be written by the FontForge script
+      generated by Xgridfit. If you want FontForge to write a source
+      file, the filename should end <tt>.sfd</tt>; if you want
+      FontForge to generate a font, it should end <tt>.ttf</tt>. It is
+      an error if the filename does not have one of these two
+      extensions. It is strongly recommended that the <tt>infile</tt>
+      and <tt>outfile</tt> names be different--that is, that you do
+      not overwrite the file that your FontForge script reads.
+    </dd>
+    <dt>-O file</dt>
+    <dd>
+      Name of the FontForge script to be output by Xgridfit.
+    </dd>
+    <dt>-p value (push-break)</dt>
+    <dd>
+      The maximum number of values that a single PUSHB or PUSHW
+      instruction can push onto the stack. Longer lists of values are
+      divided. This parameter affects the way Xgridfit processes
+      &lt;push&gt;, &lt;delta&gt; and other elements that can work
+      with long lists of values. Its purpose is to prevent strings in
+      the script generated by Xgridfit from becoming long enough to
+      exceed the maximum allowed by FontForge. The default is twenty;
+      a higher number may well work for your font. If
+      <tt>delta-break</tt> is set and <tt>push-break</tt> is not, the
+      value of <tt>push-break</tt> is twice the value of
+      <tt>delta-break</tt> (since a &lt;delta-set&gt; contains two
+      values). This option has no effect except when
+      FontForge-language output is selected with the option <tt>-l
+      ff</tt>.
+    </dd>
+    <dt>-P yes|no (combine-prep)</dt>
+    <dd>
+      Combine the Xgridfit pre-program with the prep table already
+      present in the font (merge-mode only; default is yes).
+    </dd>
+    <dt>-q (silent-mode yes|no)</dt>
+    <dd>
+      The <tt>xgridfit</tt> -q option does not take a value: when it
+      is present, silent mode is used. The long form of the parameter
+      requires a value, <tt>yes</tt> or <tt>no</tt>. When
+      <tt>yes</tt>, messages like "Compiling glyph Adieresis" are
+      suppressed. This can lead to significant increases in program
+      speed. Warnings and error messages are still displayed. The
+      default is <tt>no</tt>.
+    </dd>
+    <dt>-s value (max-storage)</dt>
+    <dd>
+      The size of the Storage Area to be reserved for this font by the
+      TrueType engine. The default is to reserve space for 64 32-bit
+      numbers. Xgridfit reserves 24 of these for its own use (and so
+      this value can never be less than 24), leaving 40 available for
+      user-defined variables. Raise this number if you are likely to
+      have more than 40 variables in use at any one time: lower it if
+      you use fewer variables.
+    </dd>
+    <dt>-S name (outfile-base)</dt>
+    <dd>
+      When this option is present, Xgridfit produces a separate file
+      for every glyph it compiles. The file has the name specified
+      here, plus the <tt>ps-name</tt> of the glyph, plus the extension
+      .pe, .py or .debug. If the option is <tt>-S&nbsp;Test</tt>, you will
+      get files Test_A.pe, Test_B.pe, etc., and also a file Myfont.pe
+      containing control values and other global elements. Note that
+      if the &lt;outfile&gt; element is present (or the <tt>-o</tt>
+      option is used), the <tt>-S</tt> option also causes the
+      resulting output to be saved in a separate file. Use the
+      <tt>-z</tt> (outfile-script-name) option to specify a filename.
+    </dd>
+    <dt>-t value (max-twilight-points)</dt>
+    <dd>
+      Maximum number of points in Twilight zone. The default is 25,
+      but few fonts require so many.
+    </dd>
+    <dt>-T file</dt>
+    <dd>
+      Processors other than xsltproc do not have native support for
+      <a href="xinclude.html">XInclude</a>. If you use one of these processors with XInclude,
+      Xgridfit uses xmllint (part of the <a href="">libxml</a>
+      package) to resolve XIncludes, writing an intermediate file
+      which it passes to the XSLT processor. Normally it deletes this
+      file at the end of the run. Use the -T option to specify a
+      different name for the temporary file; this will not be deleted
+      and may be useful for debugging.
+    </dd>
+    <dt>-v</dt>
+    <dd>
+      Show version number and exit.
+    </dd>
+    <dt>-x</dt>
+    <dd>
+      Skip compilation. Use this if you want to validate a file
+      quickly.
+    </dd>
+    <dt>-z file (outfile-script-name)</dt>
+    <dd>
+      When the &lt;outfile-base&gt; element is present or the
+      <tt>-S</tt> option is used, and the &lt;outfile&gt; element is
+      present or the <tt>-o</tt> option is used, Xgridfit saves the
+      FontForge command that saves a font file or generates a font in
+      a separate script file. By default the filename for this script
+      is based on the outfile-base: for example, if the -S parameter
+      is <tt>MyFont</tt>, then the filename will be
+      <tt>MyFont_outfile.pe</tt> or <tt>MyFont_outfile.py</tt>. Use
+      the &lt;outfile-script-name&gt; element (or the <tt>-z</tt>
+      option) to specify a filename other than the default. This
+      option has no effect when the outfile-base is not specified and
+      the glyph programs in a script are not being saved separately.
+    </dd>
+  </dl>
+  <p>
+    Here are some sample command lines:
+  </p>
+  <pre>
+    Compiling all glyphs:
+      xgridfit myfont.xgf
+
+    Compiling only glyph uni0312:
+      xgridfit -g uni0312 myfont.xgf
+
+    Compiling several related glyphs:
+      xgridfit -g a+macron+amacron myfont.xgf
+
+    Producing a file to aid in debugging:
+      xgridfit -d -g a+macron+amacron myfont.xgf
+
+    Specifying input and output files:
+      xgridfit -i myfont.sfd -o myfont.ttf myfont.xgf
+
+    Validate before compilation:
+      xgridfit -V myfont.xgf
+
+    Validate only:
+      xgridfit -V -x myfont.xgf</pre>
+  <h2 id="useother">Bypassing the <tt>xgridfit</tt> script</h2>
+  <p>
+    The <tt>xgridfit</tt> executable is a script for the Bash shell,
+    available on Linux systems and Mac OS&nbsp;X. If Bash is not available
+    on your system, or if you prefer to use an XSLT processor that
+    Xgridfit does not support (such as Microsoft's MSXML), you can run
+    Xgridfit by invoking your favorite XSLT processor directly--in
+    which case parameters have a longer form. Here Xgridfit is run
+    directly with xsltproc:
+  </p>
+  <pre>
+    xsltproc -o Junicode-Bold.pe \
+      --stringparam infile Junicode-Bold.sfd \
+      --stringparam outfile Junicode-Bold.ttf \
+      --param max-twilight-points 29 \
+      --param max-storage 128 \
+      /usr/local/share/xml/xgridfit/lib/xgridfit.xsl Junicode-Bold.xgf</pre>
+  <p>
+    Or for Python output:
+  </p>
+  <pre>
+    xsltproc -o Junicode-Bold.py \
+      --stringparam infile Junicode-Bold.sfd \
+      --stringparam outfile Junicode-Bold.ttf \
+      --param max-twilight-points 29 \
+      --param max-storage 128 \
+      /usr/local/share/xml/xgridfit/lib/xgridfit-python.xsl Junicode-Bold.xgf</pre>
+  <p>
+    Here is Saxon 6:
+  </p>
+  <pre>
+    java -jar /usr/local/saxon/saxon.jar \
+      -o Junicode-Bold.pe \
+      Junicode-Bold.xgf \
+      /usr/local/share/xml/xgridfit/lib/xgridfit.xsl</pre>
+  <p>
+    Or for merge-mode:
+  </p>
+  <pre>
+    java -jar /usr/local/saxon/saxon.jar \
+      -o Junicode-Bold.pe \
+      Junicode-Bold.xgf \
+      /usr/local/share/xml/xgridfit/lib/xgridfit-merge.xsl</pre>
+  <p>
+    Xalan C++:
+  </p>
+  <pre>
+    xalan -in Junicode-Bold.xgf \
+      -out Junicode-Bold.pe \
+      -xsl /usr/local/share/xml/xgridfit/lib/xgridfit.xsl \
+      -param infile "'Junicode-Bold.sfd'" \
+      -param outfile "'Junicode-Bold.sfd'"</pre>
+  <p>
+    Xalan java in debug mode:
+  </p>
+  <pre>
+    java org.apache.xalan.xslt.Process -in Junicode-Bold.xgf \
+      -out "Junicode-Bold.debug" \
+      -xsl /usr/local/share/xml/xgridfit/lib/xgridfit-debug.xsl</pre>
+  <p>
+    If you like, you can skip generation of a FontForge script file
+    and pass the output of an Xgridfit run directly to FontForge:
+  </p>
+  <pre>
+    xsltproc /usr/local/share/xml/xgridfit/lib/xgridfit.xsl \
+      Junicode-Bold.xgf | fontforge -script -</pre>
+</div>
+</body>
+</html>

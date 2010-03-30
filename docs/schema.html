@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+  <hr/>
+  <a href="#limits">Limitations of the compiler</a>
+  <a href="#relaxng">RELAX NG</a>
+  <a href="#validate">Using the schema: validation</a>
+  <a href="#guided">Using the schema: guided editing</a>
+</div>
+
+<div id="content">
+  <h1>Using the Schema</h1>
+  <p>
+    Programmers expect compilers to check the validity of their
+    programs and provide helpful error messages and warnings. Xgridfit
+    splits this function between the compiler itself and a schema--a
+    file that describes the structure of an XML document and can be
+    used to check its correctness--that is, to validate it. It is a
+    good idea not to rely solely on the error-checking done by the
+    Xgridfit compiler; and there are various ways to use the schema.
+  </p>
+  <p>
+    The division of labor between the Xgridfit compiler and schema is
+    roughly as follows: the schema checks that required elements and
+    attributes are present and that elements and attributes that are
+    not allowed (for example, those you have mistyped) are not
+    present. Where the order of elements is significant, the schema
+    checks that they are in the right order. The schema enforces
+    naming conventions, making sure, for example, that glyph names are
+    valid and that the names of control values and variables are in
+    the correct form. The schema validates attribute values when it
+    can: for example, when an integer within a certain range is
+    required, the schema knows about that.
+  </p>
+  <p>
+    There are certain important tasks that a schema cannot do. It
+    cannot validate complex expressions (like "(a + b) / 2"), and it
+    cannot check to make sure that a named value matches the name of a
+    &lt;constant&gt;, &lt;control-value&gt; or &lt;variable&gt;. It
+    cannot make sure that there are &lt;function&gt; definitions to
+    match &lt;call-function&gt; elements. These and a variety of other
+    tasks are for the compiler.
+  </p>
+  <p>
+    There is a certain amount of overlap between the checks performed
+    by the schema and those performed by the compiler; this redundancy
+    is partly due to historical factors (the schema did not acquire
+    its present abilities all at once), and partly because some checks
+    are so easy for the compiler that it seems absurd to omit
+    them. But the schema adds considerable value to what the compiler
+    can do.
+  </p>
+  <h2 id="limits">Limitations of the compiler</h2>
+  <p>
+    The Xgridfit compiler is (perhaps uniquely among compilers)
+    written in XSLT, an XML-based transformation language. It is basic
+    to the working of XSLT that it responds to the elements it expects
+    to find and ignores those that it does not expect. If you were to
+    write this,
+  </p>
+  <pre>
+    &lt;move&gt;
+      &lt;point num="a"/&gt;
+      &lt;myelement&gt;
+        Here's my very own element!
+      &lt;/myelement&gt;
+    &lt;/move&gt;</pre>
+  <p>
+    the Xgridfit compiler would not complain; it would not
+    notice the presence of &lt;myelement&gt; at all.
+  </p>
+  <p>
+    Ordinarily this is not a problem. Xgridfit does complain, after
+    all, when it fails to find what it requires. For example, if you
+    were to type this:
+  </p>
+  <pre>
+    &lt;move&gt;
+      &lt;poit num="a"/&gt;
+    &lt;/move&gt;</pre>
+  <p>
+    The compiler would report the lack of a &lt;point&gt; element as
+    an error, since a &lt;point&gt; is the only required child of
+    &lt;move&gt;. Note, however, that it does not detect that "point"
+    is misspelled or even that an extraneous element is present;
+    rather, it fails to see the &lt;poit&gt; element entirely and
+    notes the absence of &lt;point&gt;. In a case like the following,
+    on the other hand, the compiler would report no error:
+  </p>
+  <pre>
+    &lt;move&gt;
+      &lt;refernce&gt;
+        &lt;point num="r"/&gt;
+      &lt;/refernce&gt;
+      &lt;point num="a"/&gt;
+    &lt;/move&gt;</pre>
+  <p>
+    The compiler ignores the misspelled &lt;refernce&gt; element and
+    produces a MDAP instruction, as it does when no &lt;reference&gt;
+    element is present, rather than MDRP. The resulting bug is likely
+    to be subtle and hard to diagnose.
+  </p>
+  <p>
+    The compiler could be taught to spot elements and attributes that
+    don't belong, but only by writing expensive code that forces XSLT
+    to perform jobs it is not designed for. The schema, however, is
+    very good at detecting such elements and attributes; it would flag
+    both &lt;poit&gt; and &lt;refernce&gt; as errors.
+  </p>
+  <h2 id="relaxng">RELAX NG</h2>
+  <p>
+    Since its first release in 2006, Xgridfit has been packaged with a
+    variety of schemas: with a classic DTD (Document Type Definition),
+    with an XML Schema, and with RELAX NG schemas. These different
+    schema languages have very different capabilities. At present, the
+    only schema packaged with Xgridfit is RELAX NG, as this is the
+    only one that comes close to describing the constraints and
+    requirements of an Xgridfit program.
+  </p>
+  <p>
+    For example, consider the &lt;delta-set&gt; element. When it is
+    the child of a &lt;delta&gt; element, it may contain a
+    &lt;point&gt;, but not if it is the child of
+    &lt;control-value-delta&gt;. The &lt;point&gt; may be omitted if
+    the first element of the &lt;delta&gt; is a &lt;point&gt; or if
+    the &lt;delta&gt; is a child of &lt;move&gt;; but otherwise it
+    must be present. These complex constraints can be expressed with
+    RELAX NG and with an XML Schema, but not with a DTD.
+  </p>
+  <p>
+    Here are some other oddities:
+  </p>
+  <ul>
+    <li>
+      In &lt;store-projection-vector&gt;, the <tt>y-component</tt> and
+      <tt>x-component</tt> attributes may both be omitted, but if one
+      is present the other must be as well. This cannot be handled by
+      either a DTD or an XML Schema.
+    </li>
+    <li>
+      The &lt;line&gt; element must contain either a <tt>ref</tt>
+      attribute or two &lt;point&gt; elements. This also can be
+      handled only by RELAX NG.
+    </li>
+    <li>
+      In &lt;move&gt;, the <tt>distance</tt> and
+      <tt>pixel-distance</tt> attributes are mutually exclusive: if
+      one is present, the other cannot be used. This can be handled
+      only by RELAX NG and the XML Schema.
+    </li>
+  </ul>
+  <p>
+    There are many features of an Xgridfit program file that a DTD
+    cannot check; there are enough that an XML Schema cannot check to
+    make RELAX NG an obvious choice.
+  </p>
+  <p>
+    RELAX NG comes in two flavors: an XML syntax and a compact
+    syntax. Since it is possible to convert automatically from one to
+    the other, both are provided with Xgridfit. The compact schema is
+    named xgridfit.rnc; the XML schema is xgridfit.rng.
+  </p>
+  <h2 id="validate">Using the schema: validation</h2>
+  <p>
+    Xgridfit validates all program files before compilation. To skip
+    this step, include the <tt>--skip-validation</tt> option on the
+    command-line:
+  </p>
+  <pre>
+    $ xgridfit --skip-validation myfont.xgf</pre>
+  <p>
+    By default the <tt>xgridfit</tt> executable uses xmllint (part of
+    the libxml package) to validate program files. Error messages from
+    xmllint can sometimes be a little puzzling. For example, if a
+    &lt;point&gt; element is omitted from
+    &lt;move-point-to-intersection&gt;, the output looks something
+    like the following:
+  </p>
+  <pre>
+myfont.xgf:740: element line: Relax-NG validity error :
+                    Expecting element point, got line
+myfont.xgf:734: element move-point-to-intersection: Relax-NG validity error :
+                    Element move-point-to-intersection failed to validate content
+myfont.xgf:691: element function: Relax-NG validity error :
+                    Expecting element variant, got param
+myfont.xgf:692: element param: Relax-NG validity error :
+                    Element function has extra content: param
+Relax-NG validity error : Extra element function in interleave
+myfont.xgf:691: element function: Relax-NG validity error :
+                    Element xgridfit failed to validate content
+myfont.xgf fails to validate</pre>
+  <p>
+    The first message pinpoints the source of the error: xmllint was
+    expecting a &lt;point&gt; element as a child of
+    &lt;move-point-to-intersection&gt;, but it found something else
+    instead. The following messages are superfluous, as each ancestor
+    of &lt;move-point-to-intersection&gt; is marked as invalid and
+    causes its own error message. The lesson here is that the first
+    error message generated by xmllint is very likely the only one you
+    need to pay attention to. This is all the more true in that
+    xmllint exits on finding a single error, without validating the
+    rest of the file.
+  </p>
+  <p>
+    It is simple to use other validators. James Clark's <a
+    href="http://www.thaiopensource.com/relaxng/jing.html">Jing</a>
+    continues to validate even after it has found an error, and its
+    error messages can be more intelligible than those of xmllint
+    (though not always!). The message for the same
+    error as the one caught by xmllint above is terse, lacking the
+    unhelpful clutter, but it is also a little less informative:
+  </p>
+  <pre>
+/path/to/myfont.xgf:744:34: error: unfinished element</pre>
+  <p>
+    You can use <tt>xgfconfig</tt> (with the --validators or -V
+    option) to make Xgridfit use the Jing processor; you must specify
+    both its name and the location of its jar file. For example:
+  </p>
+  <pre>
+    $ xgfconfig -V jing#~/jing/bin/jing.jar</pre>
+  <p>
+    MSV (the <a href="https://msv.dev.java.net/">Sun Multi-Schema XML
+    Validator</a>, released under the Apache Software License) is also
+    highly usable. Its output is verbose but helpful:
+  </p>
+  <pre>
+start parsing a grammar.
+validating Junicode-Italic.xgf
+Error at line:744, column:34 of file:///path/to/myfont.xgf
+  uncompleted content model. expecting: &lt;point&gt;
+
+the document is NOT valid.</pre>
+  <p>
+    To make Xgridfit use MSV, invoke <tt>xgfconfig</tt> as follows:
+  </p>
+  <pre>
+    $ xgfconfig -V msv#/path/to/msv.jar</pre>
+  <p>
+    The <a href="http://www.davidashen.net/rnv.html">RNV</a>
+    validator is fast and claims to provide intelligible error
+    messges. Run <tt>xgfconfig</tt> with the option
+    <tt>-V&nbsp;rnv</tt>. Here is the output for our sample error:
+  </p>
+  <pre>
+myfont.xgf
+myfont.xgf:744:4: error: unfinished content of element ^move-point-to-intersection
+required:
+	element ^point
+error: some documents are invalid</pre>
+  <p>
+    You can use the <tt>xgridfit</tt> executable to quickly validate a
+    file: just suppress compilation with the <tt>-x</tt> option:
+  </p>
+  <pre>
+    $ xgridfit -x myfont.xgf</pre>
+  <ul>
+    <li>
+      Note that Mac OS X version 10.5 ("Leopard") has a version of
+      xmllint that does not accept the Xgridfit schema; users of this
+      OS should choose one of the other validators instead. "Snow
+      Leopard" does not have this problem.
+    </li>
+  </ul>
+  <h2 id="guided">Using the schema: guided editing</h2>
+  <p>
+    Some editors can validate XML documents in the background, while
+    you edit. Among these the most commonly used are Emacs with <a
+    href="http://www.thaiopensource.com/nxml-mode/">nxml-mode</a>
+    (Free Software) and <a
+    href="http://www.oxygenxml.com/">&lt;/oXygen&gt;</a> (inexpensive
+    for individuals). Emacs and nxml-mode are both in the major Linux
+    repositories, making them simple to install. After installation,
+    find the nxml-mode schema directory (in Ubuntu it is
+    /usr/share/emacs/site-lisp/nxml-mode/schema/), copy xgridfit.rnc
+    there, and edit the file schemas.xml, adding the following line:
+  </p>
+  <pre>
+    &lt;documentElement localName="xgridfit" uri="xgridfit.rnc"/&gt;</pre>
+  <p>
+    Then, after you have loaded an Xgridfit program file into Emacs,
+    type Alt-x (or Meta-x), followed by <tt>nxml-mode</tt> and
+    Return. (The mode can be loaded automatically if you know how to
+    edit the <tt>.emacs</tt> configuration file.)
+  </p>
+  <p>
+    Now your editor will validate on the fly, and if you type
+    Ctrl-Return in a variety of contexts, it will either complete the
+    tag or attribute you are typing or offer you a list of possible
+    completions. Errors are underlined in red, and error messages
+    (displayed at the bottom of the editing window) are mostly clear
+    and informative.
+  </p>
+  <p>
+    Guided editing with &lt;/oXygen&gt; (see the editor's
+    documentation to get started) is similarly straightforward,
+    relying more on context menus than on keyboard shortcuts. Either
+    of these packages can save you a great deal of typing (and
+    therefore a good bit of time).
+  </p>
+</div>
+</body>
+</html>

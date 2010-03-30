@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="euc-jp"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Xgridfit</title>
+<link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+<link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+<style type="text/css" media="print"> @import "oeg.print.css"; </style>
+<meta name="AUTHOR" content="Peter S. Baker" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<div id="jumplist">
+  <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+  <a href="http://xgridfit.sourceforge.net/">Home Page</a>
+  <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+  <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+  <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+</div>
+
+<div id="content">
+  <h1>Installing Xgridfit</h1>
+  <p>
+    To install Xgridfit on Linux, Mac OS X or Cygwin requires GNU Make
+    (you may have to install this before proceeding). Once you have
+    downloaded Xgridfit, copy it to a convenient location, open a
+    terminal window and unpack the archive:
+  </p>
+  <pre>
+    tar xvf xgridfit-2.1.tar.gz</pre>
+  <p>
+    Now change to the <tt>xgridfit</tt> directory and install. You may
+    first have to become root. Perhaps <tt>sudo</tt> will work (as
+    below); but you may have to use <tt>su</tt>, entering the root
+    password. If you can't do either of these things (or aren't
+    allowed to), you'll have to get a system administrator to help you.
+  </p>
+  <pre>
+    cd xgridfit
+    sudo make install</pre>
+  <p>
+    If you are installing on a Mac, type
+  </p>
+  <pre>
+    sudo make install-mac</pre>
+  <p>
+    If you want to install the documentation as well, instead type
+  </p>
+  <pre>
+    sudo make install-all</pre>
+  <p>
+    or
+  </p>
+  <pre>
+    sudo make install-all-mac</pre>
+  <p>
+    Xgridfit depends upon an XSLT processor. The Mac and most, perhaps
+    all, Linux systems come with xsltproc, part of the <a
+    href="http://xmlsoft.org/XSLT/index.html">XSLT library for
+    Gnome</a> (in Cygwin, you must install libxslt). But other free
+    XSLT processors are available: Saxon version 6, Saxon version 9,
+    versions of Xalan written in Java and C++, and 4xslt, written in
+    Python. Xgridfit will work well with all of these processors, and
+    some have advantages over others: Saxon 9, for example, is very
+    fast when compiling large files, but xsltproc is faster when
+    compiling small ones. To switch from one XSLT processor to
+    another, run <tt>xgfconfig</tt> with the --processors or -p option
+    and one or more of the following arguments:
+  </p>
+  <ul>
+    <li>libxslt</li>
+    <li>lxml</li>
+    <li>saxon-6</li>
+    <li>saxon-9</li>
+    <li>xalan-j</li>
+    <li>xalan-c</li>
+    <li>xsltproc</li>
+    <li>4xslt</li>
+  </ul>
+  <p>
+    If you choose one of the Java-based processors, you must supply
+    the complete pathname of its jar file after a hash mark. You can
+    supply the name of more than one processor; Xgridfit will use the
+    first by preference, the second as a backup, and so on.  For
+    example:
+  </p>
+  <pre>
+    $ xgfconfig -p saxon9#/usr/local/share/saxon/saxon9.jar lxml</pre>
+  <p>
+    If you run <tt>xgfconfig</tt> as root, your settings are saved in
+    the file <tt>config.xml</tt> in the xgridfit directory (probably
+    /usr/local/share/xml/xgridfit). These are global, applying to all
+    users. If you run the program as a user, your settings are saved
+    in ~/.xgridfit/config.xml; these local settings override the
+    global ones. You can quickly restore the global settings by
+    deleting <tt>~/.xgridfit/config.xml</tt>.
+  </p>
+  <p>
+    You can also use <tt>xgfconfig</tt> to choose a validator. For
+    details, see <a href="schema.html#validate">Using the schema:
+    validation</a>.
+  </p>
+</div>
+</body>
+</html>
