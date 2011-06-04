@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Xgridfit</title>
+    <link rel="stylesheet" href="oeg.css" media="screen" type="text/css"/>
+    <link rel="stylesheet" href="parchment.css" media="screen" type="text/css"
+      title="parchment"/>
+    <link rel="alternate stylesheet" href="legible.css" media="screen"
+      type="text/css" title="legible"/>
+    <style type="text/css" media="print"> @import "oeg.print.css"; </style>
+    <meta name="AUTHOR" content="Peter S. Baker"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  </head>
+  <body>
+    <div id="jumplist">
+      <a href="http://sourceforge.net"><img
+      src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4"
+      width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://sourceforge.net/projects/xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download (v. 2.3, 4 June 2011)</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+      <a href="https://lists.sourceforge.net/lists/listinfo/xgridfit-users">Mailing list</a>
+      <hr/>
+      <h1>Documentation:</h1>
+      <a href="tutorial1.html">Tutorial 1: Gentium's period</a>
+      <a href="tutorial2.html">Tutorial 2: Gentium's <i>o</i></a>
+      <a href="tutorial3.html">Tutorial 3: Revising auto-instructions</a>
+      <a href="install.html">Installing Xgridfit</a>
+      <a href="invoke.html">Running Xgridfit</a>
+      <a href="structure.html">File Structure</a>
+      <a href="merge-mode.html">Merge-mode</a>
+      <a href="schema.html">Using the Schema</a>
+      <a href="trans-to-1.html">Updating Xgridfit programs</a>
+      <a href="xinclude.html">Managing Large Projects</a>
+      <a href="debug.html">Debugging with FontForge</a>
+      <a href="types.html">Number Types</a>
+      <a href="expressions.html">Expressions</a>
+      <a href="variables.html">Variables</a>
+      <a href="if.html">Conditionals and Loops</a>
+      <a href="functions.html">Functions, Macros, Glyphs</a>
+      <a href="arithmetic.html">Arithmetic Elements</a>
+      <a href="low-level.html">Low-Level Elements</a>
+      <a href="points.html">Points</a>
+      <a href="cvt.html">Control Values</a>
+      <a href="graphics.html">Graphics State and Defaults</a>
+      <a href="vectors.html">Vectors</a>
+      <a href="moves.html">Moving Points</a>
+      <a href="deltas.html">Deltas</a>
+      <a href="round.html">Rounding</a>
+      <a href="reference.html">Element Reference</a>
+    </div>
+    <div id="content">
+      <img alt="Xgridfit logo" src="xgridfit.png"/>
+      <p class="first">
+	Xgridfit is a high-level, XML-based language for gridfitting,
+	or "hinting," TrueType fonts.  It aims to provide these
+	advantages over the manual instructing of glyphs:
+      </p>
+      <ul>
+        <li>
+	  replace the cryptic "mnemonics" of the TrueType language
+	  with descriptive instruction names;
+	</li>
+        <li>
+	  provide for the naming of points, control values, variables,
+	  functions and function parameters;
+	</li>
+	<li>
+	  provide macro capability for the easy and efficient handling
+	  of similar visual features of glyphs;
+	</li>
+        <li>
+	  provide high-level instructions (e.g. "diagonal-stem") to
+	  supplement the primitive instructions of TrueType;
+	</li>
+	<li>
+	  provide high-level programming constructs;
+	</li>
+        <li>
+	  manage the stack behind the scenes;
+	</li>
+        <li>
+	  manage reference points and zone pointers behind the scenes;
+	</li>
+	<li>
+	  provide methods and tools for managing instructions in large
+	  font projects;
+	</li>
+	<li>
+	  edit and augment existing instructions in fonts;
+	</li>
+	<li>
+	  support the FontForge auto-instructor and TrueType debugger.
+	</li>
+	<li>
+	  provide a simple method for adding new instructions to fonts
+	  that already contain them.
+	</li>
+      </ul>
+      <p class="continued">
+	In short, it conceals the assembly language-like character of
+	the TrueType instruction set behind a friendly façade and
+	provides many of the conveniences of a high-level programming
+	language.
+      </p>
+      <p>
+	There is much to be said for XML as the base for a programming
+	language. True, it is ugly and verbose, but its verbosity
+	contributes to its legibility. Lots of people are comfortable
+	with XML, or at least understand the basics of it. And a
+	decent XML editor (I suggest Emacs with nxml-mode) will do
+	most of your typing for you, giving you all the advantages of
+	verbosity and few of the disadvantages.
+      </p>
+      <p>
+	The Xgridfit program compiles an XML source file into tables
+	and instructions that relate to the gridfitting of glyphs. Its
+	output is a Python script that can be run in FontForge to
+	perform one or more the following tasks:
+      </p>
+      <ul>
+	<li>
+	  open a FontForge source file or TrueType font;
+	</li>
+	<li>
+	  Set Blue values;
+	</li>
+	<li>
+	  Run the FontForge auto-hinter and auto-instructor;
+	</li>
+	<li>
+	  add the CVT (Control Value), fpgm (font program) and prep
+	  (pre-program) tables produced by the Xgridfit compiler (if
+	  desired, without disturbing any programming already present
+	  in the font);
+	</li>
+	<li>
+	  add the glyph programs produced by the compiler (again,
+	  without disturbing any glyph programs already present in the
+	  font);
+	</li>
+	<li>
+	  set entries relevant to TrueType instructions in the maxp
+	  table;
+	</li>
+	<li>
+	  save a FontForge source file or generate a TrueType font.
+	</li>
+      </ul>
+      <p>
+	Xgridfit does have its limits. First of all, it cannot think
+	for you: you still must understand the basics of TrueType
+	gridfitting.  Some limitations are those of the TrueType
+	engine itself, which is not capable of run-time type-checking
+	or type conversion. Other limitations, such as the absence of
+	for- and while-loops, are due to the limitations of the XSLT
+	language in which it is implemented.
+      </p>
+      <p>
+	But Xgridfit does a few things very well, in my experience at
+	least: it speeds up TrueType development considerably, it
+	makes TrueType programming much more legible than before, it
+	makes it easy to revise and reuse existing TrueType code, and
+	it does these things while offering a level of control over
+	the glyph outline that you can't get from the graphical tools
+	that I've seen.
+      </p>
+      <h2>System Requirements</h2>
+      <p>
+	Xgridfit will run under Linux, Mac OS X and Windows (with
+	Cygwin). These programs/libraries are required or suggested:
+      </p>
+      <ul>
+	<li>
+	  <b>GNU Make</b> to run the install script.
+	</li>
+	<li>
+	  <b>FontForge</b>. Required to install instructions in
+	  fonts. Python extensions should be enabled. (The pre-built
+	  executable for Cygwin does not include Python capabilities,
+	  so you must either build from source or set the compiler to
+	  produce FontForge scripts-- see documentation for the <a
+	  href="invoke.html#l-option"><tt>-l</tt> command-line
+	  option</a>). If you want to be able to view the results of
+	  your programming in FontForge, you must build it against
+	  FreeType libraries with the bytecode interpreter
+	  enabled. (Note that there are patent issues here.)
+	</li>
+	<li>
+	  <b>Python</b>. Version 2.4 or higher. The Xgridfit
+	  executable and several utilities are Python programs; and
+	  the default output of the Xgridfit compiler is a Python
+	  script.
+	</li>
+	<li>
+	  <b>libxml2</b> and <b>libxslt</b>. Your system probably has
+	  libxml2 installed, but you might have to install libxslt. It
+	  is possible to use other XSLT processors with the Xgridfit
+	  compiler, but libxslt is still required for various
+	  utilities.
+	</li>
+	<li>
+	  Python bindings for libxml2. In Debian and Debian-based
+	  Linux distributions, look for the package python-libxml2. In
+	  Fedora, look for libxml2-python.
+	</li>
+
+	<li>
+	  A few standard tools, which are almost certainly present on
+	  your system: Bash, sed, grep, mktemp.
+	</li>
+      </ul>
+    </div>
+  </body>
+</html>
