@@ -1,0 +1,4621 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <title>Xgridfit</title>
+    <link rel="stylesheet" href="oeg.css" media="screen" type="text/css" />
+    <link rel="stylesheet" href="parchment.css" media="screen"
+          type="text/css" title="parchment" />
+    <link rel="alternate stylesheet" href="legible.css" media="screen"
+          type="text/css" title="legible" />
+    <style type="text/css" media="print"> @import "oeg.print.css"; </style>
+    <meta name="AUTHOR" content="Peter S. Baker" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <div id="jumplist">
+      <a href="http://sourceforge.net"><img
+      src="http://sflogo.sourceforge.net/sflogo.php?group_id=159705&amp;type=4"
+      width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+      <a href="http://Xgridfit.sourceforge.net/">Home Page</a>
+      <a href="http://sourceforge.net/projects/Xgridfit">Project Page</a>
+      <a href="http://sourceforge.net/project/showfiles.php?group_id=159705">Download</a>
+      <a href="http://xgridfit.cvs.sourceforge.net/xgridfit/xgridfit/">CVS repository</a>
+      <hr/>
+      <a href="#absolute">&lt;absolute&gt;</a>
+      <a href="#add">&lt;add&gt;</a>
+      <a href="#alias">&lt;alias&gt;</a>
+      <a href="#align">&lt;align&gt;</a>
+      <a href="#align-midway">&lt;align-midway&gt;</a>
+      <a href="#call-function">&lt;call-function&gt;</a>
+      <a href="#call-glyph">&lt;call-glyph&gt;</a>
+      <a href="#call-macro">&lt;call-macro&gt;</a>
+      <a href="#call-param">&lt;call-param&gt;</a>
+      <a href="#ceiling">&lt;ceiling&gt;</a>
+      <a href="#command">&lt;command&gt;</a>
+      <a href="#compile-if">&lt;compile-if&gt;</a>
+      <a href="#constant">&lt;constant&gt;</a>
+      <a href="#contour">&lt;contour&gt;</a>
+      <a href="#control-values">&lt;control-value&gt;</a>
+      <a href="#control-value-delta">&lt;control-value-delta&gt;</a>
+      <a href="#control-value-index">&lt;control-value-index&gt;</a>
+      <a href="#default-el">&lt;default&gt;</a>
+      <a href="#delta">&lt;delta&gt;</a>
+      <a href="#delta-set">&lt;delta-set&gt;</a>
+      <a href="#diagonal-stem">&lt;diagonal-stem&gt;</a>
+      <a href="#disable-instructions">&lt;disable-instructions&gt;</a>
+      <a href="#divide">&lt;divide&gt;</a>
+      <a href="#else-el">&lt;else&gt;</a>
+      <a href="#enable-instructions">&lt;enable-instructions&gt;</a>
+      <a href="#entry">&lt;entry&gt;</a>
+      <a href="#flip-on">&lt;flip-off&gt;</a>
+      <a href="#flip-on">&lt;flip-on&gt;</a>
+      <a href="#floor">&lt;floor&gt;</a>
+      <a href="#formula">&lt;formula&gt;</a>
+      <a href="#functions">&lt;function&gt;</a>
+      <a href="#get-coordinate">&lt;get-coordinate&gt;</a>
+      <a href="#getinfo">&lt;getinfo&gt;</a>
+      <a href="#glyph">&lt;glyph&gt;</a>
+      <a href="#glyph-select">&lt;glyph-select&gt;</a>
+      <a href="#if-el">&lt;if&gt;</a>
+      <a href="#infile">&lt;infile&gt;</a>
+      <a href="#interpolate">&lt;interpolate&gt;</a>
+      <a href="#interpolate-untouched-points">&lt;interpolate-untouched-points&gt;</a>
+      <a href="#legacy-functions">&lt;legacy-functions&gt;</a>
+      <a href="#line">&lt;line&gt;</a>
+      <a href="#macros">&lt;macro&gt;</a>
+      <a href="#maximum">&lt;maximum&gt;</a>
+      <a href="#mdap">&lt;mdap&gt;</a>
+      <a href="#mdrp">&lt;mdrp&gt;</a>
+      <a href="#measure-distance">&lt;measure-distance&gt;</a>
+      <a href="#message">&lt;message&gt;</a>
+      <a href="#miap">&lt;miap&gt;</a>
+      <a href="#minimum">&lt;minimum&gt;</a>
+      <a href="#mirp">&lt;mirp&gt;</a>
+      <a href="#modifier">&lt;modifier&gt;</a>
+      <a href="#move">&lt;move&gt;</a>
+      <a href="#move-point-to-intersection">&lt;move-point-to-intersection&gt;</a>
+      <a href="#multiply">&lt;multiply&gt;</a>
+      <a href="#negate">&lt;negate&gt;</a>
+      <a href="#no-compile">&lt;no-compile&gt;</a>
+      <a href="#no-round">&lt;no-round&gt;</a>
+      <a href="#no-warning">&lt;no-warning&gt;</a>
+      <a href="#outfile">&lt;outfile&gt;</a>
+      <a href="#outfile-base">&lt;outfile-base&gt;</a>
+      <a href="#outfile-script-name">&lt;outfile-script-name&gt;</a>
+      <a href="#params">&lt;param&gt;</a>
+      <a href="#param-set">&lt;param-set&gt;</a>
+      <a href="#point">&lt;point&gt;</a>
+      <a href="#pre-program">&lt;pre-program&gt;</a>
+      <a href="#ps-private">&lt;ps-private&gt;</a>
+      <a href="#push">&lt;push&gt;</a>
+      <a href="#range">&lt;range&gt;</a>
+      <a href="#restore-default">&lt;restore-default&gt;</a>
+      <a href="#reference">&lt;reference&gt;</a>
+      <a href="#round">&lt;round&gt;</a>
+      <a href="#round-state">&lt;round-state&gt;</a>
+      <a href="#set">&lt;set&gt;</a>
+      <a href="#set-auto-flip">&lt;set-auto-flip&gt;</a>
+      <a href="#set-control-value">&lt;set-control-value&gt;</a>
+      <a href="#set-control-value-cut-in">&lt;set-control-value-cut-in&gt;</a>
+      <a href="#set-coordinate">&lt;set-coordinate&gt;</a>
+      <a href="#set-delta-base">&lt;set-delta-base&gt;</a>
+      <a href="#set-delta-shift">&lt;set-delta-shift&gt;</a>
+      <a href="#set-dropout-control">&lt;set-dropout-control&gt;</a>
+      <a href="#set-dropout-type">&lt;set-dropout-type&gt;</a>
+      <a href="#set-dual-projection-vector">&lt;set-dual-projection-vector&gt;</a>
+      <a href="#set-equal">&lt;set-equal&gt;</a>
+      <a href="#set-freedom-vector">&lt;set-freedom-vector&gt;</a>
+      <a href="#set-minimum-distance">&lt;set-minimum-distance&gt;</a>
+      <a href="#set-projection-vector">&lt;set-projection-vector&gt;</a>
+      <a href="#set-round-state">&lt;set-round-state&gt;</a>
+      <a href="#set-single-width">&lt;set-single-width&gt;</a>
+      <a href="#set-single-width-cut-in">&lt;set-single-width-cut-in&gt;</a>
+      <a href="#set-vectors">&lt;set-vectors&gt;</a>
+      <a href="#shift">&lt;shift&gt;</a>
+      <a href="#shift-absolute">&lt;shift-absolute&gt;</a>
+      <a href="#srp">&lt;srp&gt;</a>
+      <a href="#store-projection-vector">&lt;store-freedom-vector&gt;</a>
+      <a href="#store-projection-vector">&lt;store-projection-vector&gt;</a>
+      <a href="#subtract">&lt;subtract&gt;</a>
+      <a href="#szp">&lt;szp&gt;</a>
+      <a href="#toggle-points">&lt;toggle-points&gt;</a>
+      <a href="#to-stack">&lt;to-stack&gt;</a>
+      <a href="#untouch">&lt;untouch&gt;</a>
+      <a href="#variables">&lt;variable&gt;</a>
+      <a href="#function-variant">&lt;variant&gt;</a>
+      <a href="#set-control-value">&lt;with-control-value&gt;</a>
+      <a href="#set-control-value-cut-in">&lt;with-control-value-cut-in&gt;</a>
+      <a href="#set-delta-base">&lt;with-delta-base&gt;</a>
+      <a href="#set-delta-shift">&lt;with-delta-shift&gt;</a>
+      <a href="#set-freedom-vector">&lt;with-freedom-vector&gt;</a>
+      <a href="#set-minimum-distance">&lt;with-minimum-distance&gt;</a>
+      <a href="#with-param">&lt;with-param&gt;</a>
+      <a href="#set-projection-vector">&lt;with-projection-vector&gt;</a>
+      <a href="#set-round-state">&lt;with-round-state&gt;</a>
+      <a href="#set-single-width">&lt;with-single-width&gt;</a>
+      <a href="#set-single-width-cut-in">&lt;with-single-width-cut-in&gt;</a>
+      <a href="#set-vectors">&lt;with-vectors&gt;</a>
+      <a href="#xgridfit-el">&lt;xgridfit&gt;</a>
+      <a href="#zone">&lt;zone&gt;</a>
+    </div>
+
+    <div id="content">
+      <h1>Element Reference</h1>
+
+      <h2 id="absolute">&lt;absolute&gt;</h2>
+
+      <p>
+        Converts negative to positive numbers; positive numbers stay
+        positive.
+      </p>
+      <pre>
+        &lt;absolute value="line-width" result-to="lw"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when &lt;absolute&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to operate on.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;absolute&gt; is the child of
+	  a &lt;formula&gt;. The name of a variable or control value
+	  in which to store the result. If <tt>result-to</tt> is
+	  omitted where allowed and <tt>value</tt> is a variable or
+	  control value, the result is written to <tt>value</tt>. If
+	  <tt>value</tt> cannot be written to, the compiler issues a
+	  warning and the result is left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="add">&lt;add&gt;</h2>
+
+      <p>
+        Adds two numbers together.
+      </p>
+      <pre>
+        &lt;add value1="line-width" value2="1p"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value1, value2</dt>
+	<dd>
+	  Required, except when &lt;add&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. These are the values to
+	  add together.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;add&gt; is the child of a
+	  &lt;formula&gt;. If <tt>result-to</tt> is omitted where
+	  allowed, Xgridfit attempts to write the result to
+	  <tt>value1</tt>. If <tt>value1</tt> cannot be written to,
+	  the compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="alias">&lt;alias&gt;</h2>
+
+      <p>
+	Provides access to a value under some other name. The value
+	can be a control-value, constant, variable, or any value that
+	can be resolved to a number either at compile time or run
+	time. The &lt;alias&gt; element can appear at the top level of
+	a program (as a child of &lt;xgridfit&gt;), or along with
+	other declarations at the beginning of &lt;glyph&gt;,
+	&lt;function&gt;, &lt;macro&gt; or &lt;pre-program&gt;
+	elements. An alias takes precedence over all other elements,
+	so in the case of name collisions the alias is always
+	used. Here is a simple example:
+      </p>
+      <pre>
+	&lt;control-value name="lc-vert-stroke" value="0"/&gt;
+	&lt;alias name="lc-vert-stem" target="lc-vert-stroke"/&gt;</pre>
+      <p>
+	Now a &lt;move&gt; element with attribute
+	<tt>distance="lc-vert-stem"</tt> will use the control-value
+	named <tt>lc-vert-stroke</tt>. If another control-value is
+	named <tt>lc-vert-stem</tt> it will be invisible. If you want
+	the alias to be used in just one glyph program, declare it as
+	a child of &lt;glyph&gt; rather than as a child of
+	&lt;xgridfit&gt;.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. This is the name under which
+	  the program may now access the value.
+	</dd>
+	<dt>target</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. The name of the value which is
+	  being renamed.
+	</dd>
+      </dl>
+
+      <h2 id="align">&lt;align&gt;</h2>
+
+      <p>
+        Moves one or more points along the freedom vector until
+        aligned with a reference point. Points are "aligned" when
+        their distance from each other, measured along the projection
+        vector, is zero. When the projection vector is "x," aligned
+        points end up stacked vertically; when it is "y" they end up
+        in a horizontal line. When the projection vector is set to a
+        line, the aligned points end up arrayed along an imaginary
+        line orthogonal to the projection vector.
+      </p>
+
+      <p>
+        The &lt;align&gt; element must contain at least one object to
+        align.  It may contain any number of &lt;point&gt;s,
+        &lt;range&gt;s and &lt;set&gt;s.  An optional
+        &lt;reference&gt; element contains the point to align with. If
+        the reference point is omitted, the current setting of RP0 is
+        used.
+      </p>
+
+      <p>
+        &lt;align&gt; can and frequently should be nested inside a
+        &lt;move&gt; element, in which case points are aligned
+        relative to the point that is the target of the
+        &lt;move&gt;. In both of the following cases point "m" is
+        aligned with point "r":
+      </p>
+
+      <pre>
+        &lt;align&gt;
+          &lt;reference&gt;
+            &lt;point num="r"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="m"/&gt;
+        &lt;/align&gt;
+
+        &lt;move&gt;
+          &lt;point num="r"/&gt;
+          &lt;align&gt;
+            &lt;point num="m"/&gt;
+          &lt;/align&gt;
+        &lt;/move&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;point&gt;, &lt;range&gt; and &lt;set&gt;
+	elements.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>compile-if</dt>
+	<dd>
+	  Optional. Any value or expression that can be resolved to a
+	  number at compile time. If true (non-zero), the
+	  &lt;align&gt; element is compiled; otherwise the compiler
+	  passes it over.
+	</dd>
+      </dl>
+
+      <h2 id="align-midway">&lt;align-midway&gt;</h2>
+
+      <p>
+        Must contain two &lt;point&gt; elements. Moves these along the
+        freedom vector until they are aligned midway between their
+        original positions. Measurement is along the projection
+        vector.
+      </p>
+
+      <pre>
+        &lt;align-midway&gt;
+          &lt;point num="a"/&gt;
+          &lt;point num="b"/&gt;
+        &lt;/align-midway&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	Two &lt;point&gt; elements, both required.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="call-function">&lt;call-function&gt;</h2>
+
+      <p>
+        Calls a function (defined via the &lt;function&gt; element) by
+        name. Parameters may be passed to the function by including
+        several &lt;with-param&gt; elements; or, if the function is to
+        be called repeatedly, several &lt;param-set&gt; elements, each
+        containing the &lt;with-param&gt; elements for one call to the
+        function.
+      </p>
+
+      <p>
+        If the function returns a value, it can be assigned to a
+        variable via the <tt>result-to</tt> attribute. Note, however,
+        that if a &lt;call-function&gt; element contains more than one
+        &lt;param-set&gt;, only the value returned by the last
+        iteration of the function is returned.
+      </p>
+
+      <pre>
+    &lt;call-function name="cap-serif-width"&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="ref-pt" value="left-left"/&gt;
+        &lt;with-param name="move-pt" value="top-serif-end"/&gt;
+      &lt;/param-set&gt;
+      &lt;param-set&gt;
+        &lt;with-param name="ref-pt" value="left-left"/&gt;
+        &lt;with-param name="move-pt" value="bottom-serif-end"/&gt;
+      &lt;/param-set&gt;
+    &lt;/call-function&gt;</pre>
+
+      <h3>Contents</h3>
+      <p>
+	Either several &lt;with-param&gt; elements (if the function is
+	to be called just once) or several &lt;param-set&gt; elements.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the function to call.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional. The name of a variable or control value in which
+	  to store the value returned by the function.
+	</dd>
+      </dl>
+
+      <h2 id="call-glyph">&lt;call-glyph&gt;</h2>
+
+      <p>
+	The &lt;call-glyph&gt; element causes code for the whole of a
+	glyph program to be compiled and inserted, in the manner of a
+	macro. Like &lt;call-macro&gt;, &lt;call-glyph&gt; can contain
+	&lt;with-param&gt; elements, passing values to the glyph
+	program. For a detailed account of its use, see the chapter on
+	<a href="functions.html#glyph">functions, macros and glyph
+	programs</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	If the glyph being called has one or more &lt;param&gt;
+	elements, one or more &lt;with-param&gt;
+	elements. &lt;param-set&gt; elements are not permitted here.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>ps-name</dt>
+	<dd>
+	  Required. Must match the <tt>ps-name</tt> attribute of the
+	  &lt;glyph&gt; element being called.
+	</dd>
+      </dl>
+
+      <h2 id="call-macro">&lt;call-macro&gt;</h2>
+
+      <p>
+        Causes a macro to be compiled and its code inserted at the
+        present location. 
+      </p>
+
+      <pre>
+    &lt;call-macro name="lc-vert-stem-with-serif"&gt;
+      &lt;with-param name="anchor" value="left-left"/&gt;
+      &lt;with-param name="distance-from-anchor" value="hn-width"/&gt;
+      &lt;with-param name="stem-a" value="right-right"/&gt;
+      &lt;with-param name="serif-a" value="right-serif-right"/&gt;
+      &lt;with-param name="stem-b" value="right-left"/&gt;
+      &lt;with-param name="serif-b" value="right-serif-left"/&gt;
+    &lt;/call-macro&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	Either one or more &lt;with-param&gt; elements, one for each
+	parameter defined in the &lt;macro&gt; element, or several
+	&lt;param-set&gt; elements if the macro is to be compiled and
+	inserted at this place more than once. &lt;with-param&gt; may
+	be omitted for each &lt;param&gt; element with a
+	<tt>value</tt> attribute.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the macro to call.
+	</dd>
+      </dl>
+
+      <h2 id="call-param">&lt;call-param&gt;</h2>
+
+      <p>
+	This element may be used within a &lt;glyph&gt; or
+	&lt;macro&gt; element containing &lt;param&gt; elements. It
+	will cause to be executed a snippet of code passed into a
+	called &lt;glyph&gt; or &lt;macro&gt; via a &lt;with-param&gt;
+	element. For details, see the <a
+	href="functions.html#callable">"Callable Parameters"</a>
+	section of <a href="functions">Functions, Macros and Glyph
+	Programs</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the &lt;param&gt; to call.
+	</dd>
+      </dl>
+
+      <h2 id="ceiling">&lt;ceiling&gt;</h2>
+
+      <p>Yields the smallest integer greater than or equal to
+      <tt>value</tt>.</p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when &lt;ceiling&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to operate on.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;ceiling&gt; is the child of a
+	  &lt;formula&gt;. If <tt>result-to</tt> is omitted where
+	  allowed, Xgridfit attempts to write the result to
+	  <tt>value</tt>. If <tt>value</tt> cannot be written to, the
+	  compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="command">&lt;command&gt;</h2>
+
+      <p>
+	Causes any TrueType instruction (except the PUSHB and PUSHW
+	instructions) to be inserted at this place in the output.
+	<tt>name</tt> is the name of the command; <tt>modifier</tt>,
+	is simply copied into brackets after the instruction that is
+	generated. This element
+      </p>
+      <pre>
+        &lt;command name="MIRP" modifier="10110"/&gt;</pre>
+      <p>
+        is compiled to "MIRP[10110]". The <tt>modifier</tt> attribute
+        lacks portability, since it is copied in literally. A better
+        solution is to use &lt;modifier&gt; elements within the
+        &lt;command&gt; element, thus:
+      </p>
+      <pre>
+        &lt;command name="MIRP"&gt;
+          &lt;modifier type="rp0" value="yes"/&gt;
+          &lt;modifier type="minimum-distance" value="no"/&gt;
+          &lt;modifier type="round" value="no"/&gt;
+          &lt;modifier type="color" value="black"/&gt;
+        &lt;/command&gt;</pre>
+      <p>
+        Though verbose, this style allows Xgridfit to check the input
+        code and has the potential to allow Xgridfit to vary the
+        syntax of its output. (Since Xgridfit now produces scripts
+        only for FontForge, the latter capability is not exploited.)
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more <a href="#modifier">&lt;modifier&gt;</a> elements,
+	if required by the instruction and if the <tt>modifier</tt>
+	attribute is not used.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the TrueType instruction to be
+	  output. The compiler checks this against a list of
+	  instructions.
+	</dd>
+	<dt>modifier</dt>
+	<dd>
+	  A modifier string to be inserted <i>literatim</i> in the
+	  TrueType instruction. For example, if <tt>command</tt> is
+	  "MIRP" and <tt>modifier</tt> is "rnd", then
+	  <tt>MIRP[rnd]</tt> is output.
+	</dd>
+      </dl>
+
+      <h2 id="compile-if">&lt;compile-if&gt;</h2>
+
+      <p>
+        Code within &lt;compile-if&gt; is compiled only if the
+        <tt>test</tt> attribute evaluates to true (non-zero). The
+        compiler must be able to evaluate <tt>test</tt> at compile
+        time: thus it may contain only constants, number literals,
+        control value indexes and a few operators (<tt>+ - = !=
+        &amp;gt; &amp;lt; &amp;gt;= &amp;lt;= or and not</tt>).
+      </p>
+      <p>
+        Here is a simple example of &lt;compile-if&gt;:
+      </p>
+      <pre>
+        &lt;compile-if test="bold-italic"&gt;
+          &lt;delta&gt;
+            &lt;delta-set size="3" distance="-2"&gt;
+              &lt;point num="pt"/&gt;
+            &lt;/delta-set&gt;
+          &lt;/delta&gt;
+        &lt;/compile-if&gt;</pre>
+      <p>
+        The delta is compiled and inserted in the output code only if
+        <tt>bold-italic</tt> (a global constant) is non-zero.
+      </p>
+      <p>
+        The &lt;compile-if&gt; element may also contain an
+        &lt;else&gt; element, which must come last. If <tt>test</tt>
+        evaluates to false (zero), the code contained in &lt;else&gt;
+        is compiled.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Programming to be conditionally compiled.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>test</dt>
+	<dd>
+	  Required. Any value or expression that can be resolved to a
+	  number at compile time. If it evaluates as true (non-zero),
+	  the content of this element is compiled.
+	</dd>
+      </dl>
+
+      <h2 id="constant">&lt;constant&gt;</h2>
+
+      <p>
+         A constant is a named number.  The <tt>value</tt> can be an
+         integer, either of the two kinds of fixed-point number
+         (e.g. "2.3" for a distance on the grid or "1.0v" for a
+         component of a vector), or the name of another constant, in
+         which case it creates an alias for that constant. It can also
+         be a simple expression (usually addition or subtraction)
+         based on another constant:
+      </p>
+
+      <pre>
+        &lt;constant name="bottom-left" value="3"/&gt;
+        &lt;constant name="bottom" value="bottom-left"/&gt;
+        &lt;constant name="bottom-right" value="bottom + 4"/&gt;</pre>
+
+      <p>
+        Constants can be referenced just about anywhere that numbers
+        are called for.  To refer to a constant belonging to another
+        glyph program, use the glyph's <tt>ps-name</tt> followed by a
+        slash and the name of the constant, e.g.
+      </p>
+
+      <pre>
+        &lt;point num="macron/bottom"/&gt;</pre>
+
+      <p>
+        This is useful when instructing composite glyphs.
+      </p>
+
+      <p>
+        Constants can be declared at the beginning of a &lt;glyph&gt;
+        program, or as a child of the &lt;xgridfit&gt; element.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. Other elements can refer to
+	  the constant by this name.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. A number or simple expression. It should be
+	  possible to resolve this attribute to a number at compile
+	  time.
+	</dd>
+      </dl>
+
+      <h2 id="contour">&lt;contour&gt;</h2>
+
+      <p>
+        Specifies a contour to be shifted by a &lt;shift&gt;
+        instruction.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>num</dt>
+	<dd>
+	  Required. A number or simple expression, the number of the
+	  contour. It should be possible to resolve this attribute to
+	  a number at compile time.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  Optional. Possible values are "glyph" and "twilight."
+	  Include the attribute <tt>zone="twilight"</tt> if this
+	  contour is in the twilight zone; otherwise the compiler will
+	  assume that it is in the glyph zone.
+	</dd>
+      </dl>
+
+      <h2 id="control-values">&lt;control-value&gt;</h2>
+      <p>
+        The font's Control Value Table is built from the
+        &lt;control-value&gt; elements. Each &lt;control-value&gt; has an
+        <tt>name</tt> (which must be unique) and a numerical value. The
+        index of the &lt;control-value&gt; is generated by Xgridfit, and
+        no attempt should be made to predict it: Xgridfit instructions
+        should use only the names of &lt;control-value&gt;s, though the
+        index may be derived and used at run time.
+      </p>
+
+      <pre>
+    &lt;control-value name="curved-char-bottom" value="-25"/&gt;
+    &lt;control-value name="lc-x-height" value="850"/&gt;
+    &lt;control-value name="lc-descender-depth" value="-555"/&gt;
+    &lt;control-value name="lc-ascender-height" value="1485"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. A number in font units (the units of the grid on
+	  which the font was designed, normally 100 units per em or
+	  2048 units per em).
+	</dd>
+	<dt>index</dt>
+	<dd>
+	  Optional, and consulted only in merge-mode. Specifies how to
+	  determine a control-value's index. "Auto" (the default)
+	  means that if a control-value with this one's <tt>value</tt>
+	  is found in the font, it should be re-used; otherwise this
+	  control value should be appended to the end of the
+	  control-value table. "Append" means that the control-value
+	  should always be appended to the end of the control-value
+	  table. A number specifies the index at which the
+	  control-value should be placed. If the <tt>value</tt> of
+	  this control-value is different from the value of that of
+	  the control-value at that index in the existing font, the
+	  control-value is updated.
+	</dd>
+      </dl>
+
+      <h2 id="control-value-delta">&lt;control-value-delta&gt;</h2>
+      <p>
+        The &lt;control-value-delta&gt; element works like the
+        &lt;delta&gt; element, but operates on the Control Value Table
+        rather than on a point. It should normally be invoked in the
+        &lt;pre-program&gt;. Each &lt;delta-set&gt; inside a
+        control-value-delta element must have <tt>cv</tt>,
+        <tt>size</tt> and <tt>distance</tt> attributes, but it may not
+        contain a point.
+      </p>
+      <p>
+        The setting of the vectors has no effect on the
+        &lt;control-value-delta&gt;. Rather, the &lt;delta-set&gt;
+        specifies an amount to add to or subtract from the value
+        stored there.
+      </p>
+      <pre>
+    &lt;control-value-delta&gt;
+      &lt;delta-set cv="pq-char-width" size="6" distance="-8"/&gt;
+      &lt;delta-set cv="pq-char-width" size="9" distance="-8"/&gt;
+    &lt;/control-value-delta&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;delta-set&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="control-value-index">&lt;control-value-index&gt;</h2>
+
+      <p>
+        Assigns the index of a control value to a variable. Use this
+        if you need to get such an index for any reason, since the
+        &lt;set-equal&gt; instruction yields the value, not the index,
+        of a control value.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. The name of the control value whose index you want
+	  to retrieve. No other kind of value is recognized here.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Required. The name of a &lt;variable&gt; in which to store
+	  the index of the control value.. Only a variable is
+	  permitted here--not, for example, the name of another
+	  control value.
+	</dd>
+      </dl>
+
+      <h2 id="default-el">&lt;default&gt;</h2>
+
+      <p>
+        This element, which may appear as a child of &lt;xgridfit&gt;,
+        declares a default value. If the type is "minimum-distance,"
+        "control-value-cut-in," "single-width," "single-width-cut-in,"
+        "delta-base," "delta-shift" or "round-state," Xgridfit also
+        inserts code in the prep program to set a font-wide default in
+        the TrueType engine.  Another way of setting these defaults is
+        simply to include elements that set these values in the
+        &lt;pre-program&gt;, and the effect is the same. If you want
+        the TrueType engine to reject all attempts to set defaults
+        (that is, if you want to use only the defaults that are
+        standard for TrueType), include this:
+      </p>
+
+      <pre>
+        &lt;default type="use-truetype-defaults" value="yes"/&gt;</pre>
+
+      <p>
+        In addition to TrueType defaults, stored in the font file,
+        this element controls several defaults that govern how
+        Xgridfit operates.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>type</dt>
+	<dd>
+	  Required. Must be one of the following: "minimum-distance",
+	  "control-value-cut-in", "single-width",
+	  "single-width-cut-in", "delta-base", "delta-shift",
+	  "delta-break", "max-twilight-points", "max-storage",
+	  "legacy-storage", "max-stack", "use-truetype-defaults",
+	  "round-state", "function-base", "init-graphics", "color",
+	  "delete-all", "combine-prep", "auto-instr", "auto-hint",
+	  "cv-num-in-compile". For details about the meanings of these
+	  types, see <a href="graphics.html">The Graphics State and
+	  Xgridfit Defaults</a> and <a
+	  href="merge-mode.html">Merge-mode</a>.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. For permissible values, see <a
+	  href="graphics.html">The Graphics State and Xgridfit
+	  Defaults</a>.
+	</dd>
+      </dl>
+
+      <h2 id="delta">&lt;delta&gt;</h2>
+      <p>
+        A delta instruction moves points at particular sizes.  The
+        &lt;delta&gt; element may contain any number of
+        &lt;delta-set&gt; elements, each one specifying a point to
+        move, a size at which to move it, and a distance to move it.
+      </p>
+      <p>
+        The direction of the move is determined by the current setting
+        of the freedom vector. The available specifications are fuzzy
+        as to the details. You will experience no surprises when the
+        vectors are set to x or y; you may experiment with the vectors
+        set at other angles.
+      </p>
+      <p>
+	When the first element of a &lt;delta&gt; is a &lt;point&gt;,
+	that point is the default, which every &lt;delta-set&gt;
+	element will move unless it contains its own
+	&lt;point&gt;. These two &lt;delta&gt; elements are
+	equivalent:
+      </p>
+      <pre>
+      &lt;delta&gt;
+        &lt;delta-set size="3" distance="8"&gt;
+          &lt;point num="p1"/&gt;
+        &lt;/delta-set&gt;
+        &lt;delta-set size="4" distance="8"&gt;
+          &lt;point num="p1"/&gt;
+        &lt;/delta-set&gt;
+      &lt;/delta&gt;
+
+      &lt;delta&gt;
+        &lt;point num="p1"/&gt;
+        &lt;delta-set size="3" distance="8"/&gt;
+        &lt;delta-set size="4" distance="8"/&gt;
+      &lt;/delta&gt;</pre>
+      <p>
+	Note that a &lt;move&gt; element may contain &lt;delta&gt;
+	elements. When a &lt;delta-set&gt; element inside one of these
+	&lt;delta&gt; elements lacks a &lt;point&gt;, it operates on
+	the point moved by the parent &lt;move&gt;.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	An optional &lt;point&gt; element, followed by one or more
+	&lt;delta-set&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>compile-if</dt>
+	<dd>
+	  Optional. Any value or expression that can be resolved to a
+	  number at compile time. If true (non-zero), the
+	  &lt;delta&gt; element is compiled; otherwise the compiler
+	  passes it over.
+	  
+	</dd>
+      </dl>
+
+      <h2 id="delta-set">&lt;delta-set&gt;</h2>
+      <p>
+        The &lt;delta-set&gt; element encapsulates the essential
+        information about a single delta move or adjustment: the
+        resolution at which to apply the delta, the magnitude of the
+        adjustment, and the point or control value that will be
+        affected.
+      </p>
+      <p>
+        The resolution is determined by the <tt>size</tt> attribute,
+        which can be a number from 0 to 47. It is added to the value
+        set by the &lt;set-delta-base&gt; or &lt;with-delta-base&gt;
+        instruction to obtain the resolution (in pixels per em or
+        "ppem") at which the move should take place. The default delta
+        base is 9; if you don't change it, a <tt>size</tt> of "0"
+        means 9 ppem, "9" means 18 ppem, and so forth up to "47,"
+        which means 56 ppem.
+      </p>
+      <p>
+        The <tt>distance</tt> attribute is the distance to shift the
+        point along the freedom vector, or the amount to add to or
+        subtract from the control value. Legal values are from -8 to 8
+        (excluding 0). When moving points, negative numbers shift
+        against the direction of the freedom vector (generally down or
+        left) and positive numbers shift in the direction of the
+        freedom vector.
+      </p>
+      <p>
+        The default unit by which pixels are moved and control values
+        adjusted is 1/8 pixel.  The unit is controlled by means of the
+        &lt;set-delta-shift&gt; or the &lt;with-delta-shift&gt;
+        instruction.
+      </p>
+      <p>
+        A &lt;delta-set&gt; that is the child of a &lt;delta&gt; will
+        normally contain a single &lt;point&gt;.  However, the
+        &lt;point&gt; may be omitted in either of two circumstances:
+        First, when the &lt;delta&gt; is the child of a &lt;move&gt;
+        element, the &lt;point&gt;, when not specified, is implicitly
+        the &lt;point&gt; that is the child of the parent
+        &lt;move&gt;. Second, when the first child element of the
+        &lt;delta&gt; is &lt;point&gt;, that point will be moved by
+        any &lt;delta-set&gt; that lacks a child &lt;point&gt;. A
+        &lt;delta-set&gt; that is the child of a
+        &lt;control-value-delta&gt; element may not contain a
+        &lt;point&gt;, but it must have a <tt>cv</tt> attribute.
+      </p>
+      <p>
+        All attribute values in a &lt;delta-set&gt; and a child
+        &lt;point&gt; must be capable of being resolved to numerical
+        values at compile time. Variables and function parameters are
+        not permitted.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	When the &lt;delta-set&gt; is the child of a &lt;delta&gt;
+	element, it may contain a &lt;point&gt;; this is the point to
+	move. It <i>must</i> contain a &lt;point&gt; when it the
+	parent &lt;delta&gt; is not the child of a &lt;move&gt; and
+	the first child of the &lt;delta&gt; is not a
+	&lt;point&gt;. When the &lt;delta-set&gt; is the child of
+	&lt;control-value-delta&gt; it has no content.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>cv</dt>
+	<dd>
+	  Required when the &lt;delta-set&gt; is the child of
+	  &lt;control-value-delta&gt;. The name of the control value
+	  to adjust.
+	</dd>
+	<dt>size</dt>
+	<dd>
+	  Required. An integer from 0 to 47. The resolution at which
+	  to move the point or adjust the control value, as explained
+	  above.
+	</dd>
+	<dt>distance</dt>
+	<dd>
+	  Required. An integer from -8 to 8, excluding 0. The distance
+	  to move the point or the amount to adjust the control value,
+	  as explained above.
+	</dd>
+      </dl>
+
+      <h2 id="diagonal-stem">&lt;diagonal-stem&gt;</h2>
+
+      <p>Given two lines (making up a diagonal stem),
+      makes the second line parallel to the first, subject to the
+      operation of the Control Value cut-in. If one &lt;align&gt; element is
+      present, the points it contains are aligned with the second line;
+      if there are two, the first set of points is aligned with the
+      first line and the second set with the second line. You may, and
+      often should, set a new minimum distance value with the <tt>min-distance</tt>
+      attribute. At the end of this instruction the minimum distance
+      is reset to its former value.</p>
+
+      <p>Usually it doesn't make a lot of sense to round the distance
+      when calling this instruction; and yet the default value of
+      <tt>round</tt> is <tt>yes</tt> for compatibility with other, similar instructions.
+      You'll probably want to set the <tt>round</tt> attribute to <tt>no</tt>; but
+      if you have several &lt;diagonal-stem&gt; instructions together,
+      enclose them in a <tt>&lt;with-round-state round="no"&gt;</tt> element to
+      turn off rounding beforehand
+      and on again afterwards. In this case, do not include the <tt>round</tt>
+      attribute with the &lt;diagonal-stem&gt; elements.</p>
+
+      <p>By default this instruction does not set the Freedom Vector, since
+      the best setting of that vector varies with circumstances. If
+      you want the Freedom Vector to be the same as the Projection
+      Vector, set <tt>freedom-vector="yes"</tt>.</p>
+
+      <p>This instruction is not suitable for use inside a function
+      (though you may do so if the &lt;line&gt; elements contain points
+      rather than <tt>ref</tt> attributes). Also, I'm not sure whether it
+      will work if the various points are in different zones. It may,
+      but I don't guarantee it.</p>
+
+      <pre>
+    &lt;with-minimum-distance value="diag-min-dist"&gt;
+      &lt;with-round-state round="no"&gt;
+        &lt;diagonal-stem distance="cap-thick-diag" save-vectors="yes"&gt;
+          &lt;line ref="left-diag-left-line"/&gt;
+          &lt;line ref="left-diag-right-line"/&gt;
+        &lt;/diagonal-stem&gt;
+        &lt;diagonal-stem distance="cap-thin-diag" save-vectors="yes"&gt;
+          &lt;line ref="right-diag-right-line"/&gt;
+          &lt;line ref="right-diag-left-line"/&gt;
+        &lt;/diagonal-stem&gt;
+      &lt;/with-round-state&gt;
+    &lt;/with-minimum-distance&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	Two &lt;line&gt; elements, the second to be made parallel to
+	the first. Optionally, one or two &lt;align&gt; elements, the
+	first containing points to be aligned with the first line and
+	the second with the second line.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>distance</dt>
+	<dd>
+	  Required. The name of a control value which determines the
+	  distance to place the second line from the first.
+	</dd>
+	<dt>round</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. If the value is anything but
+	  "no", rounding is used.
+	</dd>
+	<dt>cut-in</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no"; the default is
+	  "yes". Determines whether to use the control value cut-in.
+	</dd>
+	<dt>min-distance</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no" or any value or
+	  expression to be used to set the minimum distance for this
+	  operation.
+	</dd>
+        <dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "black." The kind of distance between
+	  the points of the two &lt;line&gt; elements.
+	</dd>
+	<dt>freedom-vector</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no"; the default is
+	  "no". Determines whether to set the freedom vector to the
+	  same angle as the projection vector.
+	</dd>
+	<dt>save-vectors</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no"; the default is
+	  "no". If "yes", both the projection vector and the freedom
+	  vector are guaranteed to be the same after this intruction
+	  as they were before.
+	</dd>
+      </dl>
+
+      <h2 id="disable-instructions">&lt;disable-instructions&gt;</h2>
+
+      <p>
+        Disables the instructions associated with glyphs.  The
+        TrueType specification does not say that instructions in the
+        &lt;pre-program&gt; are disabled: presumably they are
+        not. This instruction is available only in the
+        &lt;pre-program&gt;.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="divide">&lt;divide&gt;</h2>
+
+      <p>Divides <tt>dividend</tt> by <tt>divisor</tt>. If
+      <tt>result-to</tt> is not specified, Xgridfit attempts to
+      write the result to <tt>dividend</tt>.</p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>dividend</dt>
+	<dd>
+	  Required, except when &lt;divide&gt; is a child of the
+	  &lt;formula&gt; element. Any value or expression. The number
+	  to be divided.
+	</dd>
+	<dt>divisor</dt>
+	<dd>
+	  Required, except when &lt;divide&gt; is a child of the
+	  &lt;formula&gt; element. Any value or expression. The number
+	  by which the dividend is to be divided.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;divide&gt; is the child of a
+	  &lt;formula&gt;. The name of a variable or control value in
+	  which to store the result. In a &lt;formula&gt; element the
+	  result can be passed automatically to the next arithmetic
+	  element; otherwise, if this attribute is missing, the
+	  compiler tries to store the result in
+	  <tt>dividend</tt>. Failing that, it issues a warning and
+	  leaves the result on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="else-el">&lt;else&gt;</h2>
+
+      <p>
+        Provides the "else" clause for an <a
+        href="#if-el">&lt;if&gt;</a> or <a
+        href="#compile-if">&lt;compile-if&gt;</a> element. The
+        &lt;else&gt; must be the last child of the parent element.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Programming to be conditionally compiled.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="enable-instructions">&lt;enable-instructions&gt;</h2>
+
+      <p>
+        Enables the instructions associated with glyphs. This
+        instruction is available only in the &lt;pre-program&gt;.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="entry">&lt;entry&gt;</h2>
+
+      <p>
+	An entry in the <a href="#ps-private">PostScript private
+	dictionary</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the entry.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. The value of the entry. Usually this is a
+	  space-delimited list of numbers; for BlueFuzz it must be an
+	  integer.
+	</dd>
+      </dl>
+
+      <h2 id="flip-on">&lt;flip-off&gt;<br/>&lt;flip-on&gt;</h2>
+
+      <p>
+	"Flips" a range of points so that they all become either
+	on-line points or off-line points. The &lt;flip-off&gt; and
+	&lt;flip-on&gt; elements must contain a single &lt;range&gt;
+	element. The range operated upon always runs from the lowest
+	point to the highest.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One &lt;range&gt; element.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="floor">&lt;floor&gt;</h2>
+
+      <p>Yields the greatest integer less than or equal to <tt>value</tt>,
+      which is either an integer representing 64ths of a pixel or
+      a fixed-point number. The returned value, if looked at as
+      an integer, is either zero or a multiple of 64.</p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when &lt;floor&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to operate on.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;floor&gt; is the child of a
+	  &lt;formula&gt;.  The name of a variable or control value in
+	  which to store the result. If <tt>result-to</tt> is omitted
+	  where allowed, Xgridfit attempts to write the result to
+	  <tt>value</tt>. If <tt>value</tt> cannot be written to, the
+	  compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="formula">&lt;formula&gt;</h2>
+
+      <p>A formula is a block containing arithmetical instruction
+      elements. Within the &lt;formula&gt; the behavior of these
+      elements is modified slightly: when a <tt>result-to</tt> attribute is
+      missing, they do not attempt to write their result back to
+      one of the values passed to them, but rather leave it on the
+      stack, thus making it available to the following instruction
+      element. Further, while Xgridfit normally issues a warning
+      when an arithmetic element takes a value from the stack or
+      leaves a result on the stack, within a formula this is the
+      expected behavior and so the warning is suppressed. The
+      instructions within the formula should be chained, the
+      result of one operation being used as an argument for the
+      following one; this results in tight code being generated.
+      Example:</p> 
+      <pre>
+        &lt;formula result-to="minimum-distance"&gt;
+          &lt;round value="lc-vert-stem"/&gt;
+          &lt;multiply value2="0.8"/&gt;
+        &lt;/formula&gt;</pre>
+      <p>This rounds the control-value "lc-vert-stem," multiplies it by
+      0.8, and sets the minimum distance in the graphics state to
+      the result. The original entry in the control-value table is
+      unchanged. By contrast, if this &lt;round&gt; element were
+      not the child of a &lt;formula&gt;, the result would be
+      written back to the control-value table.</p>
+
+      <h3>Content</h3>
+      <p>
+	A sequence of elements that perform arithmetic: set-equal,
+	add, subtract, divide, multiply, absolute, negate, floor,
+	ceiling, minimum, maximum, round, no-round,
+	control-value-index.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>result-to</dt>
+	<dd>
+	  Optional.  The name of a variable or control value in which
+	  to store the result. If there is no <tt>result-to</tt>
+	  attribute, the compiler issues a warning and the result is
+	  left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="functions">&lt;function&gt;</h2>
+      <p>
+        The &lt;function&gt; element is used to define
+        functions. Functions are called by name using the <a
+        href="#call-function">&lt;call-function&gt;</a>
+        element. Normally Xgridfit takes care of indexing functions
+        and making sure the right number is used to call them.
+      </p>
+
+      <p>
+        A function may also have a <tt>num</tt> attribute: this is
+        used to define the function in the fpgm table and ensures that
+        any legacy programming can continue to call older functions by
+        number. Xgridfit assigns a number automatically to any
+        function that lacks a <tt>num</tt> attribute.
+      </p>
+
+      <p>
+        A function that returns a value must have the attribute
+        <tt>return="yes"</tt>; within such a function an instruction
+        may assign a value to the special variable "return". The
+        return value must be a single number; lines, vectors, and
+        other structures consisting of two or more numbers cannot be
+        returned.
+      </p>
+
+      <p>
+        A &lt;function&gt; may contain any number of &lt;param&gt;
+        elements and any number of &lt;variable&gt; elements, followed
+        by programming.
+      </p>
+
+      <pre>
+    &lt;function name="lc-standard-serif"&gt;
+      &lt;!-- Regulates vertical distances within a serif --&gt;
+      &lt;param name="base"/&gt;
+      &lt;param name="bottom-left"/&gt;
+      &lt;param name="bottom-right"/&gt;
+      &lt;param name="top-left"/&gt;
+      &lt;param name="top-right"/&gt;
+      &lt;with-vectors axis="y"&gt;
+        &lt;mdap&gt;
+          &lt;point num="base"/&gt;
+        &lt;/mdap&gt;
+        &lt;mirp distance="lc-serif-height" set-rp0="yes"&gt;
+          &lt;point num="top-left"/&gt;
+        &lt;/mirp&gt;
+        &lt;align&gt;
+          &lt;point num="top-right"/&gt;
+        &lt;/align&gt;
+        &lt;mirp distance="lc-serif-height" set-rp0="yes"&gt;
+          &lt;point num="bottom-left"/&gt;
+        &lt;/mirp&gt;
+        &lt;align&gt;
+          &lt;point num="bottom-right"/&gt;
+        &lt;/align&gt;
+      &lt;/with-vectors&gt;
+    &lt;/function&gt;</pre>
+
+      <p>
+	You may define <a
+	href="functions.html#function-variant">function variants</a>,
+	that is, alternative versions of a function to be used at
+	certain sizes or resolutions. To do so, simply include one or
+	more <a href="#function-variant">&lt;variant&gt;</a> elements
+	as the last children of the &lt;function&gt; element.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	First optional &lt;param&gt; elements; next optional
+	&lt;variable&gt; and &lt;alias&gt; elements (in any order);
+	then elements containing programming to be executed by
+	default; finally optional &lt;variant&gt; elements defining
+	versions of the function to be used if the <tt>test</tt>
+	attribute of the &lt;variant&gt; element evaluates as true
+	(non-zero) when the &lt;pre-program&gt; is run.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. The name of this function.
+	</dd>
+	<dt>xml:id</dt>
+	<dd>
+	  Optional. A valid XML ID, i.e. any sequence of letters,
+	  numbers, hyphens, periods; no spaces permitted; and unique
+	  within the program. This ID may be used if a function is
+	  imported into a file using XInclude.
+	</dd>
+	<dt>num</dt>
+	<dd>
+	  Optional. A non-negative integer (zero or greater). See
+	  above for its use. If your program contains functions with
+	  <tt>num</tt> attributes, it should not contain a
+	  &lt;legacy-functions&gt; element.
+	</dd>
+	<dt>return</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no"; "no" is the
+	  default. If "yes", the function may return a value by
+	  assigning a value to the special "return" variable.
+	</dd>
+      </dl>
+
+      <h2 id="get-coordinate">&lt;get-coordinate&gt;</h2>
+
+      <p>
+        Gets the coordinate of a point, measured along the current
+        projection vector. If the projection vector is set to
+        <tt>x</tt>, for example, the result will be the horizontal
+        distance of the point from the grid origin (0,0). The
+        <tt>result-to</tt> attribute may be the name of a variable, a
+        control value, or a graphics state variable.
+      </p>
+
+      <pre>
+        &lt;get-coordinate result-to="v"&gt;
+          &lt;point num="p"/&gt;
+        &lt;/get-coordinate&gt;</pre>
+
+      <p>
+	Most of the time it will be more convenient to use one of the
+	"coord" operators in an <a
+	href="expressions.html">expression</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	The &lt;point&gt; to get the coordinate of.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>grid-fitted</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no"; the default
+	  is "yes". Whether to use the point's current (grid-fitted)
+	  position or its original position (before grid-fitting).
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional.  The name of a variable or control value in which
+	  to store the result. If there is no <tt>result-to</tt>
+	  attribute, the compiler issues a warning and the result is
+	  left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="getinfo">&lt;getinfo&gt;</h2>
+
+      <p>
+	The &lt;getinfo&gt; element provides access to the TrueType
+	GETINFO instruction, which queries the TrueType engine about
+	the state of the current glyph, about the engine version, or
+	about whether ClearType is enabled. In general it is more
+	convenient to use Xgridfit's built-in <a
+	href="graphics.html#engine">graphics variables</a> to obtain
+	such information, but the &lt;getinfo&gt; element may be
+	useful to combine selectors in ways that Xgridfit does not
+	anticipate; and future versions of the TrueType may introduce
+	selectors that Xgridfit does not know about.
+      </p>
+
+      <p>
+	&lt;getinfo&gt; takes two attributes: <tt>selector</tt>
+	indicates which query or queries to submit to GETINFO. Its
+	value can be any number or expression; and note that the
+	relevant <a href="graphics.html#engine">graphics variables</a>
+	can be used here, and the value of these variables in this
+	context is the selector rather than the result of a GETINFO
+	query, as is the case elsewhere. Selectors for GETINFO can be
+	combined by ANDing them; this can be simulated in Xgridfit by
+	adding selectors together (since TrueType programming does not
+	have arithmetical AND). This query
+      </p>
+
+      <pre>
+	&lt;getinfo result-to="v" selector="is-glyph-rotated + is-glyph-stretched"/&gt;</pre>
+
+      <p>
+	will return a non-zero (true) value if either condition is
+	true.
+      </p>
+
+      <p>
+	The second attribute, <tt>result-to</tt>, works like the same
+	attribute elsewhere: that is, it is a variable in which to
+	store the result of the query, and if it is omitted the
+	compiler issues a warning and the value is left on the top of
+	the stack.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>selector</dt>
+	<dd>
+	  One or more of the following, added together:
+	  is-glyph-rotated, is-glyph-stretched, is-glyph-grayscale,
+	  is-cleartype-enabled, is-compatible-width-enabled,
+	  is-symmetrical-smoothing-enabled, is-BGR-order. Or, by
+	  itself, is-glyph-transformed.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional.  The name of a variable in which to store the
+	  result. If there is no <tt>result-to</tt> attribute, the
+	  compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="glyph">&lt;glyph&gt;</h2>
+
+      <p>
+        The &lt;glyph&gt; element contains instructions relating to an
+        individual glyph. Example:
+      </p>
+      <pre>
+        &lt;glyph ps-name="sample-glyph"&gt;
+          &lt;constant name="last" value="50"/&gt;
+            .&nbsp;.&nbsp;.
+          &lt;variable id="v"/&gt;
+          &lt;with-vectors axis="y"&gt;
+            &lt;!-- programming here --&gt;
+          &lt;/with-vectors&gt;
+          &lt;with-vectors axis="x"&gt;
+            &lt;!-- more programming here --&gt;
+          &lt;/with-vectors&gt;
+          &lt;interpolate-untouched-points/&gt;
+        &lt;/glyph&gt;</pre>
+      <p>
+	To make a glyph program callable in the manner of a macro (see
+	<a href="#call-glyph">&lt;call-glyph&gt;</a>), include one or
+	more &lt;param&gt; elements for key values. These should have
+	<tt>value</tt> attributes, since the glyph program will have
+	to be compiled and run even when it is not called.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	&lt;param&gt; elements (if any) must come first, followed by
+	&lt;constant&gt;, &lt;range&gt;, &lt;set&gt;, &lt;line&gt;,
+	&lt;alias&gt; and &lt;variable&gt; elements in any
+	order. Finally programming for the glyph.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>ps-name</dt>
+	<dd>
+	  Required. The PostScript name of the glyph. It must match
+	  the PostScript name of the glyph in the font.
+	</dd>
+	<dt>xml:id</dt>
+	<dd>
+	  Optional. A valid XML ID, i.e. any sequence of letters,
+	  numbers, hyphens, periods; no spaces permitted; and unique
+	  within the program. This ID may be used if a &lt;glyph&gt;
+	  is imported into a file using XInclude.
+	</dd>
+	<dt>init-graphics</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no". This
+	  attribute determines whether variables used by Xgridfit to
+	  track the graphics state are initialized at the beginning of
+	  the glyph program. Such initialization is not needed when
+	  instructions are imported from another font. The default
+	  value is normally "yes," but the default may be set with the
+	  <tt>init-graphics</tt> &lt;default&gt; or with the -G option
+	  for the <tt>xgridfit</tt> executable.
+	</dd>
+      </dl>
+
+      <h2 id="glyph-select">&lt;glyph-select&gt;</h2>
+
+      <p>
+	Specifies a whitespace-delimited list of glyphs to compile,
+	ignoring all others. It is all right to keep this element in
+	the file when you don't need it: just empty it out. These are
+	valid:
+      </p>
+      <pre>
+	&lt;glyph-select&gt;a macron amacron&lt;/glyph-select&gt;
+	&lt;glyph-select&gt;&lt;/glyph-select&gt;</pre>
+      <p>
+	This element corresponds to the <tt>glyph-select</tt>
+	parameter and the <tt>-g</tt> command line option, either of
+	which will, if present, override the element.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	A whitespace-delimited list of ps-names of glyph elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="if-el">&lt;if&gt;</h2>
+
+      <p>
+        Contains instructions that are executed only if the expression
+        in the <tt>test</tt> attribute is true. If the test is false,
+        and an &lt;else&gt; element is the last child of this
+        &lt;if&gt;, the instructions in the &lt;else&gt; element are
+        executed. &lt;if&gt; elements may be nested.
+      </p>
+
+      <p>
+        The <tt>test</tt> attribute contains an expression, e.g.
+      </p>
+      <pre>
+        &lt;if test="minimum-distance = 1p"&gt;</pre>
+      <p>
+        For more on expressions, see the <a
+        href="expressions.html">Expressions</a> section of this
+        documentation.  In the TrueType language, where all data is
+        numeric, a non-zero value is considered true and zero false. So
+        the <tt>test</tt> attribute can be used to tell whether a
+        value is zero. This
+      </p>
+      <pre>
+        test="round(lc-vert-stem) != 0"</pre>
+      <p>
+        is equivalent to this:
+      </p>
+      <pre>
+        test="round(lc-vert-stem)"</pre>
+      <p>
+        The &lt;if&gt; element may contain an &lt;else&gt; clause,
+        which must come last.
+      </p>
+      <pre>
+        &lt;if test="boolean-expression"&gt;
+          &lt;!-- programming --&gt;
+          &lt;else&gt;
+            &lt;!-- alternative programming --&gt;
+          &lt;/else&gt;
+        &lt;/if&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	Programming, followed optionally by an &lt;else&gt; element.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+        <dt>test</dt>
+        <dd>
+          Required. Any value or expression. The condition to test
+          for.
+        </dd>
+
+      </dl>
+
+      <h2 id="infile">&lt;infile&gt;</h2>
+
+      <p>
+        Contains the name of a file to which TrueType instructions are
+        to be added. This may be either a FontForge source file (.sfd)
+        or a TrueType font (.ttf).
+      </p>
+      <pre>
+          &lt;infile&gt;MyFont.sfd&lt;/infile&gt;
+          &lt;outfile&gt;MyFont.ttf&lt;/outfile&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	The name of a file with extension <tt>.sfd</tt> or
+	<tt>.ttf</tt>.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="interpolate">&lt;interpolate&gt;</h2>
+
+      <p>
+        To "interpolate" a point is to move it so that its position
+        relative to two reference points is what it was in the
+        original outline. If the distance between the two reference
+        points is not what it was in the original outline, the point
+        is positioned so that its relationship to the reference points
+        is proportionally correct.
+      </p>
+
+      <p>
+        The &lt;interpolate&gt; element must contain at least one
+        point to interpolate.  It may contain any number of
+        &lt;point&gt;s, &lt;range&gt;s and &lt;set&gt;s.  Like most other elements
+        that move points, it may contain a &lt;reference&gt; element;
+        but this element must contain two &lt;point&gt;s, not just
+        one.
+      </p>
+
+      <p>
+        This instruction may be nested inside a &lt;move&gt; element
+        containing a reference point, in which case no reference
+        points are needed in the &lt;interpolate&gt; element: the
+        points it contains are automatically interpolated between the
+        &lt;move&gt; element's reference point and its moved point.
+        These two &lt;interpolate&gt; elements do the same thing:
+      </p>
+      <pre>
+        &lt;interpolate&gt;
+          &lt;reference&gt;
+            &lt;point num="top"/&gt;
+            &lt;point num="bottom"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="bar-top-left"/&gt;
+        &lt;/interpolate&gt;
+
+        &lt;move&gt;
+          &lt;reference&gt;
+            &lt;point num="bottom"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="top"/&gt;
+          &lt;interpolate&gt;
+            &lt;point num="bar-top-left"/&gt;
+          &lt;/interpolate&gt;
+        &lt;/move&gt;</pre>
+      <p>
+	If you want to round points after interpolating them, simply
+	include the attribute <tt>round="yes"</tt> on the
+	&lt;interpolate&gt; element. The points will be moved along the
+	freedom vector to the nearest rounded position. Note that this
+	has no effect on &lt;range&gt; or &lt;set&gt; elements. If you
+	want to use a round state other than the current one, use the
+	appropriate value for <tt>round</tt>:
+      </p>
+      <pre>
+	&lt;interpolate round="to-half-grid">
+	  &lt;reference&gt;
+	    &lt;point num="a"/&gt;
+	    &lt;point num="b"/&gt;
+	  &lt;/reference&gt;
+	  &lt;point num="c"/&gt;
+        &lt;/interpolate&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	An optional &lt;reference&gt; element (containing two
+	&lt;point&gt; elements), followed by one or more
+	&lt;point&gt;, &lt;range&gt; and &lt;set&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>compile-if</dt>
+	<dd>
+	  Optional. Any value or expression that can be resolved to a
+	  number at compile time. This &lt;interpolate&gt; element is
+	  compiled only if the <tt>compile-if</tt> attribute evaluates
+	  as true (non-zero). If this attribute is not present, the
+	  &lt;interpolate&gt; is compiled.
+	</dd>
+	<dt>round</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. If the value is anything but
+	  "no", any points referred to by &lt;point&gt; elements (but
+	  not &lt;range&gt; or &lt;set&gt; elements) are moved to the
+	  nearest rounded position. Points are not rounded when this
+	  attribute is not present.
+	</dd>
+      </dl>
+
+      <h2 id="interpolate-untouched-points">&lt;interpolate-untouched-points&gt;</h2>
+
+      <p>Interpolates all points that have not been moved or
+      "touched" by instructions so that they are positioned
+      correctly relative to points that have been moved.
+      Most of the time you will want to place this
+      instruction at the end of the program for each
+      glyph.</p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>axis</dt>
+	<dd>
+	  Optional. Permitted values are "x" and "y". Determines the
+	  axis along which interpolation is performed. If this
+	  attribute is omitted, interpolation is performed along both
+	  x and y axes.
+	</dd>
+      </dl>
+
+      <h2 id="legacy-functions">&lt;legacy-functions&gt;</h2>
+
+      <p>
+        Stores functions from a font that has been converted for use
+        with Xgridfit. Normally this should not be created or edited
+        by hand: see <a href="convert.html">Conversion</a> for further
+        details.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Programming imported from an existing font: normally just
+	&lt;command&gt; and &lt;push&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>max-function-defs</dt>
+	<dd>
+	  Required. A positive integer (one or higher). One more than
+	  the highest index of a functon defined in the
+	  &lt;legacy-functions&gt; element. Normally this will be set
+	  correctly by ttx2xgf, but the user should check it before
+	  proceeding.
+	</dd>
+      </dl>
+
+      <h2 id="line">&lt;line&gt;</h2>
+
+      <p>
+        A &lt;line&gt; is defined by its two end-points. These points
+        need not be adjacent.
+      </p>
+
+      <p>
+        When a &lt;line&gt; has a <tt>name</tt> attribute, another
+        &lt;line&gt; may refer to it by name. You may name the
+        &lt;line&gt; the first time you use it or declare it in a
+        &lt;line&gt; element among the declarations at the beginning
+        of a &lt;glyph&gt;.  For example, if you declare the line
+        thus:
+      </p>
+
+      <pre>
+        &lt;line name="line-2b"&gt;
+          &lt;point num="b"/&gt;
+          &lt;point num="a"/&gt;
+        &lt;/line&gt;</pre>
+
+      <p>then you can use an abbreviated form whenever you need it:</p>
+
+      <pre>
+        &lt;set-freedom-vector&gt;
+          &lt;line ref="line-2b"/&gt;
+        &lt;/set-freedom-vector&gt;</pre>
+
+      <p>
+        If both points that define a &lt;line&gt; are in the same
+        zone, you may use the optional <tt>zone</tt> attribute on the
+        &lt;line&gt; to indicate this. Most instructions that take a
+        &lt;line&gt; as an argument allow one point to be in one zone
+        and the other point in the other: in such cases place the
+        <tt>zone</tt> attributes on the &lt;point&gt;s. The exception
+        is the &lt;move-point-to-intersection&gt; instruction, which
+        requires that each of the two lines it takes as arguments be
+        entirely in a zone. For this instruction, place the
+        <tt>zone</tt> attributes on the &lt;line&gt;s, never on the
+        &lt;point&gt;s.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Two &lt;point&gt; elements, one at each end of the line. These
+	are required if no <tt>ref</tt> attribute is present.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Optional, but necessary if this &lt;line&gt; is referred to
+	  elsewhere. A name: any sequence of letters, numbers,
+	  hyphens, periods; no spaces permitted. Names this
+	  &lt;line&gt;.
+	</dd>
+	<dt>ref</dt>
+	<dd>
+	  Required if no &lt;point&gt; elements are present. A
+	  reference to a named &lt;line&gt;.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  Optional. Permitted values are "twilight" and
+	  "glyph". Include the attribute <tt>zone="twilight"</tt> if
+	  both end-points of the line are in the twilight zone.
+	</dd>
+      </dl>
+
+      <h2 id="macros">&lt;macro&gt;</h2>
+
+      <p>
+        A <a href="functions.html#macros">macro</a> is a stretch of
+        code that is compiled and inserted into the program stream
+        wherever a &lt;call-macro&gt; element is encountered. Macros
+        resemble functions in syntax: they begin with &lt;param&gt;
+        definitions followed by program code, which can access all
+        global variables and values (e.g. control values, graphics
+        variables, constants and variables declared as children of
+        &lt;xgridfit&gt;). Macros can be called from a
+        &lt;function&gt;, &lt;pre-program&gt; or &lt;glyph&gt;, and
+        variables and values local to these structures can be accessed
+        by passing them as parameters.
+      </p>
+      <p>
+        Macro parameters are fundamentally different from function
+        parameters. A function parameter is passed to the function on
+        the stack at run time; the macro parameter, on the other hand,
+        is swapped at compile time for the <tt>value</tt> parameter,
+        which is then evaluated as any value is evaluated at run
+        time. When passing variables or control values, there is no
+        rule governing whether they are passed to the macro by value
+        or by reference; rather, they are evaluated according to the
+        rule that governs evaluation of variables for the particular
+        instruction where they occur.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Optional &lt;param&gt; elements, followed by optional
+	&lt;alias&gt; elements, and then by programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. Names this &lt;macro&gt;.
+	</dd>
+	<dt>xml:id</dt>
+	<dd>
+	  Optional. A valid XML ID, i.e. any sequence of letters,
+	  numbers, hyphens, periods; no spaces permitted; and unique
+	  within the program. This ID may be used if a &lt;macro&gt;
+	  is imported into a file using XInclude.
+	</dd>
+      </dl>
+
+      <h2 id="maximum">&lt;maximum&gt;</h2>
+      
+      <p>Yields the greater of the two values <tt>value1</tt> and
+      <tt>value2</tt>.</p>
+      <pre>
+        &lt;maximum value1="lc-vert-stem" value2="1p" result-to="lc-vert-stem"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value1</dt>
+	<dd>
+	  Required except when &lt;maximum&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>value2</dt>
+	<dd>
+	  Required except when &lt;maximum&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;maximum&gt; is the child of a
+	  &lt;formula&gt;.  The name of a variable in which to store
+	  the result. If <tt>result-to</tt> is omitted where allowed,
+	  the compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="mdap">&lt;mdap&gt;</h2>
+
+      <p>Corresponds to the TrueType MDAP instruction. Normally
+      &lt;move&gt; is a better choice for moving points, but this
+      element is provided to facilitate low-level programming.</p>
+
+      <p>
+        This element rounds a point to the grid if the <tt>round</tt>
+        attribute is not <tt>no</tt>; otherwise it "touches" the point
+        (marks it as moved).
+      </p>
+      <pre>
+        &lt;mdap&gt;
+          &lt;point num="p"/&gt;
+        &lt;/mdap&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	A single &lt;point&gt;.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+        <dt>round</dt>
+        <dd>
+          Optional. The value may be "yes" or "no", the name of a
+          standard or custom round state, or any number or expression
+          to use as an input for SROUND. The default value is "yes."
+          This attribute determines whether and how to round the
+          point.
+        </dd>
+      </dl>
+
+
+      <h2 id="mdrp">&lt;mdrp&gt;</h2>
+
+      <p>Corresponds to the TrueType MDRP instruction. Normally
+      &lt;move&gt; is a better choice for moving points, but this
+      element is provided to facilitate low-level programming.</p>
+
+      <p>
+        This element will also take care of setting RP0 beforehand if
+        a reference point is supplied. If no reference point is
+        supplied, the current value of RP0 is used.
+      </p>
+      <pre>
+        &lt;mdrp&gt;
+          &lt;reference&gt;
+            &lt;point num="r"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="p"/&gt;
+        &lt;/mdrp&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	An optional &lt;reference&gt; element (containing one point),
+	followed by a single &lt;point&gt;.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>round</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. The default value is "yes."
+	  This attribute determines whether and how to round the
+	  distance between the reference point and the moved point.
+	</dd>
+	<dt>min-distance</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no". The default
+	  is "yes." Whether or not to maintain a minimum distance
+	  between the reference point and the moved point.
+	</dd>
+	<dt>set-rp0</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no". The default
+	  is "no." Whether or not to set the RP0 pointer to the moved
+	  point after the instruction is executed.
+	</dd>
+	<dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "gray." The kind of distance between
+	  the reference point and the moved point. This is used by
+	  some TrueType engines to compensate for engine
+	  characteristics.
+	</dd>
+      </dl>
+
+      <h2 id="measure-distance">&lt;measure-distance&gt;</h2>
+
+      <p>
+        Measures the distance between two points and returns an
+        F26dot6 number.  The measurement is performed along the
+        projection vector, and the result may be positive or negative
+        depending on the relationship of the distance to the direction
+        of the vector. Another way of putting it is that the order of
+        the two points in this instruction is significant; reverse
+        them and you reverse the sign of the result.
+      </p>
+      <pre>
+        &lt;measure-distance result-to="v"&gt;
+          &lt;point num="p1"/&gt;
+          &lt;point num="p2"/&gt;
+        &lt;/measure-distance&gt;</pre>
+      <p>
+	Usually it will be more convenient to use the <tt>--</tt> or
+	<tt>---</tt> operator in an <a
+	href="expressions.html">expression</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Two &lt;point&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>grid-fitted</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no"; the default
+	  is "yes". Whether to use the point's current (grid-fitted)
+	  position or its original position (before grid-fitting).
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional.  The name of a variable or control value in which
+	  to store the result. If there is no <tt>result-to</tt>
+	  attribute, the compiler issues a warning and the result is
+	  left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="message">&lt;message&gt;</h2>
+
+      <p>
+        The &lt;message&gt; element produces no TrueType code, but
+        rather causes a message to be output at compile-time via the
+        &lt;xsl:message&gt; element. This may help with debugging.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Text of a message to be output.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="miap">&lt;miap&gt;</h2>
+
+      <p>Corresponds to the MIAP instruction. Normally
+      &lt;move&gt; is a better choice for moving points, but this
+      element is provided to facilitate low-level programming.</p>
+
+      <p>Positions a point a specified distance from the grid
+      origin.</p>
+
+      <h3>Content</h3>
+      <p>
+	A single point.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>distance</dt>
+	<dd>
+	  Required. The name of a control value.
+	</dd>
+	<dt>round</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. The default value is "yes."
+	  This attribute determines whether and how to round the
+	  distance between the reference point and the moved point.
+	</dd>
+	<dt>cut-in</dt>
+	<dd>
+	  Optional. The value may be "yes" or "no". The default is
+	  "yes." Whether to use the control value cut-in. If rounding
+	  is used, this will always be <tt>yes</tt>, even if you set
+	  it to <tt>no</tt>.
+	</dd>
+      </dl>
+
+      <h2 id="minimum">&lt;minimum&gt;</h2>
+
+      <p>Yields the lesser of the two values <tt>value1</tt> and
+      <tt>value2</tt>.</p>
+      <pre>
+        &lt;minimum value1="lc-vert-stem" value2="1p" result-to="lc-vert-stem"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value1</dt>
+	<dd>
+	  Required except when &lt;minimum&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>value2</dt>
+	<dd>
+	  Required except when &lt;minimum&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;minimum&gt; is the child of a
+	  &lt;formula&gt;.  The name of a variable in which to store
+	  the result. If <tt>result-to</tt> is omitted where allowed,
+	  the compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="mirp">&lt;mirp&gt;</h2>
+
+      <p>Corresponds to the MIRP instruction, but attempts, insofar as it
+      is practical, to separate rounding and the cvt cut-in. You can
+      specify <tt>round="no"</tt> and <tt>cut-in="yes"</tt> or both
+      <tt>no</tt> or both <tt>yes</tt>,
+      but not <tt>round="yes"</tt> and <tt>cut-in="no"</tt>.
+      That produces an error-message.</p>
+
+      <p>This will take care of setting RP0 beforehand if a reference point
+      is included.</p>
+      <pre>
+        &lt;mirp distance="lc-x-height"&gt;
+          &lt;reference&gt;
+            &lt;point num="p1"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="p2"/&gt;
+        &lt;/mirp&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	An optional &lt;reference&gt; element (containing one point),
+	followed by a single &lt;point&gt;.
+      </p>
+
+      <h4>Attributes</h4>
+
+      <dl>
+        <dt>distance</dt>
+        <dd>
+	  Required. The name of a control value. Distance (from a
+	  &lt;control-value&gt; element) relative to the reference
+	  point (or to RP0 if that was set by a previous instruction).
+	</dd>
+        <dt>round</dt>
+        <dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. The default value is "yes."
+	  This attribute determines whether and how to round the
+	  distance between the reference point and the moved point.
+	</dd>
+        <dt>cut-in</dt>
+        <dd>
+	  Optional. The value may be "yes" or "no". The default is
+	  "yes." Whether to use the control value cut-in. If rounding
+	  is used, this will always be <tt>yes</tt>, even if you set
+	  it to <tt>no</tt>.
+	</dd>
+        <dt>min-distance</dt>
+        <dd>
+	  Optional. Permitted values are "yes" and "no". The default
+	  is "yes." Whether or not to maintain a minimum distance
+	  between the reference point and the moved point.
+	</dd>
+	<dt>set-rp0</dt>
+	<dd>
+	  Optional. Permitted values are "yes" and "no". The default
+	  is "no." Whether or not to set the RP0 pointer to the moved
+	  point after the instruction is executed.
+	</dd>
+        <dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "gray." The kind of distance between
+	  the reference point and the moved point. This is used by
+	  some TrueType engines to compensate for engine
+	  characteristics.
+	</dd>
+      </dl>
+
+      <h2 id="modifier">&lt;modifier&gt;</h2>
+
+      <p>
+	When used as the content of a &lt;command&gt; element,
+	controls one or two bits of the output instruction.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>type</dt>
+	<dd>
+	  Required. Must be one of the following: "set-rp0", "round",
+	  "minimum-distance", "color", "grid-fitted", "to-line",
+	  "axis", "ref-ptr". This determines which bits are affected.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. The possible values vary with the
+	  <tt>type</tt>. For details and defaults, see the <a
+	  href="low-level.html#command">"Low-Level Elements"</a>
+	  section.
+	</dd>
+      </dl>
+
+      <h2 id="move">&lt;move&gt;</h2>
+
+      <p>Moves a point and, optionally, aligns other points with it
+      or moves other points in relation to it. For details, see the section
+      on <a href="moves.html">moving points</a>.</p>
+
+      <h3>Content</h3>
+      <p>
+	An optional &lt;reference&gt; element containing one
+	&lt;point&gt;; then a required &lt;point&gt;. This may be
+	followed by any number of the following elements, in this
+	order:
+      </p>
+      <ul>
+	<li>&lt;delta&gt;</li>
+	<li>&lt;align&gt;,
+	&lt;interpolate&gt;,
+	&lt;shift&gt; (in any order),</li>
+	<li>&lt;move&gt;</li>
+	<li>&lt;delta&gt;</li>
+      </ul>
+      <p>
+	The first group of &lt;delta&gt; element is executed before
+	the embedded &lt;align&gt;, &lt;interpolate&gt;, &lt;shift&gt;
+	and &lt;move&gt; elements; the second group is executed
+	afterwards. A &lt;move&gt; may contain &lt;interpolate&gt;
+	only if &lt;reference&gt; is present.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+        <dt>distance</dt>
+        <dd>
+	  Optional. The name of a &lt;control-value&gt; element.  If a
+	  <tt>distance</tt> is specified, the target point is
+	  positioned that distance either from the reference point or
+	  from the grid origin. If a <tt>distance</tt> is not
+	  specified, the distance from the original outline is
+	  used. In either case, the <tt>distance</tt> is measured
+	  along the projection vector.
+	</dd>
+        <dt>pixel-distance</dt>
+        <dd>
+	  Optional. A distance in pixels. If a <tt>pixel-distance</tt>
+	  is specified, the target point is positioned that distance
+	  either from the reference point or from the grid origin. The
+	  <tt>distance</tt> and <tt>pixel-distance</tt> attributes are
+	  not compatible, and the schema does not permit both to be
+	  present.
+	</dd>
+        <dt>round</dt>
+        <dd>
+	  Optional. The value may be "yes" or "no", the name of a
+	  standard or custom round state, or any number or expression
+	  to use as an input for SROUND. The default is "yes." Whether
+	  and how to round the <tt>distance</tt> or
+	  <tt>pixel-distance</tt>.  "Yes" means round the distance
+	  according to the current round state (to-grid, if you
+	  haven't changed it). If you specify "no", no rounding is
+	  done. To use one of the standard round states, use
+	  <tt>to-grid, to-half-grid, to-double-grid, down-to-grid</tt>
+	  or <tt>up-to-grid</tt>.  To use a custom round state defined
+	  in the top level of the program (as a child of
+	  &lt;xgridfit&gt;), use its name. Finally, any number
+	  (constant, variable) is passed to SROUND for the TrueType
+	  engine to interpret.  Setting the round state with this
+	  attribute has no effect except in this instruction: the
+	  round state returns to its former value after the
+	  instruction is executed. If several &lt;move&gt;
+	  instructions use the same round state, it is more efficient
+	  to enclose them in a &lt;with-round-state&gt; element than
+	  to include a <tt>round</tt> attribute with each one. That is
+	  also true if the <tt>round</tt> value is to be <tt>no</tt>:
+	  in that case use <tt>&lt;with-round-state
+	  round="no"&gt;</tt> and omit the <tt>round</tt> attribute
+	  for the &lt;move&gt; instructions.
+	</dd>
+        <dt>cut-in</dt>
+        <dd>
+	  Whether to use the Control Value cut-in; or a cut-in value
+	  to use. Legal values are "yes", "no" or any value or
+	  expression; the default value is "yes". If the value of this
+	  attribute is <tt>no</tt>, the value of the <tt>round</tt>
+	  attribute must also be "no". (This is a peculiarity
+	  of the TrueType instruction set and has nothing to do with
+	  Xgridfit.) This attribute has an effect only when the
+	  <tt>distance</tt> attribute is present.
+	</dd>
+        <dt>min-distance</dt>
+        <dd>
+	   Optional. The value may be "yes" or "no" or any value or
+	   expression to be used to set the minimum distance for this
+	   operation.  This attribute has an effect only when there is
+	   a reference point.
+	</dd>
+        <dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "gray." The kind of distance between
+	  the reference point and the moved point. This is used by
+	  some TrueType engines to compensate for engine
+	  characteristics. This applies only when there is a reference
+	  point.
+	</dd>
+      </dl>
+
+      <h2 id="move-point-to-intersection">&lt;move-point-to-intersection&gt;</h2>
+
+      <p>Moves a point to the intersection of two lines.
+      Each of the lines must be wholly in
+      a single zone, so if specifying the zone use the <tt>zone</tt>
+      attribute of the &lt;line&gt; elements rather than the <tt>zone</tt>
+      attributes of the &lt;point&gt; elements that make up the
+      lines.</p>
+      <pre>
+        &lt;move-point-to-intersection&gt;
+          &lt;point num="p"/&gt;
+          &lt;line&gt;
+            &lt;point num="l1p1"/&gt;
+            &lt;point num="l1p2"/&gt;
+          &lt;/line&gt;
+          &lt;line&gt;
+            &lt;point num="l2p1"/&gt;
+            &lt;point num="l2p2"/&gt;
+          &lt;/line&gt;
+        &lt;/move-point-to-intersection&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	A single &lt;point&gt; and two &lt;line&gt; elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="multiply">&lt;multiply&gt;</h2>
+
+      <p>Multiplies <tt>value1</tt> by <tt>value2</tt>. If there is no
+      <tt>result-to</tt> attribute, Xgridfit attempts to write the
+      result to <tt>value1</tt>.</p>
+      <pre>
+        &lt;multiply value1="lc-vert-stem" value2="3.3" result-to="v"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value1</dt>
+	<dd>
+	  Required except when &lt;multiply&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>value2</dt>
+	<dd>
+	  Required except when &lt;multiply&gt; is the child of a
+	  &lt;formula&gt; element. Any value or expression.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;multiply&gt; is the child of
+	  a &lt;formula&gt;.  The name of a variable in which to store
+	  the result. If <tt>result-to</tt> is omitted where allowed,
+	  the compiler issues a warning and the result is left on the
+	  stack.
+	</dd>
+      </dl>
+
+      <h2 id="negate">&lt;negate&gt;</h2>
+
+      <p>
+        Converts positive to negative numbers; negative numbers stay
+        negative. If the <tt>result-to</tt> attribute is not present,
+        Xgridfit attempts to write the result back to
+        <tt>value</tt>. Failing that, it issues a warning and leaves
+        the result on the stack.
+      </p>
+      <pre>
+        &lt;negate value="v"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when &lt;negate&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to operate on.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;negate&gt; is the child of a
+	  &lt;formula&gt;. The name of a variable or control value in
+	  which to store the result. If <tt>result-to</tt> is omitted
+	  where allowed, and <tt>value</tt> is a variable or control
+	  value, the result is written to <tt>value</tt>. If
+	  <tt>value</tt> cannot be written to, the compiler issues a
+	  warning and the result is left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="no-compile">&lt;no-compile&gt;</h2>
+      <p>
+	This element, which must always be a child of
+	&lt;xgridfit&gt;, contains &lt;glyph&gt; elements (usually
+	imported via XInclude) which are visible for reference
+	purposes but not compiled. If a file <tt>MyFont-Basic.xgf</tt>
+	contains a glyph program with an opening tag that looks like
+	this:
+      </p>
+      <pre>
+	&lt;glyph ps-name="a" xml:id="a"&gt;</pre>
+      <p>
+	then that glyph program can be made visible within another
+	file thus:
+      </p>
+      <pre>
+	&lt;no-compile&gt;
+	  &lt;xi:include href="MyFont-Basic.xgf#a"/&gt;
+	&lt;/no-compile&gt;</pre>
+      <p>
+	Now the following &lt;point&gt; will compile correctly:
+      </p>
+      <pre>
+	&lt;point num="a/top + another-num"</pre>
+      <p>
+	The glyph included in this way can also be compiled via
+	&lt;call-glyph&gt;:
+      </p>
+      <pre>
+	&lt;call-glyph ps-name="a"&gt;
+	  &lt;with-param name="left-sidebearing" value="111"/&gt;
+	&lt;/call-glyph&gt;</pre>
+      <p>
+	The &lt;no-compile&gt; element can be overridden with the
+	&lt;glyph-select&gt; element (<tt>glyph-select</tt> parameter
+	or <tt>-g</tt> option). This behavior may ease the testing of
+	programs for composite glyphs.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;glyph&gt; elements; more typically,
+	&lt;xi:include&gt; elements importing &lt;glyph&gt; elements
+	from other files.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="no-round">&lt;no-round&gt;</h2>
+
+      <p>
+        Like round, but without the rounding. That is, it may apply a
+        correction for the "color" of the distance, but it will not
+        round the distance. If the <tt>result-to</tt> attribute is not
+        present, Xgridfit attempts to write the result back to
+        <tt>value</tt>. Failing that, it issues a warning and leaves
+        the result on the stack.
+      </p>
+      <pre>
+        &lt;no-round value="v1" color="black" result-to="v2"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when &lt;no-round&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. A distance on the current
+	  grid; the value to operate on.
+	</dd>
+	<dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "gray." The kind of distance that the
+	  <tt>value</tt> represents. This is used by some TrueType
+	  engines to compensate for engine characteristics.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;no-round&gt; is the child of
+	  a &lt;formula&gt;. The name of a variable or control value
+	  in which to store the result. If <tt>result-to</tt> is
+	  omitted where allowed, and <tt>value</tt> is a variable or
+	  control value, the result is written to <tt>value</tt>. If
+	  <tt>value</tt> cannot be written to, the compiler issues a
+	  warning and the result is left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="no-warning">&lt;no-warning&gt;</h2>
+
+      <p>
+	Inside a &lt;no-warning&gt;&lt;/no-warning&gt; block, warning
+	messages are suppressed. Use this if you find a particular
+	warning message annoying and you want to assure the compiler
+	that you know what you're doing.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Programming of any kind.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="outfile">&lt;outfile&gt;</h2>
+
+      <p>
+        Contains the name of a file to write. If the filename ends
+        <tt>.sfd</tt> it is assumed that a FontForge source file is
+        desired, and the generated FontForge script ends with a "Save"
+        command. If the filename ends <tt>.ttf</tt> it is assumed that
+        a TrueType font is desired, and the generated FontForge script
+        ends with a "Generate" command. It is an error if the filename
+        has any other suffix.
+      </p>
+      <p>
+	The <tt>fmflags</tt> attribute indicates flags to pass to
+	FontForge when generating a TrueType font. It has no effect
+	when the &lt;outfile&gt; is a FontForge source file. For a
+	list of these flags, see the documentation for the <a
+	href="http://fontforge.sourceforge.net/scripting-alpha.html#G">Generate</a>
+	command. Probably the most likely to be used is "2048"
+	(generate old-style kern table).
+      </p>
+      <pre>
+          &lt;infile&gt;MyFont.sfd&lt;/infile&gt;
+          &lt;outfile fmflags="2048"&gt;MyFont.ttf&lt;/outfile&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	The name of a file, with extension of either <tt>.sfd</tt> or
+	<tt>.ttf</tt>.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>fmflags</dt>
+	<dd>
+	  Optional. An integer. Flags to be passed to the FontForge
+	  "Generate" command. This has no effect when Python output is
+	  selected; instead, use <tt>pyflags</tt>.
+	</dd>
+	<dt>pyflags</dt>
+	<dd>
+	  A list of flags for FontForge to use when it generates a
+	  font. This is a space-separated list of tokens,
+	  e.g. <tt>pyflags="old-kern ofm"</tt>. Possible tokens are:
+	  afm, pfm, tfm, ofm, composites-in-afm, glyph-map-file,
+	  short-post, apple, opentype, old-kern, dummy-dsig,
+	  TeX-table, round, no-hints, omit-instructions,
+	  PfEd-comments, PfEd-colors, PfEd-lookups, PfEd-guidelines,
+	  PfEd-background, symbol. For the meanings of these, see the
+	  section of the FontForge manual on <a
+	  href="http://fontforge.sourceforge.net/python.html#f-generate">generating
+	  fonts in Python scripts</a>.
+	</dd>
+      </dl>
+
+      <h2 id="outfile-base">&lt;outfile-base&gt;</h2>
+      <p>
+	This element, which must be a child of &lt;xgridfit&gt;,
+	corresponds to the <tt>outfile-base</tt> parameter and the
+	<tt>-S</tt> option for the <tt>xgridfit</tt> shell script. If
+	present, it causes a separate file to be output for every
+	glyph that Xgridfit compiles. The name of the file is the
+	string supplied in this element, plus the <tt>ps-name</tt> of
+	the glyph, plus the extension .pe, .py or .debug. For example,
+	this element
+      </p>
+      <pre>
+	&lt;outfile-base&gt;Test&lt;/outfile-base&gt;</pre>
+      <p>
+	causes Xgridfit to output files with names like
+	<tt>Test_A.pe</tt> and <tt>Test_B.py</tt> (or
+	<tt>Test_A.py</tt> and <tt>Test_B.pe</tt> when Python output
+	is requested). Elements such as control values, functions and
+	the pre-program are output as usual in the default output
+	script or in a file specified with the -O option. Note that
+	this element also causes the output of &lt;outfile&gt; to be
+	saved in a separate script whose default name depends on
+	&lt;outfile-base&gt;. See <a
+	href="#outfile-script-name">&lt;outfile-script-name&gt;</a> to
+	specify a different name for this separate file.
+      </p>
+      <p>
+	This feature depends on the presence of an extension element
+	that not every XSLT processor supports. Xsltproc, which
+	Xgridfit uses by default, does support it.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	A fragment of a file name, from which other file names are
+	built.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="outfile-script-name">&lt;outfile-script-name&gt;</h2>
+      <p>
+	When the &lt;outfile-base&gt; element is present or the
+	<tt>-S</tt> option is used, and the &lt;outfile&gt; element is
+	present or the <tt>-o</tt> option is used, Xgridfit outputs
+	the FontForge command that saves a font file or generates a
+	font in a separate script file. By default the filename for
+	this script is based on the outfile-base: for example, if the
+	-S parameter is <tt>MyFont</tt>, then the filename will be
+	<tt>MyFont_outfile.pe</tt> or <tt>MyFont_outfile.py</tt>. Use
+	the &lt;outfile-script-name&gt; element (or the <tt>-z</tt>
+	option) to specify a filename other than the default. This
+	element must be a child of &lt;xgridfit&gt;.
+      </p>
+      <p>
+	This element has no effect when the outfile-base is not
+	specified, and the glyph programs in a script are not being
+	saved separately.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Name of a file containing the FontForge "Generate" or "Save"
+	command.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="params">&lt;param&gt;</h2>
+      <p>
+	A &lt;param&gt; element is a declaration that a value, a
+	structure or some code may be passed to the &lt;function&gt;,
+	&lt;macro&gt; or &lt;glyph&gt; that contains it by the "call"
+	element that calls it. The &lt;param&gt; elements should be
+	the first children of &lt;function&gt;, &lt;macro&gt; and
+	&lt;glyph&gt; elements.
+      </p>
+      <p>
+	In the case of a &lt;function&gt;, only a value (a single
+	number) may be passed. A &lt;macro&gt; or &lt;glyph&gt; is
+	much more flexible: &lt;line&gt;, &lt;range&gt;, &lt;set&gt;
+	and fragments of code may be passed. Within the &lt;macro&gt;
+	or &lt;glyph&gt;, the structures can be referenced via
+	<tt>ref</tt> attributes; code passed as a parameter can be
+	called via a &lt;call-param&gt; element.
+      </p>
+      <p>
+	A &lt;param&gt; may contain a default <tt>value</tt>--that is,
+	a value to be used in the event that the call element does not
+	pass a value. The &lt;param&gt; may also contain code to be
+	used when the call element does not pass code; but it may not
+	contain a &lt;line&gt;, &lt;range&gt; or &lt;set&gt;.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Normally this element is empty; but a &lt;param&gt; intended
+	to pass code to a &lt;macro&gt; or &lt;glyph&gt; may contain
+	code to be used when the &lt;call-macro&gt; or
+	&lt;call-glyph&gt; element lacks a matching &lt;with-param&gt;
+	element.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. The name of the &lt;param&gt;
+	  is used both by the call element and by the code that
+	  requires the value or item passed.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Optional. A default value.
+	</dd>
+      </dl>
+
+      <h2 id="param-set">&lt;param-set&gt;</h2>
+
+      <p>
+        Contains a set of parameters (each encoded as a
+        &lt;with-param&gt; element) to be passed to a function or
+        macro. There may be more than one of these in a
+        &lt;call-function&gt; or &lt;call-macro&gt; element; and in
+        that case the function is called repeatedly (via LOOPCALL)
+        until the list of &lt;param-set&gt; elements is exhausted; or
+        the macro code is compiled and inserted repeatedly.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;with-param&gt; elements.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+        <dt>opt</dt>
+        <dd>
+          Optional. If set to "yes," forces optimization in pushing function
+          parameters onto the stack. That is, instructs Xgridfit to
+          push all parameters with a single PUSHB command. Use this if
+          you are sure that all parameters can be determined by the
+          compiler (i.e. they are not determined at run-time) and that
+          they are all between 0 and 255, but Xgridfit is not
+          optimizing. If you get this wrong, that is, if you force
+          optimization when it really ought not to be used, incorrect
+          code will be generated and your glyph program will
+          fail. Still, it may be worth a try since the failure will
+          probably be obvious. Conversely, set this to "no" if
+          Xgridfit is incorrectly optimizing the parameters in a
+          function call.  This probably won't happen, since Xgridfit
+          optimizes rather conservatively, but it's here just in case.
+        </dd>
+      </dl>
+
+      <h2 id="point">&lt;point&gt;</h2>
+  
+      <p>
+        The &lt;point&gt; element defines a point. It is used in all
+        instructions that manipulate or refer to points.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+        <dt>num</dt>
+        <dd>
+          Required. Any value or expression. The number of a point. To
+          refer to a point in a glyph other than the one whose glyph
+          program is currently running (as you may have occasion to do
+          when instructing composite glyphs), use the syntax "g/p",
+          where g is the ps-name of the other glyph, and p is the
+          point being referred to (it must be the name of a
+          &lt;constant&gt; declared in the other glyph).
+        </dd>
+        <dt>zone</dt>
+        <dd>
+          Optional. Permitted values are "twilight" and "glyph". The
+          zone that contains this point. Instructions will take note
+          of this attribute, when present, and adjust the zone
+          pointers appropriately. The glyph zone is always the default
+          zone. When a point is in the glyph zone it is generally
+          redundant to include an attribute <tt>zone="glyph"</tt>, and
+          doing so may also cause unnecessary (though harmless) code
+          to be generated.  N.B. For instructions that deal with lists
+          of points, include the zone attribute only in the first.
+        </dd>
+      </dl>
+
+      <h2 id="pre-program">&lt;pre-program&gt;</h2>
+
+      <p>
+        The prep table (or CVT program) is made from the
+        &lt;pre-program&gt; element. It contains instructions that are
+        executed before a font is rasterized, or whenever it is about
+        to be rasterized in a new size. A typical thing to do in the
+        &lt;pre-program&gt; is to adjust control values, e.g. rounding
+        or applying deltas to them. Another is to set defaults: an
+        instruction that assigns a value to a graphic variable sets a
+        default when it is executed in the &lt;pre-program&gt;. For
+        example, if executed in the &lt;pre-program&gt; this
+        instruction:
+      </p>
+      <pre>
+        &lt;set-minimum-distance value="0.9"&gt;</pre>
+      <p>
+        ensures that the minimum-distance graphics variable is always
+        0.9 pixels at the beginning of any glyph program.
+      </p>
+      <p>
+        The &lt;pre-program&gt; element must be present in a complete
+        Xgridfit program, even if it is empty.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more optional &lt;variable&gt; and &lt;alias&gt;
+	elements, followed by optional programming.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>xml:id</dt>
+	<dd>
+	  Optional. A valid XML ID, i.e. any sequence of letters,
+	  numbers, hyphens, periods; no spaces permitted; and unique
+	  within the program. This ID may be used if the
+	  &lt;pre-program&gt; is imported into a file using XInclude.
+	</dd>
+      </dl>
+
+      <h2 id="ps-private">&lt;ps-private&gt;</h2>
+
+      <p>
+	Provides access to the font's private PostScript
+	dictionary. This dictionary is not included in a TrueType
+	font, but it does provide crucial information to the FontForge
+	auto-hinter; and the FontForge auto-instructor, in turn,
+	depends on the presence of PostScript-style hints. For
+	details, see <a href="merge-mode.html">Merge-mode</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;entry&gt; elements, each supplying the name
+	and value of an entry in the PostScript private
+	dictionary. For example:
+      </p>
+      <pre>
+	&lt;ps-private&gt;
+          &lt;entry name="BlueValues" value="-33 -2 856 873 1358 1385"/&gt;
+          &lt;entry name="OtherBlues" value="-578 -553"/&gt;
+          &lt;entry name="BlueFuzz" value="0"/&gt;
+        &lt;/ps-private&gt;
+      </pre>
+
+      <h2 id="push">&lt;push&gt;</h2>
+
+      <p>
+        The &lt;push&gt; element does the work of the various PUSHB
+        and PUSHW instructions, and it can generate the code to move
+        any value (e.g. a variable or control-value) onto the
+        stack. It may be used in combination with &lt;command&gt; to
+        insert low-level TrueType commands into your Xgridfit
+        programming in a portable way. Its content is a
+        whitespace-delmited list of numbers, identifiers and
+        expressions.  These are valid Xgridfit &lt;push&gt;
+        instructions:
+      </p>
+      <pre>
+        &lt;push&gt;2 5 89 67&lt;/push&gt;
+
+        &lt;push&gt;
+          left
+          right
+          lc-vertical-stem
+          -1
+        &lt;/push&gt;
+
+        &lt;push&gt; 0.58p 2.0 to-grid &lt;/push&gt;
+
+        &lt;push&gt;1 (top + 3) 512&lt;/push&gt;</pre>
+      <p>
+	It is essential that all expressions containing whitespace be
+	enclosed in parentheses.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	A space-delimited list of values and expressions.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="range">&lt;range&gt;</h2>
+
+      <p>
+        A &lt;range&gt; is a collection of contiguous points defined
+        by its end-points. It can be used in any instruction that
+        operates on more than one point: &lt;shift&gt;, &lt;align&gt;,
+        &lt;interpolate&gt;, &lt;shift-absolute&gt;,
+        &lt;toggle-points&gt;. The order of points in the
+        &lt;range&gt; is not significant. Example:
+      </p>
+
+      <pre>
+        &lt;align&gt;
+          &lt;reference&gt;
+            &lt;point num="bottom"/&gt;
+          &lt;/reference&gt;
+          &lt;range&gt;
+            &lt;point num="bottom - 2"/&gt;
+            &lt;point num="bottom + 2"/&gt;
+          &lt;/range&gt;
+        &lt;/align&gt;</pre>
+
+      <p>
+        If "bottom" is point 17, the &lt;range&gt; begins with 15 and
+        ends with 19. But any reference point in the parent element of
+        the &lt;range&gt; is excluded from the &lt;range&gt;, so this
+        &lt;range&gt; actually represents points 15, 16, 18 and
+        19. The same is true of implicit reference points supplied by
+        a &lt;move&gt; element that is the parent of the parent of the
+        &lt;range&gt;:
+      </p>
+
+      <pre>
+        &lt;move&gt;
+          &lt;point num="bottom"/&gt;
+          &lt;align&gt;
+            &lt;range&gt;
+              &lt;point num="bottom - 2"/&gt;
+              &lt;point num="bottom + 2"/&gt;
+            &lt;/range&gt;
+          &lt;/align&gt;
+        &lt;/move&gt;</pre>
+
+      <p>
+        Here the points in the &lt;range&gt; are aligned with "bottom"
+        after it has been moved by the &lt;move&gt; instruction; but
+        "bottom" itself is not part of the &lt;range&gt;. The code
+        above is functionally identical to this:
+      </p>
+
+      <pre>
+        &lt;move&gt;
+          &lt;point num="bottom"/&gt;
+          &lt;align&gt;
+            &lt;point num="bottom - 2"/&gt;
+            &lt;point num="bottom - 1"/&gt;
+            &lt;point num="bottom + 1"/&gt;
+            &lt;point num="bottom + 2"/&gt;
+          &lt;/align&gt;
+        &lt;/move&gt;</pre>
+
+      <p>
+        The latter generates more efficient code than the example with
+        the &lt;range&gt;, but the &lt;range&gt; is more flexible,
+        since its endpoints, its size, and the points to be excluded
+        need not be known until run-time. This makes the &lt;range&gt;
+        ideal for use in functions.
+      </p>
+
+      <p>
+        All the points in a &lt;range&gt; must be in the same zone,
+        determined by the optional <tt>zone</tt> attribute on the
+        &lt;range&gt; element. Any <tt>zone</tt> attributes on the
+        &lt;point&gt;s within the &lt;range&gt; are ignored.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Two &lt;point&gt; elements. These are required if no
+	<tt>ref</tt> attribute is present.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Optional, but necessary if this &lt;range&gt; is referred to
+	  elsewhere. A name: any sequence of letters, numbers,
+	  hyphens, periods; no spaces permitted. Names this
+	  &lt;range&gt;.
+	</dd>
+	<dt>ref</dt>
+	<dd>
+	  Required if no &lt;point&gt; elements are present. A
+	  reference to a named &lt;range&gt;.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  Optional. Permitted values are "twilight" and
+	  "glyph".
+	</dd>
+      </dl>
+
+      <h2 id="restore-default">&lt;restore-default&gt;</h2>
+
+      <p>
+	To reset any of the graphics variables tracked by Xgridfit to
+	its default value (that is, the value set by your Xgridfit
+	program via a &lt;default&gt; element or by setting it in the
+	&lt;pre-program&gt;--failing that, the TrueType default), use
+	the &lt;restore-default&gt; element. Use the value
+	<tt>all</tt> to reset <em>all</em> graphics variables,
+	including the freedom and projection vectors and the auto-flip
+	state, which Xgridfit does not track. The <tt>all</tt> option
+	sets these last to their TrueType defaults: the x axis for the
+	vectors and "on" for auto-flip.
+      </p>
+      <pre>
+	&lt;restore-default name="minimum-distance"/&gt;</pre>
+
+	<h3>Content</h3>
+	<p>None.</p>
+
+	<h3>Attribute</h3>
+	<dl>
+	  <dt>name</dt>
+	  <dd>
+	    The name of the graphics variable to restore to its
+	    default value. Possible values are "minimum-distance",
+	    "control-value-cut-in", "single-width",
+	    "single-width-cut-in", "delta-base", "delta-shift",
+	    "round-state", "all".
+	  </dd>
+	</dl>
+
+      <h2 id="reference">&lt;reference&gt;</h2>
+
+      <p>
+        In any instruction that can position a point or other
+        structure with reference to one or more points, the
+        &lt;reference&gt; element holds the reference point(s).  This
+        element generally contains precisely one point, but when it is
+        the child of an &lt;interpolate&gt; element it must contain
+        two points. In the following example, point p2 is moved
+        relative to point p1:
+      </p>
+      <pre>
+        &lt;move&gt;
+          &lt;reference&gt;
+            &lt;point num="p1"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="p2"/&gt;
+        &lt;/move&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	A single &lt;point&gt;. When the &lt;reference&gt; element is
+	the child of &lt;interpolate&gt;, two points.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="round">&lt;round&gt;</h2>
+
+      <p>
+        Rounds a number representing a distance according to the
+        current round state, applies whatever correction is
+        appropriate for the "color" of the distance, and returns the
+        result.
+      </p>
+      <pre>&lt;round value="lc-vert-stem" color="black" result-to="new-cvt"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required, except when the child of &lt;formula&gt;. Any
+	  value or expression, understood as a distance on the current
+	  grid. This is the number to round.
+	</dd>
+	<dt>color</dt>
+	<dd>
+	  Optional. Permitted values are "black", "white" and
+	  "gray". The default is "gray." The kind of distance that the
+	  <tt>value</tt> represents. This is used by some TrueType
+	  engines to compensate for engine characteristics.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when &lt;round&gt; is the child of a
+	  &lt;formula&gt;. The name of a variable or control value in
+	  which to store the result. If <tt>result-to</tt> is omitted
+	  where allowed, and <tt>value</tt> is a variable or control
+	  value, the result is written to <tt>value</tt>. If
+	  <tt>value</tt> cannot be written to, the compiler issues a
+	  warning and the result is left on the stack.
+	</dd>
+      </dl>
+      
+      <h2 id="round-state">&lt;round-state&gt;</h2>
+
+      <p>
+        Declares a custom round state whose name can be passed to
+        &lt;set-round-state&gt;, &lt;with-round-state&gt;, or any
+        element that takes a <tt>round</tt> attribute. For an
+        explanation of the <tt>period</tt>, <tt>phase</tt> and
+        <tt>threshold</tt> attributes, see "<a
+        href="round.html">Rounding</a>." Note that only a limited number
+        of values is permitted for each of these attributes. This
+        element is permitted only at the top level of a program, as a
+        child of &lt;xgridfit&gt;.
+      </p>
+      <pre>
+        &lt;round-state name="my-round" period="two-pixel"
+                     phase="three-quarters"
+                     threshold="three-quarters"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. This is the name under which
+	  the program may refer to this round state.
+	</dd>
+	<dt>period</dt>
+	<dd>
+	  Required. One of the following: "half-pixel", "one-pixel",
+	  "two-pixel".
+	</dd>
+	<dt>phase</dt>
+	<dd>
+	  Required. One of the following: "zero", "one-quarter",
+	  "one-half", "three-quarters".
+	</dd>
+	<dt>threshold</dt>
+	<dd>
+	  Required. One of the following: "period-minus-one",
+	  "minus-three-eighths", "minus-one-quarter",
+	  "minus-one-eighth", "zero", "one-eighth", "one-quarter",
+	  "three-eighths", "one-half", "five-eighths",
+	  "three-quarters", "seven-eighths", "one", "nine-eighths",
+	  "five-quarters", "eleven-eighths".
+	</dd>
+      </dl>
+
+      <h2 id="set">&lt;set&gt;</h2>
+
+      <p>
+	A &lt;set&gt; is an arbitrary collection of points, defined by
+	the &lt;point&gt; elements contained in the &lt;set&gt;
+	element. The &lt;set&gt; can be used by any element that
+	accepts a collection of points: &lt;align&gt;,
+	&lt;interpolate&gt;, &lt;shift&gt;, &lt;shift-absolute&gt;,
+	&lt;toggle-points&gt;.
+      </p>
+      <p>
+	A &lt;set&gt; can be used only in a &lt;glyph&gt; program, or
+	it can be referenced in a &lt;macro&gt; called by a
+	&lt;glyph&gt; program. The name of a &lt;set&gt; can be passed
+	to a macro as a parameter, and a &lt;set&gt; can be the
+	content of a &lt;with-param&gt; element.
+      </p>
+      <p>
+	Xgridfit must be able to resolve the <tt>num</tt> attributes
+	of all &lt;point&gt;s in a &lt;set&gt; at compile time. It is
+	an error to attempt to reference a variable in a &lt;set&gt;.
+      </p>
+      <p>
+	When a &lt;set&gt; is used in an element that has reference
+	points, either explicitly via the &lt;reference&gt; element
+	or implicitly via an enclosing &lt;move&gt; element, any
+	reference points repeated in the set are excluded. This works
+	only when the &lt;reference&gt; points can be resolved at
+	compile time.
+      </p>
+      <p>
+	A &lt;set&gt; may be preferable to a &lt;range&gt; when all
+	point numbers are known at compile time and the range is
+	short, including perhaps three or four points. The code
+	generated by Xgridfit on encountering a &lt;set&gt; is less
+	flexible, but vastly more efficient than that generated on
+	encountering a &lt;range&gt;.
+      </p>
+      <p>
+	A &lt;set&gt; may be defined thus among the declarations at
+	the beginning of a &lt;glyph&gt;:
+      </p>
+      <pre>
+	&lt;set name="bar-bottom-left-corner"&gt;
+	  &lt;point num="bar-bottom-left"/&gt;
+	  &lt;point num="bar-bottom-left + 1"/&gt;
+	  &lt;point num="bar-bottom-left + 2"/&gt;
+	&lt;/set&gt;
+	&lt;set name="bar-bottom-right-corner"&gt;
+	  &lt;point num="bar-bottom-right"/&gt;
+	  &lt;point num="bar-bottom-right - 1"/&gt;
+	  &lt;point num="bar-bottom-right - 2"/&gt;
+	&lt;/set&gt;</pre>
+      <p>
+	It can then be referenced whenever needed:
+      </p>
+      <pre>
+	&lt;move distance="cap-horz-stem"&gt;
+	  &lt;reference&gt;
+	    &lt;point num="bar-top-left"/&gt;
+	  &lt;/reference&gt;
+	  &lt;point num="bar-bottom-left"/&gt;
+	  &lt;shift&gt;
+	    &lt;set ref="bar-bottom-left-corner"/&gt;
+	    &lt;set ref="bar-bottom-right-corner"/&gt;
+	  &lt;/shift&gt;
+	&lt;/move&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;point&gt; elements. These are required if no
+	<tt>ref</tt> element is present.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Optional, but necessary if this &lt;set&gt; is referred to
+	  elsewhere. A name: any sequence of letters, numbers,
+	  hyphens, periods; no spaces permitted. Names this
+	  &lt;set&gt;.
+	</dd>
+	<dt>ref</dt>
+	<dd>
+	  Required if no &lt;point&gt; elements are present. A
+	  reference to a named &lt;set&gt;.
+	</dd>
+	<dt>zone</dt>
+	<dd>
+	  Optional. Permitted values are "twilight" and
+	  "glyph".
+	</dd>
+      </dl>
+
+      <h2 id="set-auto-flip">&lt;set-auto-flip&gt;</h2>
+
+      <p>
+        When "on" (the default setting), the TrueType engine
+        automatically adjusts the signs of control values when
+        executing MIRP and MIAP instructions. This works very well, so
+        there is rarely a reason to set this to "off."
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Permitted values are "on" and "off".
+	</dd>
+      </dl>
+
+      <h2 id="set-control-value">&lt;set-control-value&gt;<br/>
+      &lt;with-control-value&gt;</h2>
+
+      <p>
+	You can assign a value to a control value anywhere: in the
+	&lt;pre-program&gt;, a &lt;function&gt;, or a &lt;glyph&gt;
+	program. The value you assign can be either in font units (the
+	units of the grid on which you designed the font) or in pixel
+	units (the grid on which the glyph is now being
+	rasterized). To specify which, include the attribute
+	<tt>unit="font"</tt> or <tt>unit="pixel"</tt> ("font" is the
+	default). You must specify the name of the control value with
+	the <tt>name</tt> attribute and the value (an integer in font
+	units or an "F26Dot6" number in pixel units) with the
+	<tt>value</tt> attribute.
+      </p>
+      <p>
+	You can use &lt;set-control-value&gt; to make a control value
+	<a href="cvt.html#local">simulate a local variable</a>.
+      </p>
+      <p>
+	Use &lt;with-control-value&gt;, which takes attributes exactly
+	like those of &lt;set-control-value&gt;, to assign a control
+	value to be used only within the &lt;with-control-value&gt;
+	element. After this element, the value will be the same as it
+	was before.
+      </p>
+      <pre>
+	&lt;set-control-value name="myval" unit="font" value="850"/&gt;
+	&lt;set-control-value name="otherval" unit="pixel"
+                    value="control-value(otherval) * 2"/&gt;
+        &lt;with-projection-vector axis="y"&gt;
+	  &lt;set-control-value name="myval" unit="pixel"
+	            value="point(a) --- point(b)"/&gt;
+	&lt;/with-projection-vector&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	None for &lt;set-control-value&gt;; &lt;with-control-value&gt;
+	contains programming of any kind.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. The name of the control value to set.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression. The value to write to the
+	  control value.
+	</dd>
+	<dt>unit</dt>
+	<dd>
+	  Optional. Permitted values are "font" and "pixel"; the
+	  default is "font". Whether the value is in font units or
+	  pixel units.
+	</dd>
+      </dl>
+
+      <h2 id="set-control-value-cut-in">&lt;set-control-value-cut-in&gt;<br/>
+      &lt;with-control-value-cut-in&gt;</h2>
+      <p>
+        The <tt>value</tt> is a <a
+        href="types.html#grid-distance">distance on the grid</a>. If
+        the difference between a distance from a
+        &lt;control-value&gt; element and the original distance is
+        greater than this, the original distance is used.  The effect
+        is generally to use the &lt;control-value&gt; distance at low
+        resolutions and the original distance at high
+        resolutions. This can be used to promote evenness at small
+        sizes, where a 1-pixel difference between the width of (say) p
+        and b can look bad. The default value is 17/16: that is,
+        1.0625p or 68.
+      </p>
+      <pre>
+        &lt;set-control-value-cut-in value="1.1"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-control-value-cut-in&gt; has no content;
+	&lt;with-control-value-cut-in&gt; contains programming.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression. This is the new control
+	  value cut-in.
+	</dd>
+      </dl>
+
+      <h2 id="set-coordinate">&lt;set-coordinate&gt;</h2>
+
+      <p>Moves a point to a coordinate determined by the
+      freedom and projection vectors. On the rare occasions when
+      you need a command like this one, it is probably better to
+      use &lt;move&gt; with the <tt>pixel-distance</tt> attribute.</p>
+
+      <h3>Content</h3>
+      <p>
+	A &lt;point&gt; to move.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>coordinate</dt>
+	<dd>
+	  Required. Any value or expression. This is the new
+	  coordinate of the point.
+	</dd>
+      </dl>
+
+      <h2 id="set-delta-base">&lt;set-delta-base&gt;<br/>&lt;with-delta-base&gt;</h2>
+      <p>
+        Sets the number that is added to the "size" attribute of a
+        &lt;delta-set&gt; element to get the resolution at which an
+        adjustment should take place. The default value is 9, and that
+        rarely needs to be changed.
+      </p>
+      <pre>
+        &lt;with-delta-base value="56"&gt;
+          &lt;delta&gt;
+            &lt;delta-set size="12" distance="-8"&gt;
+              &lt;point num="p"/&gt;
+            &lt;/delta-set&gt;
+          &lt;/delta&gt;
+        &lt;/with-delta-base&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-delta-base&gt; has no content; &lt;with-delta-base&gt;
+	contains programming.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression. This is the new delta
+	  base.
+	</dd>
+      </dl>
+
+      <h2 id="set-delta-shift">&lt;set-delta-shift&gt;<br/>&lt;with-delta-shift&gt;</h2>
+      <p>
+        The unit by which a delta instruction shifts a point. If the
+        unit is "2," the smallest shift is half a pixel; if "4," it is
+        a quarter of a pixel; if "8" (the default) it is one eighth,
+        and so on.
+      </p>
+      <pre>
+        &lt;set-delta-shift value="32"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-delta-shift&gt; has no content;
+	&lt;with-delta-shift&gt; contains programming.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>units-per-pixel</dt>
+	<dd>
+	  Required. These values are permitted: "2", "4", "8", "16",
+	  "32", "64".
+	</dd>
+      </dl>
+
+      <h2 id="set-dropout-control">&lt;set-dropout-control&gt;</h2>
+      <p>
+        Sets up dropout control. The <tt>threshold</tt> is a number
+        between 0 and 255 in pixels per em. The <tt>flags</tt>
+        attribute is a number that tells how to set up dropout control
+        relative to the threshold. Here are the flags as explained in
+        the <a
+        href="http://developer.apple.com/textfonts/TTRefMan/RM05/Chap5.html#SCANCTRL">Apple
+        TrueType Reference</a>:
+      </p>
+      <ul>
+	<li>
+	  <i>1. Set dropout control to TRUE if other conditions do not block
+	  and ppem is less than or equal to the threshold value.</i>
+	</li>
+	<li>
+	  <i>2. Set dropout control to TRUE if other conditions do not block
+	  and the glyph is rotated.</i>
+	</li>
+	<li>
+	  <i>4. Set dropout control to TRUE if other conditions do not block
+	  and the glyph is stretched.</i>
+	</li>
+	<li>
+	  <i>8. Set dropout control to FALSE unless ppem is less than or
+	  equal to the threshold value.</i>
+	</li>
+	<li>
+	  <i>16. Set dropout control to FALSE unless the glyph is rotated.</i>
+	</li>
+	<li>
+	  <i>32. Set dropout control to FALSE unless the glyph is stretched.</i>
+	</li>
+      </ul>
+      <p>
+	Note that, for the sake of simplicity, the numbers used here
+	are different from those implied in the Apple TrueType
+	Reference. Xgridfit adjusts them before passing them to the
+	TrueType engine.
+      </p>
+      <p>
+	To turn off dropout control, set both <tt>threshold</tt> and
+	<tt>flags</tt> to zero.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>threshold</dt>
+	<dd>
+	  Required.
+	</dd>
+	<dt>flags</dt>
+	<dd>
+	  Required.
+	</dd>
+      </dl>
+
+      <h2 id="set-dropout-type">&lt;set-dropout-type&gt;</h2>
+      <p>
+        Sets dropout type. The <a
+        href="http://www.microsoft.com/typography/otspec/ttinst.htm">Microsoft
+        TrueType Reference</a> describes the action of the possible
+        values as follows:
+      </p>
+      <ul>
+	<li>
+	  <i>if n=0 rules 1 and 2, and 3 are invoked (dropout control
+	  scan conversion including stubs)</i>
+	</li>
+	<li>
+	  <i>if n=1 rules 1, 2 and 4 are invoked (dropout control scan
+	  conversion excluding stubs)</i>
+	</li>
+	<li>
+	  <i>if n=2 rules 1 and 2 only are invoked (fast scan conversion;
+	  dropout control turned off)</i>
+	</li>
+	<li>
+	  <i>if n=3 same as n = 2</i>
+	</li>
+	<li>
+	  <i>if n = 4 rules 1, 2, and 5 are invoked (smart dropout
+	  control scan conversion including stubs)</i>
+	</li>
+	<li>
+	  <i>if n = 5 rules 1, 2, and 6 are invoked (smart dropout
+	  control scan conversion excluding stubs)</i>
+	</li>
+	<li>
+	  <i>if n = 6  same as n = 2</i>
+	</li>
+	<li>
+	  <i>if n = 7  same as n = 2</i>
+	</li>
+      </ul>
+      <p>
+	<i>The scan conversion rules are shown here:</i>
+      </p>
+      <dl>
+	<dt>Rule 1</dt>
+	<dd>
+	  If a pixel’s center falls within the glyph outline, that
+	  pixel is turned on.
+	</dd>
+	<dt>Rule 2</dt>
+	<dd>
+	  If a contour falls exactly on a pixel’s center, that pixel is turned on.
+	</dd>
+	<dt>Rule 3</dt>
+	<dd>
+	  If a scan line between two adjacent pixel centers (either
+	  vertical or horizontal) is intersected by both an
+	  on-Transition contour and an off-Transition contour and
+	  neither of the pixels was already turned on by rules 1 and
+	  2, turn on the left-most pixel (horizontal scan line) or the
+	  bottom-most pixel (vertical scan line). This is “Simple”
+	  dropout control.
+	</dd>
+	<dt>Rule 4</dt>
+	<dd>
+	  Apply Rule 3 only if the two contours continue to intersect
+	  other scan lines in both directions. That is, do not turn on
+	  pixels for ‘stubs.’ The scanline segments that form a square
+	  with the intersected scan line segment are examined to
+	  verify that they are intersected by two contours.  It is
+	  possible that these could be different contours than the
+	  ones intersecting the dropout scan line segment.  This is
+	  very unlikely but may have to be controlled with
+	  grid-fitting in some exotic glyphs.
+	</dd>
+	<dt>Rule 5</dt>
+	<dd>
+	  If a scan line between two adjacent pixel centers (either
+	  vertical or horizontal) is intersected by both an
+	  on-Transition contour and an off-Transition contour and
+	  neither of the pixels was already turned on by rules 1 and
+	  2, turn on the pixel which is closer to the midpoint between
+	  the on-Transition contour and off-Transition contour. This
+	  is “Smart” dropout control.
+	</dd>
+	<dt>Rule 6</dt>
+	<dd>
+	  Apply Rule 5 only if the two contours continue to intersect
+	  other scan lines in both directions. That is, do not turn on
+	  pixels for ‘stubs.’
+	</dd>
+      </dl>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Possible values are from "0" to "7," with meanings
+	  as described above.
+	</dd>
+      </dl>
+
+      <h2 id="set-dual-projection-vector">&lt;set-dual-projection-vector&gt;</h2>
+
+      <p>
+        Like &lt;set-projection-vector&gt;, but the dual projection
+        vector can be set only from a line, and it uses the original
+        positions in the outline of the points that constitute the
+        line rather than their current positions (assuming they have
+        moved).
+      </p>
+
+      <p>
+        The dual projection vector is not used by every instruction:
+        just by &lt;interpolate&gt;, &lt;get-coordinate&gt;,
+        &lt;measure-distance&gt;, &lt;mirp&gt;, &lt;mdrp&gt;, and
+        &lt;move&gt; (only when a "relative-to" point is
+        present). This vector lasts only until a new projection vector
+        is set; then it gets canceled.
+      </p>
+
+      <p>
+        One or both points in the line may be in the twilight zone.
+        See the explanation for &lt;set-vectors&gt;.
+      </p>
+      <pre>
+        &lt;with-projection-vector&gt;
+          &lt;set-dual-projection-vector to-line="orthogonal"&gt;
+            &lt;line ref="line-a"/&gt;
+          &lt;/set-dual-projection-vector&gt;
+          &lt;!-- programming here; then the end of the with-projection-vector
+               block returns the dual projection vector to its former value. --&gt;
+        &lt;/with-projection-vector&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	One &lt;line&gt;.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>to-line</dt>
+	<dd>
+	  Optional. Possible values are "orthogonal" and "parallel";
+	  the default is "parallel". Determines whether the dual
+	  projection vector will be orthogonal or parallel to the
+	  &lt;line&gt; from which it is set.
+	</dd>
+      </dl>
+
+      <h2 id="set-equal">&lt;set-equal&gt;</h2>
+
+      <p>Set <tt>target</tt> (variable, control value, or any of the
+      graphics state variables that Xgridfit can write to) equal
+      to <tt>source</tt>, which can be an expression or any number
+      type that Xgridfit can handle.</p>
+      <pre>
+        &lt;!-- This is the equivalent of a := b; in C. --&gt;
+        &lt;set-equal target="a" source="b"/&gt;</pre>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>source</dt>
+	<dd>
+	  Required. Any value or expression.
+	</dd>
+	<dt>target</dt>
+	<dd>
+	  Required. The name of a variable, control value or graphics
+	  variable to write to.
+	</dd>
+      </dl>
+
+      <h2 id="set-freedom-vector">&lt;set-freedom-vector&gt;<br/>
+      &lt;with-freedom-vector&gt;</h2>
+
+      <p>
+        Just like <a href="#set-vectors">&lt;set-vectors&gt;</a>, but
+        sets only the freedom vector.
+      </p>
+
+      <h2 id="set-minimum-distance">&lt;set-minimum-distance&gt;<br/>
+      &lt;with-minimum-distance&gt;</h2>
+
+      <p>
+        The minimum-distance property is used by several instructions
+        when the "min-distance" attribute is "yes." The default
+        minimum distance is one pixel (1.0, 1p, 64), but can be set to
+        another value here.
+      </p>
+      <pre>
+        &lt;with-minimum-distance value="0.85"&gt;
+          &lt;!-- The distance between p1 and p2 must be at least 0.85 pixel. --&gt;
+          &lt;move round="no"&gt;
+            &lt;reference&gt;
+              &lt;point num="p1"/&gt;
+            &lt;/reference&gt;
+            &lt;point num="p2"/&gt;
+          &lt;/move&gt;
+        &lt;/with-minimum-distance&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-minimum-distance&gt; has no content;
+	&lt;with-minimum-distance&gt; contains programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression. This is the new minimum
+	  distance.
+	</dd>
+      </dl>
+
+      <h2 id="set-projection-vector">&lt;set-projection-vector&gt;<br/>
+      &lt;with-projection-vector&gt;</h2>
+
+      <p>
+        Just like <a href="#set-vectors">&lt;set-vectors&gt;</a>, but
+        sets only the projection vector.
+      </p>
+
+      <h2 id="set-round-state">&lt;set-round-state&gt;<br/>
+      &lt;with-round-state&gt;</h2>
+          
+      <p>
+        Sets the round state. If the <tt>round</tt> attribute matches
+        the name of a &lt;round-state&gt;, that round state is
+        used. If not, one of TrueType's prefabricated round states may
+        be used:
+      </p>
+      <ul>
+        <li>to-grid</li>
+        <li>to-half-grid</li>
+        <li>to-double-grid</li>
+        <li>up-to-grid</li>
+        <li>down-to-grid</li>
+      </ul>
+
+      <p>
+        If the <tt>round</tt> attribute is not one of these, and not
+        the name of one of the custom round-states, Xgridfit tries to
+        resolve it as a number, constant, variable or function
+        parameter and use that as an argument to SROUND. You had
+        better know what you're doing if you intend to use a raw
+        number in this way; it is safer, more intelligible and just as
+        effective to supply a custom <a
+        href="#round-state">&lt;round-state&gt;</a> element.
+      </p>
+
+      <p>
+        The distinction between the element beginning with "set" and
+        the one beginning with "with" is the same as it is for the <a
+        href="vectors.html#vect-inst">vector-setting elements</a>:
+        briefly, the round state set by the "set" element affects the
+        instructions that follow it; the round state set by the "with"
+        instruction affects only the instructions that it contains.
+      </p>
+
+      <p>
+        Xgridfit generates instructions that keep track of the round
+        state (since the TrueType engine provides no way to read it),
+        but it may lose track if Xgridfit instructions are not used
+        exclusively.
+      </p>
+
+      <pre>
+        &lt;with-round-state round="to-half-grid"&gt;
+          &lt;move&gt;
+            &lt;point num="v-point"/&gt;
+          &lt;/move&gt;
+        &lt;/with-round-state&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-round-state&gt; has no content;
+	&lt;with-round-state&gt; contains programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>round</dt>
+	<dd>
+	  Required. The name or a standard or custom round state; any
+	  value or expression. This is the new round state.
+	</dd>
+      </dl>
+
+      <h2 id="set-single-width">&lt;set-single-width&gt;<br/>
+      &lt;with-single-width&gt;</h2>
+
+      <p>
+        The size of the single width, in FUnits, i.e. the units of the
+        grid the font was designed on (usually 2048 or 1000 units per
+        em).  Presumably this width is converted to the current grid,
+        and it is that converted value that the single-width cut-in is
+        compared to.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-single-width&gt; has no content;
+	&lt;with-single-width&gt; contains programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression, interpreted as font
+	  units. This is the new single width.
+	</dd>
+      </dl>
+
+      <h2 id="set-single-width-cut-in">&lt;set-single-width-cut-in&gt;<br/>
+      &lt;with-single-width-cut-in&gt;</h2>
+
+      <p>
+        When the &lt;mirp&gt; or &lt;mdrp&gt; instruction is used, or
+        when &lt;move&gt; is used relative to a point, a single width
+        (determined by &lt;set-single-width&gt; or
+        &lt;with-single-width&gt;) may be used rather than a control
+        value or the original distance if this condition is met: the
+        absolute (either positive or negative) difference between the
+        original outline and the single width is less than the
+        single-width cut-in. The relevant distances are in pixels.
+      </p>
+
+      <p>
+        The single width feature appears to be used rarely.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-single-width-cut-in&gt; has no content;
+	&lt;with-single-width-cut-in&gt; contains programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>value</dt>
+	<dd>
+	  Required. Any value or expression. This is the new
+	  single-width cut-in.
+	</dd>
+      </dl>
+
+      <h2 id="set-vectors">&lt;set-vectors&gt;<br/>&lt;with-vectors&gt;</h2>
+
+      <p>
+        Sets both the projection vector and the freedom vector to the
+        same value. They can be set to "x" or "y" via the
+        <tt>axis</tt> attribute; to a line by including a line element
+        as the content of the &lt;set-vectors&gt; element or the first
+        child of the &lt;with-vectors&gt; element; or by passing "raw"
+        values via the <tt>x-component</tt> and <tt>y-component</tt>
+        attributes.
+      </p>
+     
+      <p>
+        Xgridfit looks first for an <tt>axis</tt> attribute, next for
+        a &lt;line&gt;, and finally for <tt>x-component</tt> and
+        <tt>y-component</tt> attributes (neither is used unless both
+        are present). If it finds none of these and the present
+        element is &lt;with-vectors&gt;, Xgridfit simply stores the
+        present vectors on the stack and restores them at the end of
+        the block.  If the present element is &lt;set-vectors&gt;,
+        Xgridfit prints a warning and attempts to find "raw" vector
+        values on the stack.
+      </p>
+
+      <p>
+        The "raw" values passed in via <tt>x-component</tt> and
+        <tt>y-component</tt> are constrained in ways that make them
+        difficult to calculate, at least in a TrueType program, but
+        the <tt>x-component/y-component</tt> method is useful to
+        restore values that have been saved via
+        &lt;store-projection-vector&gt; or
+        &lt;store-freedom-vector&gt;. For example, to copy one vector
+        to another, you can do this:
+      </p>
+
+      <pre>
+        &lt;variable name="x-comp"/&gt;
+        &lt;variable name="y-comp"/&gt;
+        &lt;store-freedom-vector x-component="x-comp" y-component="y-comp"/&gt;
+        &lt;set-projection-vector x-component="x-comp" y-component="y-comp"/&gt;</pre>
+
+      <p>
+        But because of the way these instructions can leave values on
+        the stack and take them from the stack again, this is easier
+        and more efficient:
+      </p>
+
+      <pre>
+	&lt;no-warning&gt;
+          &lt;store-freedom-vector/&gt;
+          &lt;set-projection-vector/&gt;
+	&lt;/no-warning&gt;</pre>
+
+      <p>
+        When setting vectors to a line, one or both points in the line
+        can be in the twilight zone. You can include a <tt>zone</tt>
+        attribute in the &lt;line&gt; element or one in either or both
+        &lt;point&gt; elements. Include a <tt>zone</tt> attribute in
+        the &lt;line&gt; element if both points are in the twilight
+        zone. This is the same as including an attribute
+        <tt>zone="twilight"</tt> in both points. If only one point is
+        in the twilight zone, include the <tt>zone</tt> attribute for
+        that point.
+      </p>
+
+      <p>
+        Here are several examples:
+      </p>
+      <pre>
+        &lt;with-vectors axis="x"&gt;
+          &lt;!-- programming that moves points horizontally. --&gt;
+        &lt;/with-vectors&gt;
+
+        &lt;with-vectors to-line="orthogonal"&gt;
+          &lt;line ref="diagonal-line"/&gt;
+          &lt;!-- programming that moves points along a line orthogonal to
+               diagonal-line. --&gt;
+        &lt;/with-vectors&gt;
+
+        &lt;set-vectors to-line="parallel"&gt;
+          &lt;line ref="diagonal-line"/&gt;
+        &lt;/set-vectors&gt;
+        &lt;!-- Subsequent programming will move points along a line parallel
+             to diagonal-line. --&gt;</pre>
+
+      <h3>Content</h3>
+      <p>
+	&lt;set-vectors&gt; has no content if an <tt>axis</tt>
+	attribute or the <tt>x-coordinate</tt> and
+	<tt>y-coordinate</tt> attributes are present; otherwise it may
+	contain a &lt;line&gt; element.  &lt;with-vectors&gt; works
+	the same way, but also contains programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>axis</dt>
+	<dd>
+	  Optional, and incompatible with other attributes. Possible
+	  values are "x" and "y".
+	</dd>
+	<dt>to-line</dt>
+	<dd>
+	  Optional, and permitted only when a &lt;line&gt; is
+	  present. Possible values are "orthogonal" and "parallel";
+	  the default is "parallel". Determines whether the vectors
+	  will be orthogonal or parallel to the &lt;line&gt; from
+	  which they are set.
+	</dd>
+	<dt>x-component, y-component</dt>
+	<dd>
+	  Optional, but if one of these attributes is present, the
+	  other must be as well. Not permitted with other attributes
+	  or when a &lt;line&gt; is present.
+	</dd>
+      </dl>
+
+      <h2 id="shift">&lt;shift&gt;</h2>
+
+      <p>Shifts one or more points, ranges, sets, contours and zones
+      by the distance between the current position of the reference
+      point and its original position. Note that this does not
+      guarantee that the shifted elements will maintain their original
+      distance from the reference point (use &lt;move&gt; or
+      &lt;mdrp&gt; for that).</p>
+
+      <p>The &lt;shift&gt; element may contain points, ranges, sets,
+      contours and zones in any combination and order. The following
+      is perfectly correct:</p>
+      
+      <pre>
+        &lt;shift&gt;
+          &lt;reference&gt;
+            &lt;point num="ref-pt"/&gt;
+          &lt;/reference&gt;
+          &lt;point num="move-pt-1"/&gt;
+          &lt;range ref="move-rg-1"/&gt;
+          &lt;contour num="0"/&gt;
+          &lt;point num="move-pt-2"/&gt;
+          &lt;range ref="move-rg-2"/&gt;
+        &lt;/shift&gt;</pre>
+
+      <p>
+        But note that all the points are shifted first, then all the
+        ranges or sets, then all the contours, and finally any zones. The
+        order of child elements in the &lt;shift&gt; element is not
+        significant.
+      </p>
+      <p>
+	If you want to move points to the nearest rounded position
+	after the shift, include a <tt>round</tt> attribute. This
+	works exactly like the <tt>round</tt> attribute on the <a
+	href="#interpolate">&lt;interpolate&gt;</a> element.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Any number of &lt;point&gt;, &lt;range&gt;, &lt;set&gt;,
+	&lt;contour&gt; and &lt;zone&gt; elements, in any order.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>compile-if</dt>
+	<dd>
+	  Optional. If present, the &lt;shift&gt; element is compiled
+	  only if this attribute evaluates as true (non-zero) at
+	  compile time.
+	</dd>
+	<dt>round</dt>
+	<dd>
+	  Optional. Possible values are "yes", "no", one of the
+	  standard or custom round states, or any value or expression
+	  yielding a number to pass to SROUND. The default value is
+	  "no", since by default no rounding is done on the
+	  &lt;point&gt;s contained in a &lt;shift&gt; element.
+	</dd>
+	<dt>reference-ptr</dt>
+	<dd>
+	  Optional. Possible values are "1" and "2". This determines
+	  which reference pointer (RP1 or RP2) to use. Normally
+	  Xgridfit decides which pointer is appropriate in the
+	  context; otherwise RP1 is used.
+	</dd>
+      </dl>
+
+      <h2 id="shift-absolute">&lt;shift-absolute&gt;</h2>
+      
+      <p>
+	Moves one or more points along the freedom vector by a fixed
+	amount (expressed in pixels); it does not use the projection
+	vector. The &lt;shift-absolute&gt; element must contain at
+	least one point to shift: that is, a &lt;range&gt;,
+	&lt;set&gt; or &lt;point&gt; element.  It may contain any
+	number of &lt;point&gt;s, &lt;range&gt;s and &lt;set&gt;s.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Any combination of &lt;range&gt;, &lt;set&gt; and &lt;point&gt;
+	elements in any order.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>pixel-distance</dt>
+	<dd>
+	  Required. Any value or expression, understood as a distance
+	  on the grid.
+	</dd>
+      </dl>
+      
+      <h2 id="srp">&lt;srp&gt;</h2>
+
+      <p>
+        Does the work of SRP0, SRP1, SRP2. But it should rarely be
+        necessary to set the reference pointers explicitly.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One &lt;point&gt; element; the reference pointer is set to
+	point to this.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>whichpointer</dt>
+	<dd>
+	  Required. The reference pointer to set. Possible values are
+	  "0", "1" and "2".
+	</dd>
+      </dl>
+
+      <h2 id="store-projection-vector">&lt;store-projection-vector&gt;<br/>
+      &lt;store-freedom-vector&gt;</h2>
+
+      <p>
+        These instructions store a vector as two numbers, an
+        x-component and a y-component. The <tt>x-component</tt> and
+        <tt>y-component</tt> attributes, if given, must be identifiers
+        for variables:
+      </p>
+      <pre>
+	&lt;store-projection-vector x-component="vx" y-component="vy"/&gt;</pre>
+      <p>
+	If these attributes are not given, a warning is printed and
+	the values are left on the stack, where they will be picked up
+	correctly by a following <tt>set</tt> instruction.  For
+	example, this code sets the projection vector to be the same
+	as the freedom vector:
+      </p>
+
+      <pre>
+        &lt;store-freedom-vector/&gt;
+        &lt;set-projection-vector/&gt;</pre>
+
+      <p>
+        Note that a <tt>with</tt> block will not pick up the
+        components of a vector from the stack.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>x-component, y-component</dt>
+	<dd>
+	  Optional, but if one attribute is present the other must be
+	  as well. The names of variables in which to store the
+	  components of the vector. If these attributes are not
+	  present, the compiler displays a warning and the values are
+	  left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="subtract">&lt;subtract&gt;</h2>
+      
+      <p>Subtracts <tt>minuend - subtrahend</tt>. If <tt>result-to</tt> is not
+      specified, Xgridfit attempts to write the result to
+      <tt>minuend</tt>.</p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>minuend</dt>
+	<dd>
+	  Required, except when &lt;subtract&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to
+	  subtract from.
+	</dd>
+	<dt>subtrahend</dt>
+	<dd>
+	  Required, except when &lt;subtract&gt; is the child of a
+	  &lt;formula&gt;. Any value or expression. The value to
+	  subtract from the minuend.
+	</dd>
+	<dt>result-to</dt>
+	<dd>
+	  Optional; not allowed when
+	  &lt;subtract&gt; is the child of a &lt;formula&gt;. The
+	  name of a variable of control value in which to store
+	  the result of this operation.  If <tt>result-to</tt> is
+	  omitted where allowed, and <tt>minuend</tt> is a variable or
+	  control value, the result is written to <tt>minuend</tt>. If
+	  <tt>minuend</tt> cannot be written to, the compiler issues a
+	  warning and the result is left on the stack.
+	</dd>
+      </dl>
+
+      <h2 id="szp">&lt;szp&gt;</h2>
+
+      <p>
+        Does the work of SZP0, SZP1, SZP2. But these should rarely be
+        needed (use the zone attributes of the point element instead).
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>zone</dt>
+	<dd>
+	  Required. Possible values are "twilight" and "glyph". The
+	  zone to set the zone pointer to.
+	</dd>
+	<dt>whichpointer</dt>
+	<dd>
+	  Required. Possible values are "0", "1" and "2". Identifies
+	  the pointer to set.
+	</dd>
+      </dl>
+
+      <h2 id="toggle-points">&lt;toggle-points&gt;</h2>
+
+      <p>
+	Any of the points that are on-line become off-line, and any
+	that are off-line become on-line.  The &lt;toggle-points&gt;
+	element must contain at least one point to toggle: that is, a
+	&lt;range&gt;, &lt;set&gt; or &lt;point&gt; element.  It may
+	contain any number of &lt;point&gt;s, &lt;set&gt;s and
+	&lt;range&gt;s.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One or more &lt;point&gt;, &lt;set&gt; and &lt;range&gt;
+	elements.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="to-stack">&lt;to-stack&gt;</h2>
+
+      <p>
+	The &lt;to-stack&gt; element moves a single value onto the
+	stack. This can be any kind of value or expression, e.g. a
+	number literal, variable, control value or graphics variable.
+	Use &lt;push&gt; instead when more than one value needs to be
+	placed on the stack.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	A single value or expression.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="untouch">&lt;untouch&gt;</h2>
+
+      <p>A point that has been moved is "touched." This
+      untouches it so that it will be affected by
+      the &lt;interpolate-untouched-points&gt; instruction.</p>
+
+      <h3>Content</h3>
+      <p>
+	One &lt;point&gt; element.
+      </p>
+
+      <h3>Attributes</h3>
+      <p>None.</p>
+
+      <h2 id="variables">&lt;variable&gt;</h2>
+      <p>
+        Variables are spaces in the TrueType Storage Area. They are
+        declared in &lt;variable&gt; elements; Xgridfit takes care of
+        indexing the Storage Area.
+      </p>
+
+      <pre>
+        &lt;variable name="var-name"/&gt;</pre>
+
+      <p>
+        Most variables are local to a glyph program, function or
+        pre-program. Variable declarations may come among the
+        declarations at the beginning of a &lt;glyph&gt; program;
+        after &lt;param&gt; elements in a &lt;function&gt;, and at the
+        beginning of the &lt;pre-program&gt;. A global variable may be
+        declared anywhere in the top level of the program, as a child
+        of &lt;xgridfit&gt; (it is good form to group variable
+        declarations together); a value may be assigned to a global
+        variable in the &lt;pre-program&gt; and read by code in any
+        &lt;glyph&gt; or &lt;function&gt; or elsewhere in the
+        &lt;pre-program&gt;.
+      </p>
+
+      <p>
+        Variables must be written to before they can be read from.
+        (Some versions of Freetype initialize them to zero, but the
+        Microsoft rasterizer yields an error if a variable is read
+        before it is written.) Local variables may be initialized with
+        a <tt>value</tt> attribute in the declaration.
+      </p>
+
+      <p>
+        A variable is named via its <tt>name</tt> attribute. This must
+        be unique in the file in the case of a global variable, but in
+        the case of local variables unique only in the &lt;glyph&gt;
+        program or &lt;function&gt;. Several names are reserved and
+        should be avoided when naming variables and constants, since
+        they belong to pre-defined variables and constants:
+      </p>
+
+      <ul>
+        <li>Current size (all read-only):
+        <ul>
+          <li>pixels-per-em</li>
+          <li>point-size</li>
+        </ul>
+        </li>
+        <li>Values of the round-state variable (constants):
+        <ul>
+          <li>to-grid</li>
+          <li>to-half-grid</li>
+          <li>to-double-grid</li>
+          <li>down-to-grid</li>
+          <li>up-to-grid</li>
+          <li>no</li>
+          <li>custom</li>
+        </ul>
+        </li>
+        <li>Graphics variables:
+        <p>
+          Writing to these changes the graphics state.  The "default"
+          variables can be written to only in the
+          &lt;pre-program&gt;. Trying to write to them elsewhere
+          produces a compile error. Actually, it is never necessary to
+          write to a "default" variable since writing to one of the
+          other variables in the &lt;pre-program&gt; automatically
+          writes to the "default" variable as well. So treat the
+          "default" variables as read-only variables.
+        </p>
+        <ul>
+          <li>round-state (can be written to only via
+          &lt;set-round-state&gt; and
+          &lt;with-round-state&gt;)</li>
+          <li>custom-round-state
+          (can be written to only via &lt;set-round-state&gt; and
+          &lt;with-round-state&gt;)</li>
+          <li>minimum-distance</li>
+          <li>minimum-distance-default</li>
+          <li>control-value-cut-in</li>
+          <li>control-value-cut-in-default</li>
+          <li>single-width</li>
+          <li>single-width-default</li>
+          <li>single-width-cut-in</li>
+          <li>single-width-cut-in-default</li>
+          <li>delta-base delta-base-default</li>
+          <li>delta-shift delta-shift-default</li>
+        </ul>
+        </li>
+      </ul>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. The name of this variable.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Optional. Any value or expression. A value with which to
+	  initialize the variable.
+	</dd>
+      </dl>
+
+      <h2 id="function-variant">&lt;variant&gt;</h2>
+
+      <p>
+	A &lt;variant&gt; is an alternative version of a function to
+	be used at certain sizes or resolutions. Include one or more
+	&lt;variant&gt; elements as the last children of any
+	&lt;function&gt; element. For further explanation, see the
+	section on <a
+	href="functions.html#function-variant">functions</a>.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Programming. &lt;param&gt; and &lt;variable&gt; elements are
+	not permitted; the &lt;variant&gt; must use those of the
+	parent &lt;function&gt;.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>test</dt>
+	<dd>
+	  Required. Any value or expression. The variant is used if
+	  this attribute evaluates as true (non-zero) when the
+	  &lt;pre-program&gt; is run.
+	</dd>
+      </dl>
+
+      <h2>&lt;with-control-value&gt;</h2>
+
+      <p>
+	See <a href="#set-control-value">&lt;set-control-value&gt;</a>
+      </p>
+
+      <h2>&lt;with-control-value-cut-in&gt;</h2>
+
+      <p>
+        See <a href="#set-control-value-cut-in">&lt;set-control-value-cut-in&gt;</a>
+      </p>
+
+      <h2>&lt;with-delta-base&gt;</h2>
+
+      <p>
+        See <a href="#set-delta-base">&lt;set-delta-base&gt;</a>
+      </p>
+
+      <h2>&lt;with-delta-shift&gt;</h2>
+
+      <p>
+        See <a href="#set-delta-shift">&lt;set-delta-shift&gt;</a>
+      </p>
+
+      <h2>&lt;with-freedom-vector&gt;</h2>
+
+      <p>
+        See <a href="#set-freedom-vector">&lt;set-freedom-vector&gt;</a>
+      </p>
+
+      <h2>&lt;with-minimum-distance&gt;</h2>
+
+      <p>
+        See <a href="#set-minimum-distance">&lt;set-minimum-distance&gt;</a>
+      </p>
+
+      <h2 id="with-param">&lt;with-param&gt;</h2>
+
+      <p>
+        Defines a value to be passed to a function, macro or glyph program. The
+        <tt>value</tt> may be any of the value-types that Xgridfit
+        handles. Note that all values are resolved to numbers before a
+        call to a function takes place: Xgridfit does not pass
+        parameters to functions by reference.  A result of this is
+        that if a variable or control value is passed to a function,
+        these things cannot be written to.
+      </p>
+
+      <p>
+        In general there will be a &lt;with-param&gt; element for
+        every &lt;param&gt; element that appears in the function or
+        macro being called.  However, a &lt;with-param&gt; element may
+        be omitted if the matching &lt;param&gt; contains a default
+        <tt>value</tt>.
+      </p>
+
+      <p>
+        The order of &lt;with-param&gt; elements in a
+        &lt;param-set&gt;, &lt;call-function&gt;, &lt;call-macro&gt;
+        or &lt;call-glyph&gt; element is not significant.
+      </p>
+
+      <p>
+	If the &lt;with-param&gt; element is part of a call to a
+	macro, the value passed can be a &lt;set&gt;, &lt;range&gt; or
+	&lt;line&gt;. The <tt>name</tt> of such a structure can be
+	passed via the <tt>value</tt> attribute, or the structure
+	itself can be passed as the child of &lt;with-param&gt;. When
+	&lt;with-param&gt; contains a &lt;set&gt;, &lt;range&gt; or
+	&lt;line&gt;, the <tt>value</tt> attribute is optional.
+      </p>
+
+      <p>
+	Programming can also be passed via a &lt;with-param&gt;
+	element, and in this case too the <tt>value</tt> attribute is
+	optional.
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	Usually none, but if the call is to a &lt;macro&gt; or
+	&lt;glyph&gt;, the element can contain a &lt;range&gt;,
+	&lt;set&gt; or &lt;line&gt;, or a fragment of programming.
+      </p>
+
+      <h3>Attributes</h3>
+      <dl>
+	<dt>name</dt>
+	<dd>
+	  Required. A name: any sequence of letters, numbers, hyphens,
+	  periods; no spaces permitted. This must match the name of
+	  &lt;param&gt; in the &lt;function&gt;, &lt;macro&gt; or
+	  &lt;glyph&gt; being called.
+	</dd>
+	<dt>value</dt>
+	<dd>
+	  Required except when content is present. Any value or
+	  expression. The value to pass as a parameter.
+	</dd>
+      </dl>
+
+      <h2>&lt;with-projection-vector&gt;</h2>
+
+      <p>
+        See <a href="#set-projection-vector">&lt;set-projection-vector&gt;</a>
+      </p>
+
+      <h2>&lt;with-round-state&gt;</h2>
+
+      <p>
+        See <a href="#set-round-state">&lt;set-round-state&gt;</a>
+      </p>
+
+      <h2>&lt;with-single-width&gt;</h2>
+
+      <p>
+        See <a href="#set-single-width">&lt;set-single-width&gt;</a>
+      </p>
+
+      <h2>&lt;with-single-width-cut-in&gt;</h2>
+
+      <p>
+        See <a href="#set-single-width-cut-in">&lt;set-single-width-cut-in&gt;</a>
+      </p>
+
+      <h2>&lt;with-vectors&gt;</h2>
+
+      <p>
+        See <a href="#set-vectors">&lt;set-vectors&gt;</a>
+      </p>
+
+      <h2 id="xgridfit-el">&lt;xgridfit&gt;</h2>
+
+      <p>
+        The root element of an Xgridfit program file.
+      </p>
+
+      <h3>Namespace declaration</h3>
+      <p>
+	This element must contain the namespace declaration
+	xmlns="http://xgridfit.sourceforge.net/Xgridfit2".
+      </p>
+
+      <h3>Content</h3>
+      <p>
+	One at most of these: &lt;glyph-select&gt;, &lt;infile&gt;,
+	&lt;outfile&gt;, &lt;outfile-base&gt;,
+	&lt;outfile-script-name&gt;, &lt;no-compile&gt;,
+	&lt;legacy-functions&gt;, &lt;pre-program&gt;. Any number of
+	these: &lt;constant&gt;, &lt;alias&gt;, &lt;variable&gt;,
+	&lt;round-state&gt;, &lt;default&gt;, &lt;control-value&gt;,
+	&lt;function&gt;, &lt;macro&gt;, &lt;glyph&gt;,
+	&lt;xi.include&gt;.
+      </p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>xml:id</dt>
+	<dd>
+	  Optional. A valid XML ID, i.e. any sequence of letters,
+	  numbers, hyphens, periods; no spaces permitted; and unique
+	  within the program. This ID may be used if the
+	  &lt;xgridfit&gt; element is imported into a file using
+	  XInclude.
+	</dd>
+      </dl>
+
+      <h2 id="zone">&lt;zone&gt;</h2>
+
+      <p>
+        A zone to be shifted by a &lt;shift&gt; instruction.
+      </p>
+
+      <h3>Content</h3>
+      <p>None.</p>
+
+      <h3>Attribute</h3>
+      <dl>
+	<dt>zone</dt>
+	<dd>
+	  Required. Must be "twilight" or "glyph".
+	</dd>
+      </dl>
+
+    </div>
+  </body>
+</html>
